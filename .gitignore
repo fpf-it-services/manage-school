@@ -1,10 +1,10 @@
 # --- Ignorer les fichiers et dossiers du projet Laravel ---
 
 # Ignorer le dossier vendor (dépendances gérées par Composer)
-/laravel-api/vendor/
+laravel-api/vendor/
 
 # Ignorer le fichier d'environnement local Laravel
-/laravel-api/.env
+laravel-api/.env
 
 # Ignorer les fichiers générés par les IDE et systèmes d'exploitation
 /laravel-api/.idea/
