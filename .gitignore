@@ -1,0 +1,68 @@
+# --- Ignorer les fichiers et dossiers du projet Laravel ---
+
+# Ignorer le dossier vendor (dépendances gérées par Composer)
+/laravel-api/vendor/
+
+# Ignorer le fichier d'environnement local Laravel
+/laravel-api/.env
+
+# Ignorer les fichiers générés par les IDE et systèmes d'exploitation
+/laravel-api/.idea/
+/laravel-api/.vscode/
+.DS_Store
+Thumbs.db
+
+# Ignorer les fichiers de cache Laravel
+/laravel-api/storage/*.key
+/laravel-api/public/storage
+/laravel-api/storage/logs/*
+/laravel-api/storage/framework/sessions/*
+/laravel-api/storage/framework/views/*
+/laravel-api/storage/framework/cache/data/*
+
+# Ignorer les migrations compilées et les services
+/laravel-api/bootstrap/cache/*.php
+
+# Ignorer les fichiers de test et de déploiement Laravel
+/laravel-api/Homestead.yaml
+/laravel-api/Homestead.json
+/laravel-api/.phpunit.result.cache
+
+# Ignorer les fichiers de compilation des assets front-end Laravel
+/laravel-api/public/hot
+/laravel-api/public/storage
+/laravel-api/public/mix-manifest.json
+/laravel-api/public/css/app.css
+/laravel-api/public/js/app.js
+/laravel-api/public/js/*.map
+/laravel-api/public/css/*.map
+
+# --- Ignorer les fichiers et dossiers du projet React ---
+
+# Ignorer les dossiers node_modules (dépendances gérées par npm/yarn)
+/react-app/node_modules/
+
+# Ignorer le fichier de log NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorer les fichiers de compilation React
+/react-app/build/
+/react-app/public/static/
+/react-app/public/manifest.json
+/react-app/public/asset-manifest.json
+/react-app/public/service-worker.js
+
+# Ignorer les fichiers spécifiques à l'éditeur ou au système
+/react-app/.idea/
+/react-app/.vscode/
+.DS_Store
+Thumbs.db
+
+# Ignorer les fichiers de configuration environnementale React
+/react-app/.env
+/react-app/.env.local
+/react-app/.env.development
+/react-app/.env.production
+/react-app/.env.test
