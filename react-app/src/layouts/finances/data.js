@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/function-component-definition */
 import { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -15,7 +13,7 @@ export default function FinanceTable() {
     const fetchFinances = async () => {
       try {
         const response = await FinanceService.getFinances(); 
-        setFinances(response.data);
+        setFinances(response.data || []); // Assurez-vous que c'est un tableau
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des finances", error);
@@ -53,93 +51,117 @@ export default function FinanceTable() {
   };
 
   if (loading) {
-    return (
-      <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
-        <CircularProgress />
-      </MDBox>
-    );
+    return {
+      columns: getColumns(),
+      rows: [
+        {
+          niveau: (
+            <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
+              <CircularProgress />
+            </MDBox>
+          ),
+          fraisInscription: "",
+          fraisReinscription: "",
+          fraisScolarite: "",
+          fraisAnnexes: "",
+          action: "",
+        },
+      ],
+    };
   }
 
   if (error) {
-    return (
-      <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
-        <MDTypography variant="caption" color="error">
-          {error}
-        </MDTypography>
-      </MDBox>
-    );
+    return {
+      columns: getColumns(),
+      rows: [
+        {
+          niveau: (
+            <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
+              <MDTypography variant="caption" color="error">
+                {error}
+              </MDTypography>
+            </MDBox>
+          ),
+          fraisInscription: "",
+          fraisReinscription: "",
+          fraisScolarite: "",
+          fraisAnnexes: "",
+          action: "",
+        },
+      ],
+    };
   }
 
-  return (
-    <MDBox>
-      <MDTypography variant="h6" fontWeight="medium">Gestion des Finances</MDTypography>
-      <MDBox>
-        {finances.length > 0 ? (
-          finances.map((finance) => (
-            <MDBox key={finance.id} display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <MDBox width="15%">{finance.niveau}</MDBox>
-              <MDBox width="15%">
-                {finance.isEditing ? (
-                  <input
-                    type="number"
-                    value={finance.fraisInscription}
-                    onChange={(e) => handleInputChange(finance.id, "fraisInscription", e.target.value)}
-                  />
-                ) : (
-                  finance.fraisInscription
-                )}
-              </MDBox>
-              <MDBox width="15%">
-                {finance.isEditing ? (
-                  <input
-                    type="number"
-                    value={finance.fraisReinscription}
-                    onChange={(e) => handleInputChange(finance.id, "fraisReinscription", e.target.value)}
-                  />
-                ) : (
-                  finance.fraisReinscription
-                )}
-              </MDBox>
-              <MDBox width="15%">
-                {finance.isEditing ? (
-                  <input
-                    type="number"
-                    value={finance.fraisScolarite}
-                    onChange={(e) => handleInputChange(finance.id, "fraisScolarite", e.target.value)}
-                  />
-                ) : (
-                  finance.fraisScolarite
-                )}
-              </MDBox>
-              <MDBox width="15%">
-                {finance.isEditing ? (
-                  <input
-                    type="number"
-                    value={finance.fraisAnnexes}
-                    onChange={(e) => handleInputChange(finance.id, "fraisAnnexes", e.target.value)}
-                  />
-                ) : (
-                  finance.fraisAnnexes
-                )}
-              </MDBox>
-              <MDBox width="10%">
-                <MDTypography
-                  component="button"
-                  variant="caption"
-                  color="primary"
-                  onClick={() => handleEditClick(finance.id)}
-                >
-                  {finance.isEditing ? "Enregistrer" : "Editer"}
-                </MDTypography>
-              </MDBox>
-            </MDBox>
-          ))
+  // Vérifiez que finances est bien un tableau avant de faire la boucle
+  const rows = Array.isArray(finances) && finances.length > 0
+    ? finances.map((finance) => ({
+        niveau: finance.niveau,
+        fraisInscription: finance.isEditing ? (
+          <input
+            type="number"
+            value={finance.fraisInscription}
+            onChange={(e) => handleInputChange(finance.id, "fraisInscription", e.target.value)}
+          />
         ) : (
-          <MDTypography variant="caption" color="text">
-            Aucune donnée financière disponible.
+          finance.fraisInscription
+        ),
+        fraisReinscription: finance.isEditing ? (
+          <input
+            type="number"
+            value={finance.fraisReinscription}
+            onChange={(e) => handleInputChange(finance.id, "fraisReinscription", e.target.value)}
+          />
+        ) : (
+          finance.fraisReinscription
+        ),
+        fraisScolarite: finance.isEditing ? (
+          <input
+            type="number"
+            value={finance.fraisScolarite}
+            onChange={(e) => handleInputChange(finance.id, "fraisScolarite", e.target.value)}
+          />
+        ) : (
+          finance.fraisScolarite
+        ),
+        fraisAnnexes: finance.isEditing ? (
+          <input
+            type="number"
+            value={finance.fraisAnnexes}
+            onChange={(e) => handleInputChange(finance.id, "fraisAnnexes", e.target.value)}
+          />
+        ) : (
+          finance.fraisAnnexes
+        ),
+        action: (
+          <MDTypography
+            component="button"
+            variant="caption"
+            color="primary"
+            onClick={() => handleEditClick(finance.id)}
+          >
+            {finance.isEditing ? "Enregistrer" : "Editer"}
           </MDTypography>
-        )}
-      </MDBox>
-    </MDBox>
-  );
+        ),
+      }))
+    : [
+        {
+          niveau: (
+            <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
+              <MDTypography variant="caption" color="text">
+                Aucune donnée financière disponible.
+              </MDTypography>
+            </MDBox>
+          ),
+          fraisInscription: "",
+          fraisReinscription: "",
+          fraisScolarite: "",
+          fraisAnnexes: "",
+          action: "",
+        },
+      ];
+
+  return {
+    columns: getColumns(),
+    rows,
+  };
 }

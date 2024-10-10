@@ -31,7 +31,7 @@ const Finances = () => {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Mes finances
+                  Mes Finances
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>

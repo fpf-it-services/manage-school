@@ -21,6 +21,7 @@ import Icon from "@mui/material/Icon";
 import Settings from "layouts/settings";
 import AddStudent from "layouts/add-student";
 import Finances from "layouts/finances";
+import ClassManagement from "layouts/class-management";
 
 
 // const routes = [
@@ -173,7 +174,7 @@ const func_routes = (role) => {
       key: "mes-classes",
       icon: <Icon fontSize="small">list</Icon>,
       route: "/mes-classes",
-      component: <UserManagement />,
+      component: <ClassManagement />,
     }, {
       type: "examples",
       name: "Ajouter un élève",
