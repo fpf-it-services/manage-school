@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnneeController;
 use App\Http\Controllers\Api\EcoleController;
+use App\Http\Controllers\Api\EleveController;
 use App\Http\Controllers\Api\SerieController;
 use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\NiveauController;
@@ -25,14 +26,15 @@ Route::prefix("v2")->group(function(){
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::apiResource("ecoles", EcoleController::class)->except(["update"]);
             Route::apiResource("annees", AnneeController::class)->except(['destroy','update','index']);
-            Route::get("series",[SerieController::class,"index"]);
-            Route::post("series",[SerieController::class,"store"]);
-            Route::get("niveaux",[NiveauController::class,"index"]);
-            Route::post("niveaux",[NiveauController::class,"store"]);
+            //Route::get("niveaux",[NiveauController::class,"index"]);
+            Route::apiResource( "series", SerieController::class)->except(["update","index"]);
+            Route::apiResource("niveaux", NiveauController::class)->except(["update","index"]);
         });
+        Route::get("series",[SerieController::class,"index"]);
         Route::get("annees",[AnneeController::class,"index"]);
         Route::get("annee-actuelle",[AnneeController::class,"currentYear"]);
         Route::get("niveaux",[NiveauController::class,"index"]);
+        Route::get("getClassesByLevelAndSerie",[ClasseController::class, "getClassesByLevelAndSerie"]);
         Route::prefix("ecole")->group(function () {
             //Route::post('login', [AuthController::class, 'login_ecole']);
             Route::group(['middleware' => ['auth:ecole']], function () {
@@ -42,6 +44,8 @@ Route::prefix("v2")->group(function(){
                 ]]);
                 Route::put("update-profile",[EcoleController::class,"update"]);
                 Route::apiResource("montants", MontantController::class)->except(["show","destroy"]);
+                Route::apiResource("eleves", EleveController::class)->except(["show","destroy"]);
+                Route::post('/eleves/classe/{classe}', [EleveController::class, 'ajout_eleve_classe']);
                 Route::get("montants-par-niveau",[MontantController::class,"montant_niveau"]);
             });
         });

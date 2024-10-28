@@ -358,8 +358,8 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -407,8 +407,8 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -595,23 +595,18 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         'App\\Http\\Requests\\AddMontantRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddMontantRequest.php',
         'App\\Http\\Requests\\EcoleStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/EcoleStoreRequest.php',
         'App\\Http\\Requests\\EditClasseRequest' => __DIR__ . '/../..' . '/app/Http/Requests/EditClasseRequest.php',
-        'App\\Http\\Requests\\EditMontantRequest' => __DIR__ . '/../..' . '/app/Http/Requests/EditMontantRequest.php',
         'App\\Http\\Requests\\LoginEcoleRequest' => __DIR__ . '/../..' . '/app/Http/Requests/LoginEcoleRequest.php',
         'App\\Http\\Requests\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/LoginRequest.php',
         'App\\Http\\Requests\\RegisterRequest' => __DIR__ . '/../..' . '/app/Http/Requests/RegisterRequest.php',
-        'App\\Http\\Requests\\UpdateEcoleRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateEcoleRequest.php',
-        'App\\Http\\Requests\\UpdateUserProfileRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateUserProfileRequest.php',
         'App\\Http\\Resources\\AnneeResource' => __DIR__ . '/../..' . '/app/Http/Resources/AnneeResource.php',
         'App\\Http\\Resources\\ClasseResource' => __DIR__ . '/../..' . '/app/Http/Resources/ClasseResource.php',
         'App\\Http\\Resources\\ClasseResourceEcole' => __DIR__ . '/../..' . '/app/Http/Resources/ClasseResourceEcole.php',
         'App\\Http\\Resources\\EcoleResource' => __DIR__ . '/../..' . '/app/Http/Resources/EcoleResource.php',
         'App\\Http\\Resources\\EleveResource' => __DIR__ . '/../..' . '/app/Http/Resources/EleveResource.php',
-        'App\\Http\\Resources\\LevelMontantResource' => __DIR__ . '/../..' . '/app/Http/Resources/LevelMontantResource.php',
         'App\\Http\\Resources\\MontantResource' => __DIR__ . '/../..' . '/app/Http/Resources/MontantResource.php',
         'App\\Http\\Services\\Api\\EcoleService' => __DIR__ . '/../..' . '/app/Http/Services/Api/EcoleService.php',
         'App\\Models\\Annee' => __DIR__ . '/../..' . '/app/Models/Annee.php',
         'App\\Models\\Classe' => __DIR__ . '/../..' . '/app/Models/Classe.php',
-        'App\\Models\\Cursus' => __DIR__ . '/../..' . '/app/Models/Cursus.php',
         'App\\Models\\Ecole' => __DIR__ . '/../..' . '/app/Models/Ecole.php',
         'App\\Models\\Eleve' => __DIR__ . '/../..' . '/app/Models/Eleve.php',
         'App\\Models\\Montant' => __DIR__ . '/../..' . '/app/Models/Montant.php',

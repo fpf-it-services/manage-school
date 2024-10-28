@@ -1,0 +1,7 @@
+
+
+- uploader le tableau d'étudiants
+- mot de passe oublié
+- envoi de mail à l'admin lors DE l'inscription d'une école
+
+-lors de la récupération des classes associés à un level donné, je t'enverrai également l'année académique 

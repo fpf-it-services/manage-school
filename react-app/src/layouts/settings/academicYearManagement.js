@@ -8,18 +8,34 @@ import AcademicYearService from "../../services/academic-years-service";
 const AcademicYearManagement = () => {
   const [date_debut, setDateDebut] = useState("");
   const [date_fin, setDateFin] = useState("");
+
+  const [dateDebut, setDateDebutFormat] = useState("");
+  const [dateFin, setDateFinFormat] = useState("");
   const [academicYears, setAcademicYears] = useState([]); 
 
+  const formatDate = (date) => {
+    const [year, month, day] = date.split("-").map(Number)
+    const formattedMonth = String(month).padStart(2, '0');
+    const formattedDay = String(day).padStart(2, '0');
+
+    return `${formattedDay}/${formattedMonth}/${year}`
+  }
+
   const handleStartDateChange = (e) => {
-    setDateDebut(e.target.value);
+    setDateDebutFormat(e.target.value)
+    setDateDebut(formatDate(e.target.value));
   };
 
+
+
   const handleEndDateChange = (e) => {
-    setDateFin(e.target.value);
+    setDateFinFormat(e.target.value)
+    setDateFin(formatDate(e.target.value));
   };
 
   const handleAddYear = async () => {
     try {
+      console.log({ date_debut, date_fin })
       await AcademicYearService.createAcademicYear({ date_debut, date_fin });
       setDateDebut("");
       setDateFin(""); 
@@ -32,6 +48,7 @@ const AcademicYearManagement = () => {
   const fetchAcademicYears = async () => {
     try {
       const response = await AcademicYearService.getAcademicYears(); 
+      console.log(response.data)
       setAcademicYears(response.data || []); 
     } catch (error) {
       console.error("Erreur lors de la récupération des années académiques :", error);
@@ -50,14 +67,14 @@ const AcademicYearManagement = () => {
         <MDInput
           type="date"
           label="Date de Début"
-          value={date_debut}
+          value={dateDebut}
           onChange={handleStartDateChange}
           fullWidth 
         />
         <MDInput
           type="date"
           label="Date de Fin"
-          value={date_fin}
+          value={dateFin}
           onChange={handleEndDateChange}
           fullWidth 
         />
@@ -86,13 +103,13 @@ const AcademicYearManagement = () => {
                 key={yearItem.id}
                 border="1px solid #ddd"  
                 borderRadius="8px"
-                padding="16px"
+                padding="10px"
                 textAlign="center"
                 boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)"  
                 backgroundColor="#f9f9f9" 
               >
-                <MDTypography variant="subtitle1" fontWeight="medium">
-                  {`Du ${new Date(yearItem.date_debut).toLocaleDateString()} au ${new Date(yearItem.date_fin).toLocaleDateString()}`}
+                <MDTypography variant="body2" fontSize="15px" fontWeight="medium">
+                  {`Du ${yearItem.date_debut} au ${yearItem.date_fin}`}
                 </MDTypography>
               </MDBox>
             ))}

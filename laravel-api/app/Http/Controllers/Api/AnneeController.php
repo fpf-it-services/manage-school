@@ -28,7 +28,7 @@ class AnneeController extends Controller
     {
         return response()->json([
             "success" => true,
-            "data" => new AnneeResource(Annee::create($request->validated()))
+            "data" => new AnneeResource(Annee::create($request->all()))
         ], 201);
     }
 

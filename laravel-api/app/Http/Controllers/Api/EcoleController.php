@@ -35,7 +35,7 @@ class EcoleController extends Controller
             'telephone' => $request->contact,
             'logo' => $logoPath,
             // 'capacite' => $request->capacite ?? 0,
-            'centre_de_composition' => $request->centre_de_composition == 'true',
+            'centre_de_composition' => false,
         ]);
 
         return response()->json([

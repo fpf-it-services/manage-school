@@ -19,4 +19,7 @@ class Classe extends Model
     // public function serie(){
     //     return $this->belongsTo(Serie::class);
     // }
+    public function eleves(){
+        return $this->belongsToMany(Eleve::class,"cursuses");
+    }
 }

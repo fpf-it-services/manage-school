@@ -1,5 +1,6 @@
 import ClassService from '../../services/class-service';
 import LevelService from '../../services/level-service';
+import AcademicYearService from '../../services/academic-years-service';
 
 
 export const getLevels = async () => {
@@ -47,8 +48,7 @@ export const getStudentsByClass = async (classId) => {
 };
 
 
-export const uploadStudents = async (className, classSize, file, level, serie = null) => {
-  console.log(className, classSize, file, level, serie)
+export const uploadStudents = async (className, classSize, data, level, serie = null) => {
   if (!className || !classSize || !level) {
     console.error("Données manquantes pour la création de la classe");
     return;
@@ -56,16 +56,14 @@ export const uploadStudents = async (className, classSize, file, level, serie = 
 
   try {
     const classData = { nom: className, effectif_max: classSize, niveau_id: level, serie_id: serie };  
+    console.log(classData)
     const createClassResponse = await ClassService.createClass(classData);
 
     if (createClassResponse && createClassResponse.data) {
-      console.log("Classe créée avec succès:", createClassResponse.data);
 
-      const classId = createClassResponse.data.id;
-
-      // Uploader le fichier si fourni
-      if (file) {
-        await ClassService.uploadStudents(classId, file);
+      const classId = createClassResponse.data;
+      if (data.length !== 0) {
+        await ClassService.uploadStudents(classId, { eleves: data });
         console.log("Fichier uploadé avec succès pour la classe:", classId);
       }
 
@@ -89,14 +87,26 @@ export const getSeriesByLevel = async (levelId) => {
   }
 };
 
-// Récupérer les classes d'un niveau et d'une série spécifique
-export const getClassesByLevelAndSerie = async (levelId, serieId) => {
+export const getClassesByLevelAndSerie = async (levelId, serieId, selectedYear) => {
   try {
-    const classes = await LevelService.getClassesByLevelAndSerie(levelId, serieId);
-    console.log(classes)
+    const classes = await LevelService.getClassesByLevelAndSerie(levelId, serieId, selectedYear);
     return classes; 
   } catch (error) {
     console.error("Erreur lors de la récupération des classes:", error);
     return [];  
+  }
+};
+
+
+export const getAcademicYears = async () => {
+  try {
+    const response = await AcademicYearService.getAcademicYears();
+    if (response && response.data) {
+      return response.data;
+    }
+    return [];
+  } catch (error) {
+    console.error("Erreur lors de la récupération des années académiques:", error);
+    return [];
   }
 };

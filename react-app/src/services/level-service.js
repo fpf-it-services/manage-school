@@ -7,26 +7,23 @@ class LevelService {
     return await HttpService.get(endpoint);
   };
 
-  // Créer un nouveau niveau académique
   createLevel = async (levelData) => {
     const endpoint = 'niveaux'; 
     return await HttpService.post(endpoint, levelData);
   };
 
-  // Supprimer un niveau académique
   deleteLevel = async (levelId) => {
-    const endpoint = `levels/${levelId}`; 
+    const endpoint = `niveaux/${levelId}`; 
     return await HttpService.delete(endpoint);
   };
 
-  // Récupérer les séries d'un niveau spécifique
   getSeriesByLevel = async (levelId) => {
     if (!levelId) {
       console.error("ID de niveau manquant");
       return [];
     } 
     try {
-      const endpoint = `series`; // Endpoint à ajuster si nécessaire
+      const endpoint = `series`; 
       const response = await HttpService.get(endpoint);
       return response?.data || [];
     } catch (error) {
@@ -36,14 +33,16 @@ class LevelService {
   };
 
   // Récupérer les classes d'un niveau et d'une série spécifique
-  getClassesByLevelAndSerie = async (levelId, serieId) => {
+  getClassesByLevelAndSerie = async (levelId, serieId, selectedYear) => {
     if (!levelId) {
       console.error("ID de niveau ou de série manquant");
       return [];
     }
     try {
-      const endpoint = serieId ? `classesByLevelAndSerie?level=${levelId}&serie=${serieId}` : `classesByLevelAndSerie?level=${levelId}`; // Endpoint à ajuster si nécessaire
+      // const endpoint = serieId ? `getClassesByLevelAndSerie?niveau_id=${levelId}&serie_id=${serieId}&annee_id=${selectedYear}` : `getClassesByLevelAndSerie?niveau_id=${levelId}&annee_id=${selectedYear}`; 
+      const endpoint = `ecole/classes`
       const response = await HttpService.get(endpoint);
+      console.log(response)
       return response?.data || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des classes:", error);

@@ -13,7 +13,7 @@ export default function FinanceTable() {
     const fetchFinances = async () => {
       try {
         const response = await FinanceService.getFinances(); 
-        setFinances(response.data || []); // Assurez-vous que c'est un tableau
+        setFinances(response.data || []); 
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des finances", error);

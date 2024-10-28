@@ -107,8 +107,6 @@ class AuthController extends Controller
             unset($user->updated_at);
             $client = $this->getClientInfos();
 
-            
-
             //return response()->json(['client' => $client],400);
 
             /* $response = Http::post(env('APP_URL') . '/oauth/token', [

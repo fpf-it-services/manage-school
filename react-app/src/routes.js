@@ -1,6 +1,4 @@
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
-import Billing from "layouts/billing";
 
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
@@ -15,32 +13,18 @@ import AddSchool from "layouts/add-school";
 import Login from "auth/login";
 import Register from "auth/register";
 import ForgotPassword from "auth/forgot-password";
-import ResetPassword from "auth/reset-password";
 
 import Icon from "@mui/material/Icon";
 import Settings from "layouts/settings";
 import AddStudent from "layouts/add-student";
 import Finances from "layouts/finances";
 import ClassManagement from "layouts/class-management";
+import Paiement from "layouts/payment";
+import Historique from "layouts/history";
 
 
 // const routes = [
-//   {
-//     type: "collapse",
-//     name: "Dashboard",
-//     key: "dashboard",
-//     icon: <Icon fontSize="small">dashboard</Icon>,
-//     route: "/dashboard",
-//     component: <Dashboard />,
-//   },
-//   {
-//     type: "collapse",
-//     name: "Tables",
-//     key: "tables",
-//     icon: <Icon fontSize="small">table_view</Icon>,
-//     route: "/tables",
-//     component: <Tables />,
-//   },
+
 //   {
 //     type: "collapse",
 //     name: "Billing",
@@ -92,16 +76,6 @@ import ClassManagement from "layouts/class-management";
 //   },
 
 
-
-//   {
-//     type: "auth",
-//     name: "Reset Password",
-//     key: "reset-password",
-//     icon: <Icon fontSize="small">assignment</Icon>,
-//     route: "/auth/reset-password",
-//     component: <ResetPassword />,
-//   },
-// ];
 const func_routes = (role) => {
   const commonRoutes = [
     {
@@ -132,6 +106,20 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">person</Icon>,
       route: "/mon-profil",
       component: <UserProfile />,
+    }, {
+      type: "public",
+      name: "Paiement",
+      key: "payer-frais",
+      icon: <Icon fontSize="small">person</Icon>,
+      route: "/public/payer-frais",
+      component: <Paiement />,
+    }, {
+      type: "public",
+      name: "Paiement",
+      key: "voir-historique",
+      icon: <Icon fontSize="small">person</Icon>,
+      route: "/public/voir-historique",
+      component: <Historique />,
     }
   ];
 

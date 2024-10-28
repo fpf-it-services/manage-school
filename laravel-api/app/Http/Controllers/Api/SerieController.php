@@ -26,5 +26,9 @@ class SerieController extends Controller
             ])
         ]);
     }
+    public function destroy(Serie $serie){
+        $serie->delete();
+        return response()->json([],204);
+    }
 }
 // ->

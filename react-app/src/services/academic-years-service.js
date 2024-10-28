@@ -15,15 +15,9 @@ class AcademicYearService {
   };
 
   // Récupérer l'année académique en cours
-  getCurrentAcademicYear = async (yearData) => {
-    const endpoint = 'annees'; 
-    return await HttpService.post(endpoint, yearData);
-  };
-
-  // Supprimer une année académique
-  deleteAcademicYear = async (yearId) => {
-    const endpoint = `academic-years/${yearId}`; 
-    return await HttpService.delete(endpoint);
+  getCurrentAcademicYear = async () => {
+    const endpoint = 'annee-actuelle'; 
+    return await HttpService.get(endpoint);
   };
 }
 

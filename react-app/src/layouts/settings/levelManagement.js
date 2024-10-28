@@ -77,7 +77,7 @@ const LevelManagement = () => {
                 boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)" 
                 backgroundColor="#f9f9f9" 
               >
-                <MDTypography variant="subtitle1" fontWeight="medium">
+                <MDTypography variant="body2" fontSize="15px" fontWeight="medium">
                   {levelItem.niveau}
                 </MDTypography>
               </MDBox>

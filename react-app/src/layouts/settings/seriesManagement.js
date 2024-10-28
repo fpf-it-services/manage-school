@@ -77,7 +77,7 @@ const SeriesManagement = () => {
                 boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)" // Ajout d'une légère ombre
                 backgroundColor="#f9f9f9" // Couleur de fond légère
               >
-                <MDTypography variant="subtitle1" fontWeight="medium">
+                <MDTypography variant="body2" fontSize="15px" fontWeight="medium">
                   {serieItem.serie}
                 </MDTypography>
               </MDBox>

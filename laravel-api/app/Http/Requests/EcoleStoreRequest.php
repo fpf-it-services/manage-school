@@ -29,7 +29,7 @@ class EcoleStoreRequest extends FormRequest
             'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             // 'capacite' => 'nullable|integer|min:1',
             'password' => 'nullable|string|min:8',
-            'centre_de_composition' => 'nullable|in:true,false'
+            'centre_de_composition' => 'boolean|nullable'
         ];
     }
 }
