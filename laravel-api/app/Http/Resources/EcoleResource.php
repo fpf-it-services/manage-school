@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class EcoleResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class EcoleResource extends JsonResource
         return [
             "id" => $this->id,
             "nom" => $this->nom,
-            "logo" => $this->logo,
+            "logo" => Storage::disk("public")->url($this->logo),
             "telephone" => $this->telephone,
             "email" => $this->email,
             "adresse" => $this->adresse,

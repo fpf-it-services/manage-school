@@ -54,9 +54,8 @@ function FormStudent() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        
         const fetchedClasses = await ClassService.getClasses();
-        setClasses(fetchedClasses);
+        setClasses(fetchedClasses.data);
       } catch (error) {
         setErrorMessage("Erreur lors de la récupération des classes.");
       }
@@ -76,8 +75,6 @@ function FormStudent() {
   const submitHandler = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-
-    // Validation des champs obligatoires
     if (inputs.nom.trim().length === 0) {
       setErrors({ ...errors, nomError: true });
       setErrorMessage("Le nom est requis.");
@@ -127,7 +124,7 @@ function FormStudent() {
     formData.append("lieu_naissance", inputs.lieu_naissance);
     formData.append("nationalite", inputs.nationalite);
     formData.append("sexe", inputs.sexe);
-    formData.append("classe", inputs.classe);
+    formData.append("classe_id", inputs.classe);
     if (inputs.photo) {
       formData.append("photo", inputs.photo);
     }
@@ -150,7 +147,7 @@ function FormStudent() {
     }
 
     try {
-      await StudentService.createStudent(formData);
+      await StudentService.addStudent(formData);
       setInputs({
         nom: "",
         prenoms: "",

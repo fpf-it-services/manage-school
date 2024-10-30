@@ -70,7 +70,7 @@ class MontantController extends Controller
                 (
                 Montant::create
                     (
-                        array_merge($request->validated(),["ecole_id" => auth()->id()])
+                        array_merge($request->all(),["ecole_id" => auth()->id()])
                     )
                 )
         ],201);

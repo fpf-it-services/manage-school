@@ -13,11 +13,11 @@ class FinanceService {
     return await HttpService.put(endpoint, financeData);
   }
 
-    // Créer un nouveau niveau financier
-  // createFinance = async (financeData) => {
-  //   const endpoint = 'finances'; 
-  //   return await HttpService.post(endpoint, financeData);
-  // };
+  saveFees = async (financeData) => {
+    const endpoint = `ecole/montants`; 
+    console.log(financeData)
+    return await HttpService.post(endpoint, financeData);
+  };
 
 }
 

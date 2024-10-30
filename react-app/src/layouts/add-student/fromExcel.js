@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
-import StudentService from "services/student-service";
+import ClassService  from 'services/class-service';
 
 function UploadStudentExcel() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
   const [students, setStudents] = useState([]);
+  const [classe, setClasse] = useState(""); 
+  const [classes, setClasses] = useState([]); 
+
+  // Récupération des classes (à ajuster selon votre service d'API)
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const fetchedClasses = await ClassService.getClasses();
+        setClasses(fetchedClasses.data);
+      } catch (error) {
+        setErrorMessage("Erreur lors de la récupération des classes.");
+      }
+    };
+
+    fetchClasses();
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -21,7 +37,6 @@ function UploadStudentExcel() {
   };
 
   const validateExcelData = (data) => {
-    // Champs obligatoires
     const requiredFields = [
       "Nom",
       "Prenoms",
@@ -32,7 +47,6 @@ function UploadStudentExcel() {
       "Nom Tuteur1",
       "Téléphnone Tuteur1",
       "Email tuteur1",
-      "classe", 
     ];
 
     const missingFields = [];
@@ -48,6 +62,11 @@ function UploadStudentExcel() {
           ", "
         )}.`
       );
+      return false;
+    }
+
+    if (!classe) {
+      setErrorMessage("Veuillez sélectionner une classe.");
       return false;
     }
 
@@ -73,7 +92,6 @@ function UploadStudentExcel() {
       if (validateExcelData(data)) {
         setStudents(data);
         setErrorMessage("");
-        
         sendDataToBackend(data);
       }
     };
@@ -87,16 +105,18 @@ function UploadStudentExcel() {
 
   const sendDataToBackend = async (data) => {
     try {
-      await StudentService.uploadStudents(data);
+      await ClassService.uploadStudents({ classe, data });
       setErrorMessage("");
       alert("Les élèves ont été importés avec succès.");
       setFile(null);
       setFileName(""); 
       setStudents([]);
+      setClasse(""); // Réinitialiser la classe
     } catch (error) {
       setErrorMessage("Une erreur s'est produite lors de l'importation des élèves.");
       console.error("Erreur lors de l'importation", error);
     }
+
   };
 
   return (
@@ -135,11 +155,30 @@ function UploadStudentExcel() {
                   accept=".xlsx, .xls"
                 />
               </MDBox>
-              {fileName && ( 
+              {fileName && (
                 <MDTypography variant="body2" color="textSecondary">
                   Fichier sélectionné : {fileName}
                 </MDTypography>
               )}
+
+              <MDBox mb={2}>
+                <select
+                  name="classe"
+                  value={classe}
+                  onChange={(e) => setClasse(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '4px' }}
+                  required
+                >
+                  <option value="" disabled>Choisir la classe</option>
+                  {classes.length > 0 ? (
+                    classes.map((classe) => (
+                      <option key={classe.id} value={classe.id}>{classe.nom}</option>
+                    ))
+                  ) : (
+                    <option value="" disabled>Pas de classes disponibles</option>
+                  )}
+                </select>
+              </MDBox>
             </Grid>
           </Grid>
 
@@ -157,6 +196,7 @@ function UploadStudentExcel() {
             </MDButton>
           </MDBox>
         </MDBox>
+
         <MDBox mb={2}>
           <MDTypography variant="subtitle2">
             Format attendu du fichier Excel :
@@ -173,7 +213,6 @@ function UploadStudentExcel() {
               { label: "Nom Tuteur1", required: true },
               { label: "Téléphone Tuteur1", required: true },
               { label: "Email Tuteur1", required: true },
-              { label: "Classe", required: true },
               { label: "Nom Tuteur2", required: false },
               { label: "Téléphone Tuteur2", required: false },
               { label: "Email Tuteur2", required: false },

@@ -21,6 +21,7 @@ import Finances from "layouts/finances";
 import ClassManagement from "layouts/class-management";
 import Paiement from "layouts/payment";
 import Historique from "layouts/history";
+import SettingsFinances from "layouts/settings-finance";
 
 
 // const routes = [
@@ -177,6 +178,13 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">attach_money</Icon>,
       route: "/mes-finances",
       component: <Finances />,
+    }, {
+      type: "examples",
+      name: "Paramètres scolaires",
+      key: "settings-school",
+      icon: <Icon fontSize="small">settings</Icon>,
+      route: "/settings-school",
+      component: <SettingsFinances />,
     }, {
       type: "collapse",
       name: "Participer à une session",

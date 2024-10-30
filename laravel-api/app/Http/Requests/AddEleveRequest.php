@@ -26,7 +26,7 @@ class AddEleveRequest extends FormRequest
         return [
             'nom' => "required|string|min:3",
             'prenoms' => "required|string|min:3",
-            'date_naissance' => "required|date|after:" . now()->subYears(5),
+            'date_naissance' => "required|date|before:" . now()->subYears(5),
             'lieu_naissance' => "required|string",
             'nationalite' => "required|string",
             'sexe' =>"required|in:M,F",
@@ -37,7 +37,7 @@ class AddEleveRequest extends FormRequest
             'email_tuteur1' => "required|email",
             'nom_complet_tuteur2' => "nullable|string|min:7",
             'telephone_tuteur2' => "nullable|string|min:8",
-            'adresse_tuteur2' => "required|string|min:4",
+            'adresse_tuteur2' => "nullable|string|min:4",
             'email_tuteur2' => "nullable|email",
             "classe_id" => "required|exists:classes,id",
             "annee_exits" => [Rule::in([true])]

@@ -103,7 +103,7 @@ class ClasseController extends Controller
     public function getClassesByLevelAndSerie(Request $request){
         return response()->json([
             "success" => true,
-            "data"=> ClasseResource::collection(ClasseService::getClassesByLevelAndSerie($request->get("niveau_id"), $request->get("serie_id")))
+            "data"=> ClasseResource::collection(ClasseService::getClassesByLevelAndSerie($request->get("niveau_id"), $request->get("serie_id"),$request->get("annee_id")))
         ]);
     }
 }

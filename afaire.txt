@@ -4,4 +4,13 @@
 - mot de passe oublié
 - envoi de mail à l'admin lors DE l'inscription d'une école
 
--lors de la récupération des classes associés à un level donné, je t'enverrai également l'année académique 
+
+- s'occuper des routes pour pouvoir contourner l'auth
+- creation de finances pour un level ()
+- recuperation des levels ajoutés par une école.
+- la logique de réinscription également.
+
+
+Je dois vérifier si le niveau est ajouté par l'école au niveau de 
+    -l'ajout de classes
+    -l'ajout des élèves

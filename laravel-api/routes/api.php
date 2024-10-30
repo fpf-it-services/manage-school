@@ -42,6 +42,7 @@ Route::prefix("v2")->group(function(){
                 Route::apiResource("classes", ClasseController::class,['parameters' => [
                     'classes' => 'classe'
                 ]]);
+                Route::get('mes-niveaux', [NiveauController::class, 'mes_niveaux']);
                 Route::put("update-profile",[EcoleController::class,"update"]);
                 Route::apiResource("montants", MontantController::class)->except(["show","destroy"]);
                 Route::apiResource("eleves", EleveController::class)->except(["show","destroy"]);

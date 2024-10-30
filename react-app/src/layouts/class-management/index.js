@@ -4,6 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDAvatar from "components/MDAvatar";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
@@ -82,12 +83,12 @@ const ClassManagement = () => {
 
   const handleTabChange = (event, newValue) => {
     setSelectedClass(newValue)
-    // const selectedClass = classes.find(classe => classe.id === newValue);
-    // if (selectedClass && selectedClass.eleves) {
-    //   setStudents(selectedClass.eleves);
-    // } else {
-    //   setStudents([]);
-    // }
+    const selectedClass = classes.find(classe => classe.id === newValue);
+    if (selectedClass && selectedClass.eleves !== 0) {
+      setStudents(selectedClass.eleves);
+    } else {
+      setStudents([]);
+    }
   };
 
   const handleClickOpen = () => {
@@ -163,21 +164,37 @@ const ClassManagement = () => {
       };
       reader.readAsBinaryString(file);
     } else {
-      console.log(className, classSize, data, selectedLevel+1, selectedSerie)
       await uploadStudents(className, classSize, data, selectedLevel+1, selectedSerie);
       handleClose();
     }
   };
+
+  const Author = ({ image, name, sexe }) => (
+    <MDBox display="flex" alignItems="center" lineHeight={1}>
+      <MDAvatar src={image} name={name} size="sm" />
+      <MDBox ml={2} lineHeight={1}>
+        <MDTypography display="block" variant="button" fontWeight="medium">
+          {name}
+        </MDTypography>
+        <MDTypography variant="caption">{sexe}</MDTypography>
+      </MDBox>
+    </MDBox>
+  );
+
+
+  const handlereRegister = (id) => {
+    console.log("Réinscrit")
+  }
   
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={2} pb={3}>
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={2}>
             <Card>
-              <MDBox p={3}>
+              <MDBox p={2}>
                 <MDBox mt={2}>
                   {levels.map((level, index) => (
                     <div key={level.id}>
@@ -257,27 +274,96 @@ const ClassManagement = () => {
                         <Tab value={classe.id} label={classe.nom} key={classe.id} />
                       ))}
                     </Tabs>
-                    {students.length > 0 ? (
-                      <DataTable
-                        table={{
-                          columns: [
-                            { Header: "Nom", accessor: "nom" },
-                            { Header: "Prénom", accessor: "prenom" },
-                            { Header: "Date de Naissance", accessor: "date_naissance" },
-                            { Header: "Sexe", accessor: "sexe" },
-                            { Header: "Téléphone", accessor: "telephone" },
-                            // Ajoutez d'autres colonnes si nécessaire
-                          ],
-                          data: students,
-                        }}
-                      />
-                    ) : (
-                      <MDBox textAlign="center">
-                        <MDTypography variant="h6" color="textSecondary">
-                          Aucune donnée d'élèves disponible.
-                        </MDTypography>
-                      </MDBox>
-                    )}
+                    {
+                      students.length > 0 ? (
+                        <>
+                        <br/>
+                        <DataTable
+                          table={{
+                            columns: [
+                              { Header: "Nom", accessor: "nom" },
+                              { Header: "Date de Naissance", accessor: "date_naissance", align: "center" },
+                              { Header: "Lieu de Naissance", accessor: "lieu_naissance", align: "center" },
+                              { Header: "Nationalité", accessor: "nationalite", align: "center" },
+                              { Header: "Téléphone", accessor: "telephone", align: "center" },
+                              { Header: "Adresse tuteur 1", accessor: "adresse_tuteur1", align: "center" },
+                              { Header: "Email Tuteur 1", accessor: "email_tuteur1", align: "center" },
+                              { Header: "Adresse tuteur 2", accessor: "adresse_tuteur2", align: "center" },
+                              { Header: "Email Tuteur 2", accessor: "email_tuteur2", align: "center" },
+                              { Header: "Action", accessor: "action", align: "center" },
+                            ],
+                            rows: students.map((student) => ({
+                              nom: <Author image={student.photo} name={`${student.nom} ${student.prenoms}`} sexe={student.sexe} />,
+                              date_naissance: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.date_naissance}
+                                </MDTypography>
+                              ),
+                              lieu_naissance: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.lieu_naissance}
+                                </MDTypography>
+                              ),
+                              nationalite: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.nationalite}
+                                </MDTypography>
+                              ),
+                              telephone: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.telephone}
+                                </MDTypography>
+                              ),
+                              adresse_tuteur1: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.adresse_tuteur1}
+                                </MDTypography>
+                              ),
+                              email_tuteur1: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.email_tuteur1}
+                                </MDTypography>
+                              ),
+                              adresse_tuteur2: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.adresse_tuteur2 ? student.adresse_tuteur2 : 'Non Fourni' }
+                                </MDTypography>
+                              ),
+                              email_tuteur2: (
+                                <MDTypography variant="caption" fontWeight="medium">
+                                  {student.email_tuteur2 ? student.email_tuteur2 : 'Non Fourni' }
+                                </MDTypography>
+                              ),
+                              action: (
+                                <MDBox>
+                                  <MDTypography
+                                    component="a"
+                                    href="#"
+                                    variant="caption"
+                                    color="primary"
+                                    fontWeight="medium"
+                                    onClick={() => handlereRegister(student.id)}
+                                  >
+                                    Réinscrire
+                                  </MDTypography>
+                                </MDBox>
+                              ),
+                            }))
+                          }}
+                          isSorted={false}
+                          entriesPerPage={false}
+                          showTotalEntries={false}
+                          noEndBorder
+                        />
+                        </>
+                      ) : (
+                        <MDBox textAlign="center">
+                          <MDTypography variant="h6" color="textSecondary">
+                            Aucune donnée d'élèves disponible.
+                          </MDTypography>
+                        </MDBox>
+                      )
+                    }
                   </>
                 )}
               </MDBox>
@@ -340,3 +426,4 @@ const ClassManagement = () => {
 };
 
 export default ClassManagement;
+

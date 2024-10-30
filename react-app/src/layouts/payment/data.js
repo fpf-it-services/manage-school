@@ -6,10 +6,10 @@ import AcademicYearService from '../../services/academic-years-service';
 
 export const getStudents = async (query) => {
   try {
-    // const response = await StudentService.getStudents(query);  
-    // if (response && response.data) {
-    //   return response.data;
-    // }
+    const response = await StudentService.getStudents(query);  
+    if (response && response.data) {
+      return response.data;
+    }
     return []; 
   } catch (error) {
     console.error("Erreur lors de la récupération des étudiants:", error);
@@ -19,10 +19,10 @@ export const getStudents = async (query) => {
 
 export const getFees = async () => {
   try {
-    // const response = await FinanceService.getFinances(); 
-    // if (response && response.data) {
-    //   return response.data;
-    // }
+    const response = await FinanceService.getFinances(); 
+    if (response && response.data) {
+      return response.data;
+    }
     return [];
   } catch (error) {
     console.error("Erreur lors de la récupération des frais:", error);
@@ -32,10 +32,10 @@ export const getFees = async () => {
 
 export const getSchools = async () => {
   try {
-    // const response = await SchoolService.getSchools();  
-    // if (response && response.data) {
-    //   return response.data;
-    // }
+    const response = await SchoolService.getSchools();  
+    if (response && response.data) {
+      return response.data;
+    }
     return [];
   } catch (error) {
     console.error("Erreur lors de la récupération des écoles:", error);
@@ -45,10 +45,10 @@ export const getSchools = async () => {
 
 export const getAcademicYears = async () => {
   try {
-    // const response = await AcademicYearService.getAcademicYears();
-    // if (response && response.data) {
-    //   return response.data;
-    // }
+    const response = await AcademicYearService.getAcademicYears();
+    if (response && response.data) {
+      return response.data;
+    }
     return [];
   } catch (error) {
     console.error("Erreur lors de la récupération des années académiques:", error);
@@ -62,10 +62,10 @@ export const getClassesBySchool = async (schoolId) => {
     return [];
   }
   try {
-    // const response = await ClassService.getClassesBySchool(schoolId);  
-    // if (response && response.data) {
-    //   return response.data;
-    // }
+    const response = await ClassService.getClassesBySchool(schoolId);  
+    if (response && response.data) {
+      return response.data;
+    }
     return [];
   } catch (error) {
     console.error("Erreur lors de la récupération des classes pour l'école:", error);

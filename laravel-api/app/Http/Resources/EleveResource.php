@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class EleveResource extends JsonResource
 {
@@ -22,7 +23,7 @@ class EleveResource extends JsonResource
             'lieu_naissance' => $this->lieu_naissance,
             'nationalite' => $this->nationalite,
             'sexe' => $this->sexe,
-            'photo' => $this->photo,
+            'photo' => Storage::disk("public")->url($this->photo),
             'nom_complet_tuteur1' => $this->nom_complet_tuteur1,
             'telephone_tuteur1' => $this->telephone_tuteur1,
             'adresse_tuteur1' => $this->adresse_tuteur1,
