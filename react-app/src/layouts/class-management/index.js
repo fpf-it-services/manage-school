@@ -196,6 +196,7 @@ const ClassManagement = () => {
             <Card>
               <MDBox p={2}>
                 <MDBox mt={2}>
+                <MDTypography variant="h4" mr={2} fontSize= "20px">Les Niveaux: </MDTypography>
                   {levels.map((level, index) => (
                     <div key={level.id}>
                       <Button

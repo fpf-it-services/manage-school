@@ -25,4 +25,7 @@ class Ecole extends Authenticatable
     public function classes(){
         return $this->hasMany(Classe::class);
     }
+    public function eleves(){
+        return $this->belongsToMany(Eleve::class,"cursuses");
+    }
 }

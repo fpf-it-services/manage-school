@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Grid, Card, Select, MenuItem, Button, TextField } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import BasicLayoutLanding from "layouts/authentication/components/BasicLayoutLanding";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
-import { getStudents, getFees, getSchools, getAcademicYears, getClassesBySchool } from "./data";
-import { openKkiapayWidget, addKkiapayListener, removeKkiapayListener } from "kkiapay";
+import { getSchoolsAndStudents, getAcademicYears, postPaymentData } from "./data";
+import { useKKiaPay } from 'kkiapay-react';
 
 function Paiement() {
   const [students, setStudents] = useState([]);
-  const [fees, setFees] = useState([]);
   const [schools, setSchools] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -23,23 +22,71 @@ function Paiement() {
   const [email, setEmail] = useState(""); 
   const [amount, setAmount] = useState(""); 
   const [errors, setErrors] = useState({}); 
+  const navigate = useNavigate();
+  const { 
+    openKkiapayWidget,
+    addKkiapayListener,
+    removeKkiapayListener
+  } = useKKiaPay();
 
   useEffect(() => {
     async function fetchData() {
-      const feesData = await getFees();
-      const schoolsData = await getSchools();
+      const schoolsData = await getSchoolsAndStudents();
       const yearsData = await getAcademicYears();
 
-      setFees(feesData);
       setSchools(schoolsData);
       setAcademicYears(yearsData);
     }
     fetchData();
-    addKkiapayListener("success", successHandler);
-    return () => {
-      removeKkiapayListener("success", successHandler);
-    };
   }, []);
+
+  useEffect(() => {
+    addKkiapayListener('success',successHandler)
+    addKkiapayListener('failed', failureHandler)
+    
+    return () => {
+      removeKkiapayListener('success',successHandler)
+      removeKkiapayListener('failed', failureHandler)
+    };
+  }, [addKkiapayListener,removeKkiapayListener]);
+
+  function successHandler(response) {
+    // console.log(response);
+    postPaymentData({
+      email,
+      selectedStudent,
+      selectedFee,
+      selectedSchool,
+      selectedYear,
+      selectedClass,
+      amount
+    });
+    resetForm();
+    navigate("/public/historique");
+  }
+  
+  function failureHandler(error) {
+    console.log(error);
+  }
+
+  const resetForm = () => {
+    setEmail("");
+    setSelectedStudent("");
+    setSelectedFee("");
+    setSelectedSchool(null);
+    setSelectedYear("");
+    setSelectedClass("");
+    setAmount("");
+    setErrors({});
+  };
+
+  const feesList = [
+    { name: "Frais de formation", id: "frais_formation" },
+    { name: "Frais de réinscription", id: "frais_reinscription" },
+    { name: "Frais d'inscription", id: "frais_inscription" },
+    { name: "Frais annexes", id: "frais_annexe" },
+  ];
+
 
   const validateFields = () => {
     const newErrors = {};
@@ -60,28 +107,29 @@ function Paiement() {
     if (validateFields()) {
       openKkiapayWidget({
         amount: amount,
-        api_key: process.env.API_KEY,
+        api_key: "f11e39e0652511efbf02478c5adba4b8",
         sandbox: true,
         email,
         phone: "97000000",
       });
     }
   };
-
-  const successHandler = (response) => {
-    console.log(response);
-  };
-
   const handleSearchStudents = async (query) => {
-    setSearchTerm(query);
-    const studentsData = await getStudents(query);
-    setStudents(studentsData);
+    const studentData = students.find((student) => student.id === query);
+    setSearchTerm(studentData);
+    setSelectedStudent(studentData)
   };
 
   const handleSchoolChange = async (schoolId) => {
     setSelectedSchool(schoolId);
-    const classesData = await getClassesBySchool(schoolId);
-    setClasses(classesData);
+    const selectedSchoolData = schools.find((school) => school.id === schoolId);
+    if (selectedSchoolData) {
+      setStudents(selectedSchoolData.eleves || []);
+      setClasses(selectedSchoolData.classes || []);
+    } else {
+      setClasses([]);
+      setStudents([]);
+    }
   };
 
   return (
@@ -134,7 +182,7 @@ function Paiement() {
                   placeholder="Entrez l'email"
                   error={!!errors.email}
                   helperText={errors.email}
-                  style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
+                  style={{ borderRadius: "8px", height: "40px" }}
                 />
               </MDBox>
 
@@ -144,19 +192,18 @@ function Paiement() {
                 </MDTypography>
                 <Select
                   fullWidth
-                  value={searchTerm}
                   onChange={(e) => handleSearchStudents(e.target.value)}
                   displayEmpty
-                  renderValue={(selected) => (selected ? selected : "Sélectionnez un élève")}
+                  defaultValue=""
                   variant="outlined"
                   error={!!errors.student}
                   helperText={errors.student}
-                  style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
+                  style={{ borderRadius: "8px", height: "40px" }}
                 >
                   {students.length > 0 ? (
                     students.map((student) => (
-                      <MenuItem key={student.id} value={student.name}>
-                        {student.name}
+                      <MenuItem key={student.id} value={student.id}>
+                        {`${student.nom} ${student.prenoms}`}
                       </MenuItem>
                     ))
                   ) : (
@@ -177,18 +224,18 @@ function Paiement() {
                   variant="outlined"
                   error={!!errors.school}
                   helperText={errors.school}
-                  style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
+                  style={{ borderRadius: "8px", height: "40px" }}
                 >
                   {schools.map((school) => (
                     <MenuItem key={school.id} value={school.id}>
-                      {school.name}
+                      {school.nom}
                     </MenuItem>
                   ))}
                 </Select>
               </MDBox>
 
               {selectedSchool && (
-                <MDBox mb={2}>
+                <MDBox mb={2} textAlign="left">
                   <MDTypography variant="body2" color="textSecondary" mb={1}>
                     Classe
                   </MDTypography>
@@ -200,11 +247,11 @@ function Paiement() {
                     variant="outlined"
                     error={!!errors.class}
                     helperText={errors.class}
-                    style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
+                    style={{ borderRadius: "8px", height: "40px" }}
                   >
                     {classes.map((classItem) => (
                       <MenuItem key={classItem.id} value={classItem.id}>
-                        {classItem.name}
+                        {classItem.nom}
                       </MenuItem>
                     ))}
                   </Select>
@@ -231,78 +278,65 @@ function Paiement() {
                   variant="outlined"
                   error={!!errors.fee}
                   helperText={errors.fee}
-                  style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
+                  style={{ borderRadius: "8px", height: "40px" }}
                 >
-                      {fees.map((fee) => (
-                        <MenuItem key={fee.id} value={fee.id}>
-                          {fee.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </MDBox>
-
-
-
-
-                  <MDBox mb={2} textAlign="left">
-                    <MDTypography variant="body2" color="textSecondary" mb={1}>
-                    Montant
-                  </MDTypography>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="Entrez le montant"
-                    error={!!errors.amount}
-                    helperText={errors.amount}
-                    style={{ borderRadius: "8px", height: "40px" }} // Hauteur uniforme
-                  />
-                </MDBox>
-
-                <MDBox mb={2} textAlign="left">
-                  <MDTypography variant="body2" color="textSecondary" mb={1}>
-                    Année académique
-                  </MDTypography>
-                  <Select
-                    fullWidth
-                    displayEmpty
-                    defaultValue=""
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    variant="outlined"
-                    error={!!errors.year}
-                    helperText={errors.year}
-                    style={{ borderRadius: "8px", height: "40px" }} 
-                  >
-                    {academicYears.map((year) => (
-                      <MenuItem key={year.id} value={year.id}>
-                        {year.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </MDBox>
-
-                <MDBox mt={3}>
-                  <Button
-                    variant="text"
-                    color="primary"
-                    onClick={open}
-                    fullWidth
-                    style={{ height: "40px", fontSize: "15px" }} 
-                  >
-                    Payer
-                  </Button>
-                </MDBox>
+                  {feesList.map((fee) => (
+                    <MenuItem key={fee.id} value={fee.id}>
+                      {fee.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </MDBox>
-            </Grid>
+
+              <MDBox mb={2} textAlign="left">
+                <MDTypography variant="body2" color="textSecondary" mb={1}>
+                  Année académique
+                </MDTypography>
+                <Select
+                  fullWidth
+                  displayEmpty
+                  defaultValue=""
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  variant="outlined"
+                  error={!!errors.year}
+                  helperText={errors.year}
+                  style={{ borderRadius: "8px", height: "40px" }}
+                >
+                  {academicYears.map((year) => (
+                    <MenuItem key={year.id} value={year.id}>
+                      {year.annee_academique}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </MDBox>
+
+              <MDBox mb={2} textAlign="left">
+                <MDTypography variant="body2" color="textSecondary" mb={1}>
+                  Montant
+                </MDTypography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Entrez le montant"
+                  error={!!errors.amount}
+                  helperText={errors.amount}
+                  style={{ borderRadius: "8px", height: "40px" }}
+                />
+              </MDBox>
+
+              <MDBox textAlign="center" mt={3}>
+                <Button onClick={open} variant="text" color="primary">
+                  Payer
+                </Button>
+              </MDBox>
+            </MDBox>
           </Grid>
+        </Grid>
       </Card>
     </BasicLayoutLanding>
   );
 }
 
 export default Paiement;
-
-
-

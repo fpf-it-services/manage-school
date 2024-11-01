@@ -9,8 +9,7 @@ class AcademicYearService {
 
   // Créer une nouvelle année académique
   createAcademicYear = async (yearData) => {
-    const endpoint = 'annees'; 
-    console.log(yearData)
+    const endpoint = 'annees';
     return await HttpService.post(endpoint, yearData);
   };
 

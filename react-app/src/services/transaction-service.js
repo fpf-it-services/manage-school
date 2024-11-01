@@ -10,6 +10,11 @@ class TransactionService {
       throw error; 
     }
   }
+
+  sendPaymentData = async (paymentData) => {
+    const endpoint = `payment-data`;
+    return await HttpService.post(endpoint, paymentData);
+  };
 }
 
 export default new TransactionService();

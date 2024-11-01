@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Niveau;
+use App\Models\Montant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -39,7 +40,7 @@ class NiveauController extends Controller
                     Montant::where(
                             "ecole_id",
                             auth()->user()->id
-                        )->get("id")->pluck("niveau_id")
+                        )->get()->pluck("niveau_id")
                 )->get()
         ]);
     }

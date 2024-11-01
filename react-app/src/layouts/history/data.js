@@ -18,15 +18,16 @@ export const getTransactionHistory = async (studentId) => {
   }
 };
 
-export const getStudents = async (query) => {
-    try {
-      const response = await StudentService.getStudents(query);  
-      if (response && response.data) {
-        return response.data;
-      }
-      return []; 
-    } catch (error) {
-      console.error("Erreur lors de la récupération des étudiants:", error);
-      return []; 
+export const getSchoolsAndStudents = async () => {
+  try {
+    const response = await SchoolService.getSchoolsAndStudents();  
+    if (response && response.data) {
+      console.log(response.data)
+      return response.data;
     }
-  };
+    return []; 
+  } catch (error) {
+    console.error("Erreur lors de la récupération des étudiants:", error);
+    return []; 
+  }
+};

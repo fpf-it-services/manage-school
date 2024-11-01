@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\MontantResource;
 use App\Http\Requests\AddMontantRequest;
 use App\Http\Requests\EditMontantRequest;
+use App\Http\Requests\EditFraisMontantRequest;
 use App\Http\Resources\LevelMontantResource;
 
 class MontantController extends Controller
@@ -27,9 +28,9 @@ class MontantController extends Controller
                 "message" => "Aucune année définie",
             ],404);
 
-        $niveaus = Niveau::with(["montants" => function($query) use ($annee_courante){
+        $niveaus = Niveau::withWhereHas("montants" , function($query) use ($annee_courante){
             $query->where("ecole_id", "=", auth()->id())->where("annee_id",$annee_courante->id);
-        }])->get();
+        })->get();
 
 
         return response()->json([
@@ -89,6 +90,12 @@ class MontantController extends Controller
      */
     public function update(EditMontantRequest $request, Montant $montant)
     {
+        return $this->update_montant($request,$montant);
+    }
+    public function update_frais(EditFraisMontantRequest $request,Montant $montant){
+        return $this->update_montant($request,$montant);
+    }
+    private function update_montant(Request $request,Montant $montant){
         if(Gate::allows("update-montant",$montant)){
             $montant->update($request->validated());
             return response()->json([

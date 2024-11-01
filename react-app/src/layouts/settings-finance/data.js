@@ -115,10 +115,10 @@ export default function LevelsTable() {
     try {
       await FinanceService.saveFees(fees);
       closeDialog();
-      alert("Frais enregistrés avec succès !");
+      // alert("Frais enregistrés avec succès !");
     } catch (error) {
       console.error("Erreur lors de l'enregistrement des frais", error);
-      alert("Une erreur est survenue lors de l'enregistrement des frais.");
+      // alert("Une erreur est survenue lors de l'enregistrement des frais.");
     }
   };
 

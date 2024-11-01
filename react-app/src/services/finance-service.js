@@ -13,11 +13,17 @@ class FinanceService {
     return await HttpService.put(endpoint, financeData);
   }
 
+  updateScolarite = async (financeId, scolariteData) => {
+    const endpoint = `ecole/montants_frais/${financeId}`;
+    return await HttpService.put(endpoint, scolariteData);
+  }
+
   saveFees = async (financeData) => {
     const endpoint = `ecole/montants`; 
-    console.log(financeData)
     return await HttpService.post(endpoint, financeData);
   };
+
+  
 
 }
 

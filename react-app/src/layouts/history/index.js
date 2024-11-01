@@ -5,36 +5,42 @@ import BasicLayoutLanding from "layouts/authentication/components/BasicLayoutLan
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import { Grid, Card, Select, MenuItem, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
-
-// Assume the following functions fetch data from backend
-import { getStudents, getTransactionHistory } from "./data";
-
+import { getSchoolsAndStudents, getTransactionHistory } from "./data";
 
 function Historique() {
+  const [schools, setSchools] = useState([]);
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    // Fetch the students list with associated schools from the backend
-    async function fetchStudents() {
-      const studentsData = await getStudents();
-      setStudents(studentsData);
+    // Fetch the list of schools and students from the backend
+    async function fetchSchoolsAndStudents() {
+      const data = await getSchoolsAndStudents();
+      setSchools(data); // Assuming data is an array of { school, students }
     }
-    fetchStudents();
+    fetchSchoolsAndStudents();
   }, []);
+
+  const handleSchoolSelect = (school) => {
+    setSelectedSchool(school);
+    setSelectedStudent(null);
+    setFilteredStudents(school.students || []);
+    setTransactions([]);
+  };
 
   const handleSearch = (query) => {
     setSearchTerm(query);
     if (query) {
-      const results = students.filter((student) =>
+      const results = filteredStudents.filter((student) =>
         student.name.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredStudents(results);
     } else {
-      setFilteredStudents([]);
+      setFilteredStudents(selectedSchool ? selectedSchool.students : []);
     }
   };
 
@@ -88,7 +94,7 @@ function Historique() {
           </MDTypography>
         </MDBox>
         <Grid container>
-          {/* Search Bar */}
+          {/* Selection Controls */}
           <Grid
             item
             xs={12}
@@ -101,41 +107,61 @@ function Historique() {
             }}
           >
             <MDBox display="flex" flexDirection="column" width="100%" maxWidth="500px">
-
-              {/* Student Search */}
+              {/* School Selection */}
               <MDBox mb={2} textAlign="left">
                 <MDTypography variant="body2" color="textSecondary" mb={1}>
-                  Rechercher un élève
+                  Sélectionnez une école
                 </MDTypography>
-                <TextField
+                <Select
                   fullWidth
-                  variant="outlined"
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="Tapez le nom d'un élève"
-                  style={{ borderRadius: "8px", height: "35px" }}
-                />
-                {/* Display the student options */}
-                {filteredStudents.length > 0 && (
-                  <MDBox mt={1} style={{ maxHeight: "150px", overflowY: "auto" }}>
-                    {filteredStudents.map((student) => (
-                      <MenuItem
-                        key={student.id}
-                        onClick={() => handleStudentSelect(student)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {student.name} ({student.school})
-                      </MenuItem>
-                    ))}
-                  </MDBox>
-                )}
+                  value={selectedSchool || ""}
+                  onChange={(e) => handleSchoolSelect(e.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="" disabled>Choisir une école</MenuItem>
+                  {schools.map((school) => (
+                    <MenuItem key={school.id} value={school}>
+                      {school.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </MDBox>
 
-              {/* Transaction History Table */}
+              {/* Student Search */}
+              {selectedSchool && (
+                <MDBox mb={2} textAlign="left">
+                  <MDTypography variant="body2" color="textSecondary" mb={1}>
+                    Rechercher un élève
+                  </MDTypography>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    placeholder="Tapez le nom d'un élève"
+                    style={{ borderRadius: "8px", height: "35px" }}
+                  />
+                  {filteredStudents.length > 0 && (
+                    <MDBox mt={1} style={{ maxHeight: "150px", overflowY: "auto" }}>
+                      {filteredStudents.map((student) => (
+                        <MenuItem
+                          key={student.id}
+                          onClick={() => handleStudentSelect(student)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {student.name}
+                        </MenuItem>
+                      ))}
+                    </MDBox>
+                  )}
+                </MDBox>
+              )}
+
+              {/* Transactions Table */}
               {selectedStudent && (
                 <>
                   <MDTypography variant="h5" fontWeight="bold" textAlign="left" mb={2}>
-                    Transactions de {selectedStudent.name} ({selectedStudent.school})
+                    Transactions de {selectedStudent.name} ({selectedSchool.name})
                   </MDTypography>
                   <Table>
                     <TableHead>
@@ -183,6 +209,3 @@ function Historique() {
 }
 
 export default Historique;
-
-
-

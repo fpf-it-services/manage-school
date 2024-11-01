@@ -7,6 +7,11 @@ class LevelService {
     return await HttpService.get(endpoint);
   };
 
+  getLevelsVerified = async () => {
+    const endpoint = `ecole/mes-niveaux`; 
+    return await HttpService.get(endpoint);
+  };
+
   createLevel = async (levelData) => {
     const endpoint = 'niveaux'; 
     return await HttpService.post(endpoint, levelData);

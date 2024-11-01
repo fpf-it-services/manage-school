@@ -30,6 +30,7 @@ Route::prefix("v2")->group(function(){
             Route::apiResource( "series", SerieController::class)->except(["update","index"]);
             Route::apiResource("niveaux", NiveauController::class)->except(["update","index"]);
         });
+        Route::get("ecoles_eleves",[EcoleController::class,"ecoles_eleves"]);
         Route::get("series",[SerieController::class,"index"]);
         Route::get("annees",[AnneeController::class,"index"]);
         Route::get("annee-actuelle",[AnneeController::class,"currentYear"]);
@@ -45,6 +46,7 @@ Route::prefix("v2")->group(function(){
                 Route::get('mes-niveaux', [NiveauController::class, 'mes_niveaux']);
                 Route::put("update-profile",[EcoleController::class,"update"]);
                 Route::apiResource("montants", MontantController::class)->except(["show","destroy"]);
+                Route::put("montants_frais/{montant}",[MontantController::class,"update_frais"]);
                 Route::apiResource("eleves", EleveController::class)->except(["show","destroy"]);
                 Route::post('/eleves/classe/{classe}', [EleveController::class, 'ajout_eleve_classe']);
                 Route::get("montants-par-niveau",[MontantController::class,"montant_niveau"]);

@@ -5,7 +5,7 @@ import AcademicYearService from '../../services/academic-years-service';
 
 export const getLevels = async () => {
   try {
-    const response = await LevelService.getLevels();
+    const response = await LevelService.getLevelsVerified();
     if (response && response.data) {
       return response.data;
     }

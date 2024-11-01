@@ -4,7 +4,6 @@ class StudentService {
   // Fonction pour ajouter un élève
   addStudent = async (studentData) => {
     const endpoint = `ecole/eleves`;
-    console.log(studentData)
     return await HttpService.post(endpoint, studentData);
   };
 

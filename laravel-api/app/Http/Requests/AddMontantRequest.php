@@ -33,14 +33,14 @@ class AddMontantRequest extends FormRequest
             "frais_annexe" => ["required","integer","min:0"],
             "tranche" => ["required","array","min:3","max:3"],
             "tranche.*" => ["required","integer","min:0"],
-            "somme_tranches_verification" => [Rule::in([true])],
+            "somme_tranches" => [Rule::in([0])],
             "avant_la_rentree" => [Rule::in([true])],
             "unique_constraint" => [Rule::in([true])]
         ];
     }
     public function messages(){
         return [
-            "somme_tranches_verification.*"   => "Les montants sont mals répartis en tranches",
+            "somme_tranches.*"   => "Les montants sont mals répartis en tranches",
             "avant_la_rentree.*" => "Vous ne pouvez pas définir un montant pour une année en cours",
             "unique_constraint.*" => "Un montant existe déjà pour cette année et cette classe",
             "tranche.*" => "Tranches invalides",
@@ -55,7 +55,7 @@ class AddMontantRequest extends FormRequest
             "tranche1" => $this->tranche[0] ?? 0,
             "tranche2" => $this->tranche[1] ?? 0,
             "tranche3" => $this->tranche[2] ?? 0,
-            "somme_tranches_verification" => $this->tranche1 + $this->tranche2 + $this->tranche3 - $this->frais_formation == 0,
+            "somme_tranches" => ($this->tranche[0] ?? 0) + ($this->tranche[1] ?? 0) + ($this->tranche[2] ?? 0) - $this->frais_formation,
             "annee_id" => $annee_courante?->id,
             "avant_la_rentree" => $annee_courante?->date_debut?->isAfter(now()),
             "unique_constraint" => Montant::where([

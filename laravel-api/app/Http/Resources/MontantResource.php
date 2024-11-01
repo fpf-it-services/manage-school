@@ -15,6 +15,7 @@ class MontantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
             "serie_id" => $this->serie_id,
             "frais_inscription" => $this->frais_inscription,
             "frais_formation" => $this->frais_formation,

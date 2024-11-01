@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MDBox from "components/MDBox";
@@ -7,10 +8,24 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import FinanceTable from "layouts/finances/data";
+import useFinanceTable from "layouts/finances/data"; // Assurez-vous que ce chemin est correct
+import FinanceDialog from "./financeDialog"; 
 
 const Finances = () => {
-  const { columns, rows } = FinanceTable();
+  const onFinanceSelect = (finance) => {
+    setSelectedFinance(finance);
+    setOpenDialog(true);
+  };
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedFinance, setSelectedFinance] = useState(null);
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedFinance(null);
+  };
+  const { columns, rows } = useFinanceTable({onFinanceSelect}); 
+
 
   return (
     <DashboardLayout>
@@ -40,13 +55,22 @@ const Finances = () => {
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
+                  onRowClick={onFinanceSelect} 
                 />
               </MDBox>
-            </Card>
+            </Card> 
           </Grid>
         </Grid>
       </MDBox>
       <Footer />
+
+      {selectedFinance && (
+        <FinanceDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          finance={selectedFinance}
+        />
+      )}
     </DashboardLayout>
   );
 };

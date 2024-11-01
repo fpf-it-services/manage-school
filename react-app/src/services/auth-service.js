@@ -26,8 +26,9 @@ class AuthService {
     return await HttpService.post(resetPassword, credentials);
   }
 
-  getProfile = async() => {
-    const getProfile = 'me';
+  getProfile = async(user) => {
+    let getProfile;
+    user === 'admin' ? getProfile= 'me' : getProfile= 'ecole/me'
     return await HttpService.get(getProfile);
   }
 

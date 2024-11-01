@@ -1,4 +1,0 @@
-
-la route pour récupérer toutes classes, associés à une école, les élèves associés à chaque classe (Nom, prénoms, Sexe)
-la route pour l'ajout des élèves avec sélection de la classe
-

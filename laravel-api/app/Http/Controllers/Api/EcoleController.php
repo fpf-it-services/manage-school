@@ -6,6 +6,7 @@ use App\Models\Ecole;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EcoleResource;
+use App\Http\Resources\EcoleEleveResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\EcoleStoreRequest;
 use App\Http\Requests\UpdateEcoleRequest;
@@ -94,5 +95,12 @@ class EcoleController extends Controller
         return response()->json([
 
         ],204);
+    }
+    public function ecoles_eleves(Ecole $ecole)
+    {
+        return response()->json([
+            "success" => true,
+            "data" => EcoleEleveResource::collection(Ecole::with(["eleves","classes"])->get())
+        ]);
     }
 }

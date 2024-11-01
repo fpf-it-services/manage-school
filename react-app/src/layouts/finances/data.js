@@ -6,12 +6,10 @@ import MDTypography from "components/MDTypography";
 import CircularProgress from "@mui/material/CircularProgress"; 
 import FinanceService from "../../services/finance-service"; 
 
-export default function FinanceTable() {
+export default function FinanceTable({ onFinanceSelect }) {
   const [finances, setFinances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedFinance, setSelectedFinance] = useState(null);
 
   useEffect(() => {
     const fetchFinances = async () => {
@@ -31,28 +29,28 @@ export default function FinanceTable() {
 
   const getColumns = () => [
     { Header: "Niveau", accessor: "niveau", align: "center" },
-    { Header: "Frais d'inscription", accessor: "fraisInscription", align: "center" },
+    { Header: "Frais d'inscription", accessor: "frais_inscription", align: "center" },
     { Header: "Frais de Réinscription", accessor: "fraisReinscription", align: "center" },
-    { Header: "Frais de scolarité", accessor: "fraisScolarite", align: "center" },
-    { Header: "Frais annexes", accessor: "fraisAnnexes", align: "center" },
+    { Header: "Frais de scolarité", accessor: "frais_formation", align: "center" },
+    { Header: "Frais annexes", accessor: "frais_annexe", align: "center" },
     { Header: "Action", accessor: "action", align: "center" },
   ];
 
   const handleEditClick = (id) => {
     setFinances((prevFinances) =>
       prevFinances.map((finance) =>
-        finance.id === id ? { ...finance, isEditing: !finance.isEditing } : finance
+        finance.montants[0].id === id ? { ...finance, isEditing: !finance.isEditing } : finance
       )
     );
   };
 
   const handleSaveClick = async (finance) => {
     try {
-      await FinanceService.updateFinance(finance.id, {
-        fraisInscription: finance.fraisInscription,
-        fraisReinscription: finance.fraisReinscription,
-        fraisScolarite: finance.fraisScolarite,
-        fraisAnnexes: finance.fraisAnnexes,
+      await FinanceService.updateFinance(finance.montants[0].id, {
+        frais_inscription: finance.montants[0].frais_inscription,
+        fraisReinscription: finance.montants[0].frais_formation, 
+        frais_formation: finance.montants[0].frais_formation, 
+        frais_annexe: finance.montants[0].frais_annexe, 
       });
       setFinances((prevFinances) =>
         prevFinances.map((f) => 
@@ -68,20 +66,22 @@ export default function FinanceTable() {
 
   const handleInputChange = (id, field, value) => {
     setFinances((prevFinances) =>
-      prevFinances.map((finance) =>
-        finance.id === id ? { ...finance, [field]: value } : finance
-      )
+      prevFinances.map((finance) => {
+        if (finance.montants[0].id === id) {
+          return {
+            ...finance,
+            montants: finance.montants.map((montant) => 
+              montant.id === id ? { ...montant, [field]: value } : montant
+            ),
+          };
+        }
+        return finance;
+      })
     );
-  };
+  };  
 
   const handleViewMoreClick = (finance) => {
-    setSelectedFinance(finance);
-    setOpenDialog(true);
-  };
-
-  const closeDialog = () => {
-    setOpenDialog(false);
-    setSelectedFinance(null);
+    onFinanceSelect(finance); 
   };
 
   if (loading) {
@@ -94,10 +94,10 @@ export default function FinanceTable() {
               <CircularProgress />
             </MDBox>
           ),
-          fraisInscription: "",
+          frais_inscription: "",
           fraisReinscription: "",
-          fraisScolarite: "",
-          fraisAnnexes: "",
+          frais_formation: "",
+          frais_annexe: "",
           action: "",
         },
       ],
@@ -116,122 +116,95 @@ export default function FinanceTable() {
               </MDTypography>
             </MDBox>
           ),
-          fraisInscription: "",
+          frais_inscription: "",
           fraisReinscription: "",
-          fraisScolarite: "",
-          fraisAnnexes: "",
+          frais_formation: "",
+          frais_annexe: "",
           action: "",
         },
       ],
     };
   }
 
-  const rows = Array.isArray(finances) && finances.length > 0
-    ? finances.map((finance) => ({
-        niveau: (
-          <MDTypography variant="caption" fontWeight="medium">
-            {finance.niveau}
-          </MDTypography>
-        ),
-        fraisInscription: finance.isEditing ? (
-          <MDInput
-            type="number"
-            value={finance.fraisInscription}
-            onChange={(e) => handleInputChange(finance.id, "fraisInscription", e.target.value)}
-          />
-        ) : (
-          finance.fraisInscription
-        ),
-        fraisReinscription: finance.isEditing ? (
-          <MDInput
-            type="number"
-            value={finance.fraisReinscription}
-            onChange={(e) => handleInputChange(finance.id, "fraisReinscription", e.target.value)}
-          />
-        ) : (
-          finance.fraisReinscription
-        ),
-        fraisScolarite: finance.isEditing ? (
-          <MDInput
-            type="number"
-            value={finance.fraisScolarite}
-            onChange={(e) => handleInputChange(finance.id, "fraisScolarite", e.target.value)}
-          />
-        ) : (
-          finance.fraisScolarite
-        ),
-        fraisAnnexes: finance.isEditing ? (
-          <MDInput
-            type="number"
-            value={finance.fraisAnnexes}
-            onChange={(e) => handleInputChange(finance.id, "fraisAnnexes", e.target.value)}
-          />
-        ) : (
-          finance.fraisAnnexes
-        ),
-        action: (
-          <>
-            <Button
-              variant="text"
-              color="primary"
-              onClick={() => finance.isEditing ? handleSaveClick(finance) : handleEditClick(finance.id)}
-            >
-              {finance.isEditing ? "Enregistrer" : "Editer"}
-            </Button>
-            <Button
-              variant="text"
-              color="secondary"
-              onClick={() => handleViewMoreClick(finance)}
-            >
-              Voir plus
-            </Button>
-          </>
-        ),
-      }))
-    : [
-        {
+  return {
+    columns: getColumns(),
+    rows: Array.isArray(finances) && finances.length > 0
+      ? finances.map((finance) => ({
           niveau: (
-            <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
-              <MDTypography variant="caption" color="text">
-                Aucune donnée financière disponible.
-              </MDTypography>
-            </MDBox>
+            <MDTypography variant="caption" fontWeight="medium">
+              {finance.niveau}
+            </MDTypography>
           ),
-          fraisInscription: "",
-          fraisReinscription: "",
-          fraisScolarite: "",
-          fraisAnnexes: "",
-          action: "",
-        },
-      ];
-
-  return (
-    <>
-      { /* Table component here */ }
-      <Dialog open={openDialog} onClose={closeDialog}>
-        <DialogTitle>{selectedFinance?.niveau}</DialogTitle>
-        <DialogContent>
-          <Table>
-            <TableBody>
-              {selectedFinance?.tranches?.map((tranche, index) => (
-                <TableRow key={index}>
-                  <TableCell>{tranche.nom}</TableCell>
-                  <TableCell align="right">{tranche.montant}</TableCell>
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell>Total</TableCell>
-                <TableCell align="right">
-                  {selectedFinance?.tranches?.reduce((total, tranche) => total + tranche.montant, 0)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog}>Fermer</Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
+          frais_inscription: finance.isEditing ? (
+            <MDInput
+              type="number"
+              value={finance.montants[0].frais_inscription}
+              onChange={(e) => handleInputChange(finance.montants[0].id, "frais_inscription", e.target.value)}
+            />
+          ) : (
+            finance.montants[0].frais_inscription
+          ),
+          fraisReinscription: finance.isEditing ? (
+            <MDInput
+              type="number"
+              value={finance.montants[0].frais_formation}
+              onChange={(e) => handleInputChange(finance.montants[0].id, "fraisReinscription", e.target.value)}
+            />
+          ) : (
+            finance.montants[0].frais_formation
+          ),
+          frais_formation: finance.isEditing ? (
+            <MDInput
+              type="number"
+              value={finance.montants[0].frais_formation} 
+              onChange={(e) => handleInputChange(finance.montants[0].id, "frais_formation", e.target.value)}
+            />
+          ) : (
+            finance.montants[0].frais_formation 
+          ),
+          frais_annexe: finance.isEditing ? (
+            <MDInput
+              type="number"
+              value={finance.montants[0].frais_annexe}
+              onChange={(e) => handleInputChange(finance.montants[0].id, "frais_annexe", e.target.value)}
+            />
+          ) : (
+            finance.montants[0].frais_annexe
+          ),
+          action: (
+            <>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => finance.isEditing ? handleSaveClick(finance) : handleEditClick(finance.montants[0].id)}
+              >
+                {finance.isEditing ? "Enregistrer" : "Editer"}
+              </Button>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={() => handleViewMoreClick(finance)}
+              >
+                Voir plus
+              </Button>
+            </>
+          ),
+        }))
+      : [
+          {
+            niveau: (
+              <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
+                <MDTypography variant="caption" color="text">
+                  Aucune donnée financière disponible.
+                </MDTypography>
+              </MDBox>
+            ),
+            frais_inscription: "",
+            fraisReinscription: "",
+            frais_formation: "",
+            frais_annexe: "",
+            action: "",
+          },
+        ],
+  };
 }
