@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Ecole;
+use App\Models\Annee;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EcoleResource;
@@ -10,6 +11,7 @@ use App\Http\Resources\EcoleEleveResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\EcoleStoreRequest;
 use App\Http\Requests\UpdateEcoleRequest;
+use App\Http\Resources\EcoleAnneeClasseEleveResourceEcole;
 
 class EcoleController extends Controller
 {
@@ -36,7 +38,7 @@ class EcoleController extends Controller
             'telephone' => $request->contact,
             'logo' => $logoPath,
             // 'capacite' => $request->capacite ?? 0,
-            'centre_de_composition' => false,
+            'centre_de_composition' => $request->centre_de_composition == "true",
         ]);
 
         return response()->json([
@@ -102,5 +104,75 @@ class EcoleController extends Controller
             "success" => true,
             "data" => EcoleEleveResource::collection(Ecole::with(["eleves","classes"])->get())
         ]);
+    }
+    // public function getEcolesAnneesClassesEleves(){
+    //     $annees = Annee::all();
+    //     session()->put("annees",$annees);
+    //     $ecoles = Ecole::with(["classes.eleves"])->get();
+    //     $es = collect();
+    //     foreach($ecoles as $ecole){
+    //         $ecole->annees = session()->get("annees");
+    //         foreach($ecole->annees as $annee){
+    //             $annee->classes = $this->getClasses($ecole,$annee);
+    //         }
+    //         //return $ecoles->first()->annees->first();
+    //     }
+    //     //return $es->first();
+    //     return $ecoles->first()->annees->first();
+    //     session()->forget("annees");
+    //     return response()->json([
+    //         "success" => true,
+    //         "data" => EcoleAnneeClasseEleveResourceEcole::collection($ecoles)
+    //     ]);
+    // }
+    public function getEcolesAnneesClassesEleves()
+    {
+        // Récupère toutes les années académiques
+        $annees = Annee::all();
+
+        // Charge toutes les écoles avec leurs classes et élèves
+        $ecoles = Ecole::with(["classes.eleves"])->get();
+
+        // Structure de la réponse JSON
+        $responseData = $ecoles->map(function ($ecole) use ($annees) {
+            return [
+                'ecole_id' => $ecole->id,
+                'nom' => $ecole->nom,
+                'annees' => $annees->map(function ($annee) use ($ecole) {
+                    // Récupère les classes de l'école pour l'année académique courante
+                    $classes = $this->getClasses($ecole, $annee);
+                    return [
+                        'annee_id' => $annee->id,
+                        'annee_academique' => $annee->annee_academique,  // Utilise l'année académique ici
+                        'classes' => $classes->map(function ($classe) {
+                            return [
+                                'classe_id' => $classe->id,
+                                'nom' => $classe->nom,
+                                'eleves' => $classe->eleves->map(function ($eleve) {
+                                    return [
+                                        'eleve_id' => $eleve->id,
+                                        'nom' => $eleve->nom,
+                                        'prenom' => $eleve->prenoms,
+                                    ];
+                                })
+                            ];
+                        })
+                    ];
+                })
+            ];
+        });
+
+        // Retourne la réponse structurée en JSON
+        return response()->json([
+            "success" => true,
+            "data" => $responseData
+        ]);
+    }
+
+
+    private function getClasses($ecole,$annee){
+        return $ecole->classes->filter(function($classe) use ($annee){
+            return $classe->created_at->isBefore($annee->date_fin);
+        });
     }
 }

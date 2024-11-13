@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react";
-import MDBox from "components/MDBox";
 import MDAlert from "components/MDAlert";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -13,7 +12,7 @@ import { AuthContext } from "context";
 
 const UserProfile = () => {
   const authContext = useContext(AuthContext);
-  const [notification, setNotification] = useState(false);
+  const [notification, setNotification] = useState({ show: false, type: "info", message: "" });
   const [user, setUser] = useState({
     role: authContext.role, 
     name: "",
@@ -28,7 +27,6 @@ const UserProfile = () => {
 
   const getUserData = async () => {
     const response = await AuthService.getProfile(`${authContext.role}`);
-    console.log(response)
     setUser({ ...user, ...response.data });
   };
 
@@ -37,8 +35,8 @@ const UserProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (notification) {
-      setTimeout(() => setNotification(false), 5000);
+    if (notification.show) {
+      setTimeout(() => setNotification({ show: false, type: "info", message: "" }), 5000);
     }
   }, [notification]);
 
@@ -60,17 +58,6 @@ const UserProfile = () => {
       return;
     }
   
-    if (user.confirmPassword || user.newPassword) {
-      if (user.confirmPassword.trim() !== user.newPassword.trim()) {
-        setErrors({ ...errors, confirmPassError: true });
-        return;
-      }
-      if (user.newPassword.trim().length < 8) {
-        setErrors({ ...errors, newPassError: true });
-        return;
-      }
-    }
-  
     let userData = {
       data: {
         type: "profile",
@@ -80,7 +67,6 @@ const UserProfile = () => {
         },
       },
     };
-  
     if (user.newPassword.length > 0) {
       userData = {
         data: {
@@ -95,18 +81,22 @@ const UserProfile = () => {
       };
     }
   
-    const response = await AuthService.updateProfile(JSON.stringify(userData));
-  
-    setErrors({
-      nameError: false,
-      emailError: false,
-      passwordError: false,
-      newPassError: false,
-      confirmPassError: false,
-    });
-  
-    setNotification(true);
-    setEditMode(false);
+    try {
+      const response = await AuthService.updateProfile(JSON.stringify(userData));
+      setNotification({ show: true, type: "success", message: "Votre profil a été mis à jour avec succès" });
+      
+      setErrors({
+        nameError: false,
+        emailError: false,
+        passwordError: false,
+        newPassError: false,
+        confirmPassError: false,
+      });
+      
+      setEditMode(false);
+    } catch (error) {
+      setNotification({ show: true, type: "error", message: "Une erreur est survenue lors de la mise à jour" });
+    }
   };
 
   const handleEditClick = () => setEditMode(true);
@@ -118,7 +108,7 @@ const UserProfile = () => {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      {notification && <MDAlert color="info">Votre profil a été mis à jour</MDAlert>}
+      {notification.show && <MDAlert color={notification.type}>{notification.message}</MDAlert>}
       <Header name={user.role === "admin" ? user.name : user.nom} image={user.logo}>
         {user.role === "admin" ? (
           <AdminProfile 
@@ -148,4 +138,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-

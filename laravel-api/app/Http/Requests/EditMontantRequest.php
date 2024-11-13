@@ -25,6 +25,7 @@ class EditMontantRequest extends FormRequest
     {
         return [
             "frais_inscription" => ["required","integer","min:1"],
+            "frais_reinscription" => ["required","integer","min:1"],
             "frais_annexe" => ["required","integer","min:0"],
             "avant_la_rentree" => [Rule::in([true])],
         ];

@@ -15,7 +15,6 @@ function UploadStudentExcel() {
   const [classe, setClasse] = useState(""); 
   const [classes, setClasses] = useState([]); 
 
-  // Récupération des classes (à ajuster selon votre service d'API)
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -88,7 +87,6 @@ function UploadStudentExcel() {
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const data = XLSX.utils.sheet_to_json(worksheet);
-      console.log(data)
       if (validateExcelData(data)) {
         setStudents(data);
         setErrorMessage("");
@@ -111,7 +109,7 @@ function UploadStudentExcel() {
       setFile(null);
       setFileName(""); 
       setStudents([]);
-      setClasse(""); // Réinitialiser la classe
+      setClasse(""); 
     } catch (error) {
       setErrorMessage("Une erreur s'est produite lors de l'importation des élèves.");
       console.error("Erreur lors de l'importation", error);

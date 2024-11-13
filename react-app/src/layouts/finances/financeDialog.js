@@ -1,17 +1,5 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  TextField,
-  Snackbar,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Table, TableBody, TableCell, TableRow, TextField, } from "@mui/material";
 import MDTypography from "components/MDTypography";
 import FinanceService from "../../services/finance-service"; 
 
@@ -31,8 +19,6 @@ export default function FinanceDialog({ open, onClose, finance }) {
     }
 
     const response = await FinanceService.updateScolarite(finance.montants[0].id, { frais_formation, tranche1, tranche2, tranche3 })
-
-
     onClose(); 
   };
 

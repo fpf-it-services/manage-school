@@ -26,4 +26,11 @@ class Eleve extends Model
         'email_tuteur2'
     ];
     protected $casts = ["date_naissance" => "date"];
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
+    public function cursuses(){
+        return $this->hasMany(Cursus::class);
+    }
 }

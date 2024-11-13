@@ -86,9 +86,6 @@ function FormSchool() {
       setErrorMessage("Le numéro de téléphone est requis.");
       return;
     }
-
-    console.log(inputs)
-
     const formData = new FormData();
     formData.append("nom", inputs.name);
     formData.append("email", inputs.email);
@@ -101,7 +98,6 @@ function FormSchool() {
     }
 
     try {
-      console.log(formData)
       await SchoolService.createSchool(formData);
       setInputs({
         name: "",

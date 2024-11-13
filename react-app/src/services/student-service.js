@@ -1,7 +1,6 @@
 import HttpService from "./htttp.service"; 
 
 class StudentService {
-  // Fonction pour ajouter un élève
   addStudent = async (studentData) => {
     const endpoint = `ecole/eleves`;
     return await HttpService.post(endpoint, studentData);

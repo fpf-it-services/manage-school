@@ -3,11 +3,54 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import BasicLayoutLanding from "layouts/authentication/components/BasicLayoutLanding";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-import { Grid, Card, Select, MenuItem, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
-
 import { getSchoolsAndStudents, getTransactionHistory } from "./data";
+import { Box, Grid, Card, Select, MenuItem, TextField, CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TablePagination, TableRow, Paper, IconButton } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
-function Historique() {
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} aria-label="first page">
+        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton onClick={handleNextButtonClick} disabled={page >= Math.ceil(count / rowsPerPage) - 1} aria-label="next page">
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton onClick={handleLastPageButtonClick} disabled={page >= Math.ceil(count / rowsPerPage) - 1} aria-label="last page">
+        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+// Main Component
+export default function Historique() {
   const [schools, setSchools] = useState([]);
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
@@ -15,20 +58,26 @@ function Historique() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the list of schools and students from the backend
     async function fetchSchoolsAndStudents() {
-      const data = await getSchoolsAndStudents();
-      setSchools(data); // Assuming data is an array of { school, students }
+      try {
+        const data = await getSchoolsAndStudents();
+        setSchools(data);
+      } catch (err) {
+        setError("Erreur de chargement des écoles et élèves");
+      }
     }
     fetchSchoolsAndStudents();
   }, []);
 
-  const handleSchoolSelect = (school) => {
-    setSelectedSchool(school);
+  const handleSchoolSelect = (schoolId) => {
+    setSelectedSchool(schoolId);
     setSelectedStudent(null);
-    setFilteredStudents(school.students || []);
+    const selectedSchoolData = schools.find((school) => school.id === schoolId);
+    setFilteredStudents(selectedSchoolData ? selectedSchoolData.eleves : []);
     setTransactions([]);
   };
 
@@ -36,30 +85,34 @@ function Historique() {
     setSearchTerm(query);
     if (query) {
       const results = filteredStudents.filter((student) =>
-        student.name.toLowerCase().includes(query.toLowerCase())
+        student.nom.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredStudents(results);
     } else {
-      setFilteredStudents(selectedSchool ? selectedSchool.students : []);
+      setFilteredStudents(selectedSchool ? selectedSchool.eleves : []);
     }
   };
 
   const handleStudentSelect = async (student) => {
     setSelectedStudent(student);
-    setSearchTerm(student.name);
-
-    // Fetch transaction history of the selected student
-    const historyData = await getTransactionHistory(student.id);
-    setTransactions(historyData);
+    setSearchTerm(`${student.nom} ${student.prenoms}`);
+    setIsLoading(true);
+    try {
+      const historyData = await getTransactionHistory(student.id);
+      setTransactions(historyData);
+    } catch (err) {
+      setError("Erreur de chargement des transactions");
+    }
+    setIsLoading(false);
   };
 
   const calculateTotalPaid = () => {
-    return transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    return transactions.reduce((total, transaction) => total + transaction.montant, 0);
   };
 
   const calculateRemainingAmount = () => {
     const totalPaid = calculateTotalPaid();
-    const totalDue = transactions.reduce((total, transaction) => total + transaction.totalFee, 0);
+    const totalDue = transactions.reduce((total, transaction) => total + transaction.total_frais, 0);
     return totalDue - totalPaid;
   };
 
@@ -94,7 +147,6 @@ function Historique() {
           </MDTypography>
         </MDBox>
         <Grid container>
-          {/* Selection Controls */}
           <Grid
             item
             xs={12}
@@ -107,7 +159,6 @@ function Historique() {
             }}
           >
             <MDBox display="flex" flexDirection="column" width="100%" maxWidth="500px">
-              {/* School Selection */}
               <MDBox mb={2} textAlign="left">
                 <MDTypography variant="body2" color="textSecondary" mb={1}>
                   Sélectionnez une école
@@ -115,19 +166,18 @@ function Historique() {
                 <Select
                   fullWidth
                   value={selectedSchool || ""}
+                  style={{ borderRadius: "8px", height: "35px" }}
                   onChange={(e) => handleSchoolSelect(e.target.value)}
                   displayEmpty
                 >
                   <MenuItem value="" disabled>Choisir une école</MenuItem>
                   {schools.map((school) => (
-                    <MenuItem key={school.id} value={school}>
-                      {school.name}
+                    <MenuItem key={school.id} value={school.id}>
+                      {school.nom}
                     </MenuItem>
                   ))}
                 </Select>
               </MDBox>
-
-              {/* Student Search */}
               {selectedSchool && (
                 <MDBox mb={2} textAlign="left">
                   <MDTypography variant="body2" color="textSecondary" mb={1}>
@@ -149,55 +199,56 @@ function Historique() {
                           onClick={() => handleStudentSelect(student)}
                           style={{ cursor: "pointer" }}
                         >
-                          {student.name}
+                          {`${student.nom} ${student.prenoms}`}
                         </MenuItem>
                       ))}
                     </MDBox>
                   )}
                 </MDBox>
               )}
-
-              {/* Transactions Table */}
               {selectedStudent && (
                 <>
                   <MDTypography variant="h5" fontWeight="bold" textAlign="left" mb={2}>
-                    Transactions de {selectedStudent.name} ({selectedSchool.name})
+                    Transactions de {`${selectedStudent.nom} ${selectedStudent.prenoms}`}
                   </MDTypography>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Numéro de Transaction</TableCell>
-                        <TableCell>Montant Payé</TableCell>
-                        <TableCell>Type de Frais</TableCell>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Heure</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {transactions.map((transaction) => (
-                        <TableRow key={transaction.id}>
-                          <TableCell>{transaction.transactionNumber}</TableCell>
-                          <TableCell>{transaction.amount} €</TableCell>
-                          <TableCell>{transaction.feeType}</TableCell>
-                          <TableCell>{transaction.date}</TableCell>
-                          <TableCell>{transaction.time}</TableCell>
-                        </TableRow>
-                      ))}
-                      {/* Total and Remaining Amount */}
-                      <TableRow>
-                        <TableCell colSpan={4} align="right">
-                          <strong>Total Payé:</strong>
-                        </TableCell>
-                        <TableCell>{calculateTotalPaid()} €</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell colSpan={4} align="right">
-                          <strong>Montant Restant:</strong>
-                        </TableCell>
-                        <TableCell>{calculateRemainingAmount()} €</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                  {isLoading ? (
+                    <CircularProgress />
+                  ) : (
+                    <TableContainer component={Paper}>
+                      <Table sx={{ minWidth: 500, fontSize: "10px" }} aria-label="custom pagination table">
+                        <TableBody>
+                          {transactions.map((transaction, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{transaction.numero}</TableCell>
+                              <TableCell align="right">{transaction.montant}</TableCell>
+                              <TableCell align="right">{transaction.type_frais}</TableCell>
+                              <TableCell align="right">{transaction.date}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                        <TableFooter>
+                          <TableRow>
+                            <TablePagination
+                              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                              count={transactions.length}
+                              rowsPerPage={5}
+                              page={0}
+                              onPageChange={() => {}}
+                              ActionsComponent={TablePaginationActions}
+                            />
+                          </TableRow>
+                        </TableFooter>
+                      </Table>
+                    </TableContainer>
+                  )}
+                  <MDBox display="flex" justifyContent="space-between" mt={2}>
+                    <MDTypography variant="h6" fontWeight="bold">Total payé :</MDTypography>
+                    <MDTypography variant="h6" fontWeight="bold">{calculateTotalPaid()}</MDTypography>
+                  </MDBox>
+                  <MDBox display="flex" justifyContent="space-between" mt={2}>
+                    <MDTypography variant="h6" fontWeight="bold">Montant restant :</MDTypography>
+                    <MDTypography variant="h6" fontWeight="bold">{calculateRemainingAmount()}</MDTypography>
+                  </MDBox>
                 </>
               )}
             </MDBox>
@@ -207,5 +258,3 @@ function Historique() {
     </BasicLayoutLanding>
   );
 }
-
-export default Historique;

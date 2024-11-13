@@ -1,19 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  TableHead,
-  TableFooter,
-  TableContainer,
-  Paper,
-} from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead, TableFooter, TableContainer, Paper, } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
@@ -163,7 +149,6 @@ export default function LevelsTable() {
         </TableContainer>
       </MDBox>
 
-      {/* Boîte de dialogue pour définir les frais */}
       <Dialog open={openDialog} onClose={closeDialog} maxWidth="xs" fullWidth>
         <DialogTitle>Définir les frais pour le niveau {selectedLevel?.niveau}</DialogTitle>
         <DialogContent sx={{ width: "600px", maxWidth: "100%" }}>
@@ -183,8 +168,8 @@ export default function LevelsTable() {
             <MDInput
               label="Frais de Reinscription"
               type="number"
-              value={fees.reinscription}
-              onChange={(e) => handleFeeChange("reinscription", e.target.value)}
+              value={fees.frais_reinscription}
+              onChange={(e) => handleFeeChange("frais_reinscription", e.target.value)}
             />
             <MDInput
               label="Frais Annexes"
@@ -211,7 +196,6 @@ export default function LevelsTable() {
               </select> : <></> : <></> 
             }
 
-            {/* Tableau des tranches */}
             <Table>
               <TableBody>
                 {fees.tranche.map((tranche, index) => (

@@ -63,7 +63,7 @@ function Footer({ company }) {
 }
 
 Footer.defaultProps = {
-  company: { href: "#", name: "Matine OUSMANE" },
+  company: { href: "https://fpf-it-services.vercel.app", name: "FPF IT-Services" },
 };
 
 Footer.propTypes = {

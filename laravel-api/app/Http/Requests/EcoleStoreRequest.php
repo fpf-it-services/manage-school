@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class EcoleStoreRequest extends FormRequest
@@ -29,7 +31,7 @@ class EcoleStoreRequest extends FormRequest
             'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             // 'capacite' => 'nullable|integer|min:1',
             'password' => 'nullable|string|min:8',
-            'centre_de_composition' => 'boolean|nullable'
+            'centre_de_composition' => Rule::in(["true","false"])
         ];
     }
 }

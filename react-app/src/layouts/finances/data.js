@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import { Button } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
@@ -30,9 +30,10 @@ export default function FinanceTable({ onFinanceSelect }) {
   const getColumns = () => [
     { Header: "Niveau", accessor: "niveau", align: "center" },
     { Header: "Frais d'inscription", accessor: "frais_inscription", align: "center" },
-    { Header: "Frais de Réinscription", accessor: "fraisReinscription", align: "center" },
+    { Header: "Frais de Réinscription", accessor: "frais_reinscription", align: "center" },
     { Header: "Frais de scolarité", accessor: "frais_formation", align: "center" },
     { Header: "Frais annexes", accessor: "frais_annexe", align: "center" },
+    { Header: "Mise à jour le", accessor: "mise_a_jour", align: "center" },
     { Header: "Action", accessor: "action", align: "center" },
   ];
 
@@ -48,7 +49,7 @@ export default function FinanceTable({ onFinanceSelect }) {
     try {
       await FinanceService.updateFinance(finance.montants[0].id, {
         frais_inscription: finance.montants[0].frais_inscription,
-        fraisReinscription: finance.montants[0].frais_formation, 
+        frais_reinscription: finance.montants[0].frais_reinscription, 
         frais_formation: finance.montants[0].frais_formation, 
         frais_annexe: finance.montants[0].frais_annexe, 
       });
@@ -95,7 +96,7 @@ export default function FinanceTable({ onFinanceSelect }) {
             </MDBox>
           ),
           frais_inscription: "",
-          fraisReinscription: "",
+          frais_reinscription: "",
           frais_formation: "",
           frais_annexe: "",
           action: "",
@@ -117,7 +118,7 @@ export default function FinanceTable({ onFinanceSelect }) {
             </MDBox>
           ),
           frais_inscription: "",
-          fraisReinscription: "",
+          frais_reinscription: "",
           frais_formation: "",
           frais_annexe: "",
           action: "",
@@ -144,23 +145,19 @@ export default function FinanceTable({ onFinanceSelect }) {
           ) : (
             finance.montants[0].frais_inscription
           ),
-          fraisReinscription: finance.isEditing ? (
+          frais_reinscription: finance.isEditing ? (
             <MDInput
               type="number"
               value={finance.montants[0].frais_formation}
-              onChange={(e) => handleInputChange(finance.montants[0].id, "fraisReinscription", e.target.value)}
+              onChange={(e) => handleInputChange(finance.montants[0].id, "frais_reinscription", e.target.value)}
             />
           ) : (
             finance.montants[0].frais_formation
           ),
-          frais_formation: finance.isEditing ? (
-            <MDInput
-              type="number"
-              value={finance.montants[0].frais_formation} 
-              onChange={(e) => handleInputChange(finance.montants[0].id, "frais_formation", e.target.value)}
-            />
-          ) : (
-            finance.montants[0].frais_formation 
+          frais_formation: (
+            <MDTypography variant="caption" fontWeight="medium">
+              {finance.montants[0].frais_formation} 
+            </MDTypography>
           ),
           frais_annexe: finance.isEditing ? (
             <MDInput
@@ -170,6 +167,11 @@ export default function FinanceTable({ onFinanceSelect }) {
             />
           ) : (
             finance.montants[0].frais_annexe
+          ),
+          mise_a_jour: (
+            <MDTypography variant="caption" fontWeight="medium">
+              {finance.montants[0].mise_a_jour} 
+            </MDTypography>
           ),
           action: (
             <>
@@ -200,7 +202,7 @@ export default function FinanceTable({ onFinanceSelect }) {
               </MDBox>
             ),
             frais_inscription: "",
-            fraisReinscription: "",
+            frais_reinscription: "",
             frais_formation: "",
             frais_annexe: "",
             action: "",

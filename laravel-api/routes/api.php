@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\SerieController;
 use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\NiveauController;
 use App\Http\Controllers\Api\MontantController;
+use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\InscriptionEnAttente;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -36,6 +38,12 @@ Route::prefix("v2")->group(function(){
         Route::get("annee-actuelle",[AnneeController::class,"currentYear"]);
         Route::get("niveaux",[NiveauController::class,"index"]);
         Route::get("getClassesByLevelAndSerie",[ClasseController::class, "getClassesByLevelAndSerie"]);
+        Route::get("ecoles_annees_classes_eleves",[EcoleController::class, "getEcolesAnneesClassesEleves"]);
+        Route::get("montants/a_payer",[TransactionController::class, "montant_du"]);
+        Route::get("montants/historique/{eleve}",[TransactionController::class, "historique"]);
+        Route::post("montants",[TransactionController::class, "save"]);
+        Route::get("montants/statistiques/{eleve}",[TransactionController::class, "stats_eleves"]);
+        Route::post("inscription/attente",[InscriptionEnAttente::class, "register"]);
         Route::prefix("ecole")->group(function () {
             //Route::post('login', [AuthController::class, 'login_ecole']);
             Route::group(['middleware' => ['auth:ecole']], function () {

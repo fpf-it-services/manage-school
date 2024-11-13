@@ -15,6 +15,7 @@ class Montant extends Model
         "serie_id",
         "annee_id",
         "frais_inscription",
+        "frais_reinscription",
         "frais_formation",
         "frais_annexe",
         "tranche1",

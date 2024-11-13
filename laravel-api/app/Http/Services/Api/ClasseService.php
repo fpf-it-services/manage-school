@@ -16,6 +16,6 @@ class ClasseService{
             else
                 return collect();
         }
-        return $query->get();
+        return $query->with(["eleves"])->get();
     }
 }

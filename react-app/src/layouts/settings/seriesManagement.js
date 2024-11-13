@@ -65,19 +65,19 @@ const SeriesManagement = () => {
               md: "repeat(5, 1fr)", 
               lg: "repeat(6, 1fr)", 
             }}
-            gap={3} // Espace entre les éléments
+            gap={3} 
           >
             {seriesList.map((serieItem) => (
               <MDBox
                 key={serieItem.id}
-                border="1px solid #ddd" // Bordure plus claire
+                border="1px solid #ddd" 
                 borderRadius="8px"
                 padding="4px"
                 textAlign="center"
-                boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)" // Ajout d'une légère ombre
-                backgroundColor="#f9f9f9" // Couleur de fond légère
+                boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)" 
+                backgroundColor="#f9f9f9" 
               >
-                <MDTypography variant="body2" fontSize="15px" fontWeight="medium">
+                <MDTypography variant="body2" fontSize="14px" fontWeight="medium">
                   {serieItem.serie}
                 </MDTypography>
               </MDBox>

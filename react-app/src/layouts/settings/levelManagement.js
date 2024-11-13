@@ -15,7 +15,6 @@ const LevelManagement = () => {
   const handleAddLevel = async () => {
     try {
       await LevelService.createLevel({ niveau }); 
-      console.log("Niveau ajouté :", niveau);
       setLevel(""); 
       fetchLevels(); 
     } catch (error) {

@@ -4,9 +4,8 @@ import transactionService from 'services/transaction-service';
 
 export const getSchoolsAndStudents = async () => {
   try {
-    const response = await SchoolService.getSchoolsAndStudents();  
-    if (response && response.data) {
-      console.log(response.data)
+    const response = await SchoolService.getSchoolsAndStudentsAndClassesWithYears();  
+    if (response && response.data) {  
       return response.data;
     }
     return []; 
@@ -21,7 +20,6 @@ export const getAcademicYears = async () => {
   try {
     const response = await AcademicYearService.getAcademicYears();
     if (response && response.data) {
-      console.log(response)
       return response.data;
     }
     return [];
@@ -33,8 +31,10 @@ export const getAcademicYears = async () => {
 
 export const postPaymentData = async (paymentData) => {
   try {
-    // const response = await transactionService.sendPaymentData(paymentData);  
+    const response = await transactionService.sendPaymentData(paymentData); 
+    return true;
   } catch (error) {
     console.error("Erreur :", error);
+    return false;
   }
 };

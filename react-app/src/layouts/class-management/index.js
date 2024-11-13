@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Grid, Divider, Button, TextField, Card, Tabs, Tab, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -9,12 +8,13 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
-import { getLevels, getSeriesByLevel, getClassesByLevelAndSerie, getStudentsByClass, uploadStudents, getAcademicYears } from "./data";
+import { getLevels, getSeriesByLevel, getClassesByLevelAndSerie, uploadStudents, getAcademicYears } from "./data";
 import * as XLSX from "xlsx";  
 
 const ClassManagement = () => {
   const [levels, setLevels] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [indx, setIndx] = useState(null);
   const [selectedSerie, setSelectedSerie] = useState(null);
   const [selectedClass, setSelectedClass] = useState(0);
   const [series, setSeries] = useState([]);
@@ -55,10 +55,11 @@ const ClassManagement = () => {
     }
   };
 
-  const handleChangeLevel = async (event, newValue, year) => {
+  const handleChangeLevel = async (event, newValue, idx) => {
+    setIndx(idx)
     setSelectedLevel(newValue);
     setSelectedSerie(null);
-    const level = levels[newValue];
+    const level = levels.find(lvl => lvl.id === newValue);
     setSeries([]);
     setClasses([]);
     setStudents([]);
@@ -67,7 +68,7 @@ const ClassManagement = () => {
       const seriesData = await getSeriesByLevel(level.id);
       setSeries(seriesData);
     } else {
-      const classesData = await getClassesByLevelAndSerie(level.id, null, year);
+      const classesData = await getClassesByLevelAndSerie(level.id, null, selectedYear);
       setClasses(classesData);
       setStudents([]);
     }
@@ -75,8 +76,8 @@ const ClassManagement = () => {
 
   const handleSelectSerie = async (serieId) => {
     setSelectedSerie(serieId);
-    const levelId = levels[selectedLevel].id;
-    const classesData = await getClassesByLevelAndSerie(levelId, serieId, selectedYear);
+    const level = levels.find(lvl => lvl.id === newValue);
+    const classesData = await getClassesByLevelAndSerie(level.id, serieId, selectedYear);
     setClasses(classesData);
     setStudents([]);
   };
@@ -164,7 +165,7 @@ const ClassManagement = () => {
       };
       reader.readAsBinaryString(file);
     } else {
-      await uploadStudents(className, classSize, data, selectedLevel+1, selectedSerie);
+      await uploadStudents(className, classSize, data, selectedLevel, selectedSerie);
       handleClose();
     }
   };
@@ -181,12 +182,6 @@ const ClassManagement = () => {
     </MDBox>
   );
 
-
-  const handlereRegister = (id) => {
-    console.log("Réinscrit")
-  }
-  
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -200,10 +195,10 @@ const ClassManagement = () => {
                   {levels.map((level, index) => (
                     <div key={level.id}>
                       <Button
-                        onClick={() => handleChangeLevel(null, index)}
+                        onClick={() => handleChangeLevel(null, level.id, index)}
                         fullWidth
                         variant="text"
-                        color={index === selectedLevel ? "primary" : "inherit"}
+                        color={index === indx ? "primary" : "inherit"}
                       >
                         {level.niveau} {index === selectedLevel && selectedSerie ? `(${series.find(serie => serie.id === selectedSerie)?.serie})` : ""}
                       </Button>
@@ -231,7 +226,7 @@ const ClassManagement = () => {
                     >
                       {academicYears.map((year) => (
                       <MenuItem key={year.id} value={year.id}>
-                        {`${year.date_debut} - ${year.date_fin}`}
+                        {`${year.annee_academique}`}
                       </MenuItem>
                     ))}
                     </Select>
@@ -291,7 +286,7 @@ const ClassManagement = () => {
                               { Header: "Email Tuteur 1", accessor: "email_tuteur1", align: "center" },
                               { Header: "Adresse tuteur 2", accessor: "adresse_tuteur2", align: "center" },
                               { Header: "Email Tuteur 2", accessor: "email_tuteur2", align: "center" },
-                              { Header: "Action", accessor: "action", align: "center" },
+                              { Header: "Statut", accessor: "action", align: "center" },
                             ],
                             rows: students.map((student) => ({
                               nom: <Author image={student.photo} name={`${student.nom} ${student.prenoms}`} sexe={student.sexe} />,
@@ -327,27 +322,22 @@ const ClassManagement = () => {
                               ),
                               adresse_tuteur2: (
                                 <MDTypography variant="caption" fontWeight="medium">
-                                  {student.adresse_tuteur2 ? student.adresse_tuteur2 : 'Non Fourni' }
+                                  {student.adresse_tuteur2 ? student.adresse_tuteur2 : '-' }
                                 </MDTypography>
                               ),
                               email_tuteur2: (
                                 <MDTypography variant="caption" fontWeight="medium">
-                                  {student.email_tuteur2 ? student.email_tuteur2 : 'Non Fourni' }
+                                  {student.email_tuteur2 ? student.email_tuteur2 : '-' }
                                 </MDTypography>
                               ),
-                              action: (
-                                <MDBox>
-                                  <MDTypography
-                                    component="a"
-                                    href="#"
-                                    variant="caption"
-                                    color="primary"
-                                    fontWeight="medium"
-                                    onClick={() => handlereRegister(student.id)}
-                                  >
-                                    Réinscrire
-                                  </MDTypography>
-                                </MDBox>
+                              action: ( 
+                                <MDTypography 
+                                  variant="caption" 
+                                  fontWeight="medium" 
+                                  color={student.reinscris ? "success" : "error"} 
+                                >
+                                  {student.reinscris ? 'Réinscrit' : 'Non Réinscrit'}
+                                </MDTypography>
                               ),
                             }))
                           }}

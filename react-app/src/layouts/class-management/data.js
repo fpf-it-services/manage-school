@@ -33,21 +33,6 @@ export const getClassesByLevel = async (levelId) => {
   }
 };
 
-export const getStudentsByClass = async (classId) => {
-  if (!classId) {
-    console.warn("Aucun ID de classe fourni");
-    return [];
-  }
-  try {
-    const response = await ClassService.getStudentsByClass(classId);
-    return response?.data || [];
-  } catch (error) {
-    console.error("Erreur lors de la récupération des élèves:", error);
-    return [];
-  }
-};
-
-
 export const uploadStudents = async (className, classSize, data, level, serie = null) => {
   if (!className || !classSize || !level) {
     console.error("Données manquantes pour la création de la classe");
@@ -56,17 +41,13 @@ export const uploadStudents = async (className, classSize, data, level, serie = 
 
   try {
     const classData = { nom: className, effectif_max: classSize, niveau_id: level, serie_id: serie };  
-    console.log(classData)
     const createClassResponse = await ClassService.createClass(classData);
-
     if (createClassResponse && createClassResponse.data) {
-
       const classId = createClassResponse.data;
       if (data.length !== 0) {
         await ClassService.uploadStudents(classId, { eleves: data });
         console.log("Fichier uploadé avec succès pour la classe:", classId);
       }
-
       return createClassResponse;
     } else {
       console.warn("Aucune réponse valide après la création de la classe");
@@ -75,7 +56,6 @@ export const uploadStudents = async (className, classSize, data, level, serie = 
     console.error("Erreur lors de la création de la classe et de l'upload des élèves:", error);
   }
 };
-
 
 export const getSeriesByLevel = async (levelId) => {
   try {
@@ -96,7 +76,6 @@ export const getClassesByLevelAndSerie = async (levelId, serieId, selectedYear) 
     return [];  
   }
 };
-
 
 export const getAcademicYears = async () => {
   try {

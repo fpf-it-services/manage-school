@@ -8,7 +8,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import useFinanceTable from "layouts/finances/data"; // Assurez-vous que ce chemin est correct
+import useFinanceTable from "layouts/finances/data"; 
 import FinanceDialog from "./financeDialog"; 
 
 const Finances = () => {

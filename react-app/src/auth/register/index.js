@@ -47,6 +47,7 @@ function Register() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    console.log("cccc")
 
     const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const phoneFormat = /^[0-9]{10,15}$/;
@@ -61,10 +62,10 @@ function Register() {
       return;
     }
 
-    if (inputs.password.trim().length < 8) {
-      setErrors({ ...errors, passwordError: true });
-      return;
-    }
+    // if (inputs.password.trim().length < 8) {
+    //   setErrors({ ...errors, passwordError: true });
+    //   return;
+    // }
 
     if (inputs.address.trim().length === 0) {
       setErrors({ ...errors, addressError: true });
@@ -89,31 +90,33 @@ function Register() {
     const formData = new FormData();
     formData.append("name", inputs.name);
     formData.append("email", inputs.email);
-    formData.append("password", inputs.password);
+    // formData.append("password", inputs.password);
     formData.append("address", inputs.address);
     formData.append("phone", inputs.phone);
     formData.append("logo", inputs.logo);
     
-    const myData = {
-      data: {
-        type: "users",
-        attributes: { ...inputs, password_confirmation: inputs.password },
-        relationships: {
-          roles: {
-            data: [
-              {
-                type: "roles",
-                id: "1",
-              },
-            ],
-          },
-        },
-      },
-    };
+    // const myData = {
+    //   data: {
+    //     type: "users",
+    //     attributes: { ...inputs, password_confirmation: inputs.password },
+    //     relationships: {
+    //       roles: {
+    //         data: [
+    //           {
+    //             type: "roles",
+    //             id: "1",
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   },
+    // };
+    console.log("cccc2")
 
     try {
       const response = await AuthService.register(formData);
-      authContext.login(response.access_token, response.refresh_token);
+
+      // authContext.login(response.access_token, response.refresh_token);
 
       setInputs({
         name: "",
@@ -196,7 +199,7 @@ function Register() {
                 </MDTypography>
               )}
             </MDBox>
-            <MDBox mb={2}>
+            {/* <MDBox mb={2}>
               <MDInput
                 type="password"
                 label="Mot de passe"
@@ -212,7 +215,7 @@ function Register() {
                   Le mot de passe doit contenir au moins 8 caractères
                 </MDTypography>
               )}
-            </MDBox>
+            </MDBox> */}
             <MDBox mb={2}>
               <MDInput
                 type="text"

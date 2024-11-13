@@ -35,7 +35,6 @@ const AcademicYearManagement = () => {
 
   const handleAddYear = async () => {
     try {
-      console.log({ date_debut, date_fin })
       await AcademicYearService.createAcademicYear({ date_debut, date_fin });
       setDateDebut("");
       setDateFin(""); 
@@ -48,7 +47,6 @@ const AcademicYearManagement = () => {
   const fetchAcademicYears = async () => {
     try {
       const response = await AcademicYearService.getAcademicYears(); 
-      console.log(response.data)
       setAcademicYears(response.data || []); 
     } catch (error) {
       console.error("Erreur lors de la récupération des années académiques :", error);
@@ -108,7 +106,7 @@ const AcademicYearManagement = () => {
                 boxShadow="0px 4px 8px rgba(0, 0, 0, 0.1)"  
                 backgroundColor="#f9f9f9" 
               >
-                <MDTypography variant="body2" fontSize="15px" fontWeight="medium">
+                <MDTypography variant="body2" fontSize="14px" fontWeight="medium">
                   {`Du ${yearItem.date_debut} au ${yearItem.date_fin}`}
                 </MDTypography>
               </MDBox>

@@ -1,10 +1,4 @@
 import Dashboard from "layouts/dashboard";
-
-import Notifications from "layouts/notifications";
-import Profile from "layouts/profile";
-import SignIn from "layouts/authentication/sign-in";
-import SignUp from "layouts/authentication/sign-up";
-
 import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import AddSchool from "layouts/add-school";
@@ -25,15 +19,6 @@ import SettingsFinances from "layouts/settings-finance";
 
 
 // const routes = [
-
-//   {
-//     type: "collapse",
-//     name: "Billing",
-//     key: "billing",
-//     icon: <Icon fontSize="small">receipt_long</Icon>,
-//     route: "/billing",
-//     component: <Billing />,
-//   },
 //   {
 //     type: "collapse",
 //     name: "Notifications",
@@ -146,6 +131,13 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">settings</Icon>,
       route: "/settings-management",
       component: <Settings />,
+    }, {
+      type: "examples",
+      name: "Pending Registration",
+      key: "pending-registration",
+      icon: <Icon fontSize="small">hourglass_empty</Icon>,
+      route: "/pending-registration",
+      component: <Dashboard />,
     }, {
       type: "collapse",
       name: "Programmer une session d'examen",

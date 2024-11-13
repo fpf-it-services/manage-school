@@ -298,8 +298,6 @@ function FormStudent() {
               </MDBox>
             </Grid>
           </Grid>
-
-          {/* Informations des tuteurs */}
           <MDBox mt={4}>
             <MDTypography variant="h6" fontWeight="medium">
               Informations du Tuteur 1
@@ -358,8 +356,6 @@ function FormStudent() {
               </Grid>
             </Grid>
           </MDBox>
-
-          {/* Informations du Tuteur 2 (facultatif) */}
           <MDBox mt={4}>
             <MDTypography variant="h6" fontWeight="medium">
               Informations du Tuteur 2 (facultatif)

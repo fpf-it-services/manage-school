@@ -17,13 +17,10 @@ const Settings = () => {
       <MDBox p={3}>
         <Card>
           <MDBox p={3}>
-            {/* Gestion des Années Académiques */}
             <AcademicYearManagement />
             <Divider />
-            {/* Gestion des Niveaux */}
             <LevelManagement />
             <Divider />
-            {/* Gestion des Séries */}
             <SeriesManagement />
           </MDBox>
         </Card>

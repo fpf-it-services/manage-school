@@ -7,7 +7,7 @@ class AuthService {
   };
 
   register = async (credentials) => {
-    const registerEndpoint = 'register';
+    const registerEndpoint = 'inscription/attente';
     return await HttpService.post(registerEndpoint, credentials);
   };
 
@@ -26,15 +26,15 @@ class AuthService {
     return await HttpService.post(resetPassword, credentials);
   }
 
-  getProfile = async(user) => {
+  getProfile = async(user) => { 
     let getProfile;
     user === 'admin' ? getProfile= 'me' : getProfile= 'ecole/me'
     return await HttpService.get(getProfile);
   }
 
   updateProfile = async (newInfo) => {
-    const updateProfile = "me";
-    return await HttpService.patch(updateProfile, newInfo);
+    const updateProfile = "update-profile";
+    return await HttpService.put(updateProfile, newInfo);
   }
 }
 

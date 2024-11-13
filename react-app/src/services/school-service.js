@@ -24,6 +24,13 @@ class SchoolService {
     const endpoint = `ecoles/${schoolId}`;
     return await HttpService.delete(endpoint);
   };
+
+  getSchoolsAndStudentsAndClassesWithYears = async () => {
+    const endpoint = `ecoles_annees_classes_eleves`;
+    return await HttpService.get(endpoint);
+  };
 }
+
+
 
 export default new SchoolService();

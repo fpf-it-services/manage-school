@@ -44,10 +44,9 @@ class LevelService {
       return [];
     }
     try {
-      // const endpoint = serieId ? `getClassesByLevelAndSerie?niveau_id=${levelId}&serie_id=${serieId}&annee_id=${selectedYear}` : `getClassesByLevelAndSerie?niveau_id=${levelId}&annee_id=${selectedYear}`; 
-      const endpoint = `ecole/classes`
+      const endpoint = serieId ? `getClassesByLevelAndSerie?niveau_id=${levelId}&serie_id=${serieId}&annee_id=${selectedYear}` : `getClassesByLevelAndSerie?niveau_id=${levelId}&annee_id=${selectedYear}`; 
+      // const endpoint = `ecole/classes`
       const response = await HttpService.get(endpoint);
-      console.log(response)
       return response?.data || [];
     } catch (error) {
       console.error("Erreur lors de la récupération des classes:", error);
