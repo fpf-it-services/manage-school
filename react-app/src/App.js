@@ -142,8 +142,6 @@ export default function App() {
         {/* <meta name="twitter:image" content="https://example.com/image-gestion-ecoles.jpg" /> */}
         <meta property="og:title" content="Application de gestion d'écoles" />
         <meta property="og:type" content="article" />
-        {/* <meta property="og:url" content="https://www.schoolapp.com" /> */}
-        {/* <meta property="og:image" content="https://example.com/image-gestion-ecoles.jpg" /> */}
         <meta
           property="og:description"
           content="Une application complète pour la gestion des écoles, facilitant la gestion des classes et des emplois du temps."
@@ -194,7 +192,7 @@ export default function App() {
             key="user-management"
           />
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<Navigate to="/mes-classes" />} />
         </Routes>
       </ThemeProvider>
     </>

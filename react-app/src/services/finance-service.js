@@ -9,16 +9,19 @@ class FinanceService {
 
   // Mettre à jour un niveau financier
   updateFinance = async (financeId, financeData) => {
+    
     const endpoint = `ecole/montants/${financeId}`;
     return await HttpService.put(endpoint, financeData);
   }
 
   updateScolarite = async (financeId, scolariteData) => {
+    console.log(scolariteData)
     const endpoint = `ecole/montants_frais/${financeId}`;
     return await HttpService.put(endpoint, scolariteData);
   }
 
   saveFees = async (financeData) => {
+    console.log(financeData)
     const endpoint = `ecole/montants`; 
     return await HttpService.post(endpoint, financeData);
   };

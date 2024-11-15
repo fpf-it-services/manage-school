@@ -15,7 +15,11 @@ use App\Http\Resources\EcoleAnneeClasseEleveResourceEcole;
 
 class EcoleController extends Controller
 {
-
+    /**
+     * Récupère et affiche toutes les écoles.
+     *
+     * @return \Illuminate\Http\JsonResponse La liste des écoles sous forme de JSON.
+     */
     public function index()
     {
         return response()->json([
@@ -24,23 +28,34 @@ class EcoleController extends Controller
         ]);
     }
 
+    /**
+     * Enregistre une nouvelle école dans la base de données.
+     *
+     * @param EcoleStoreRequest $request La requête validée contenant les données de l'école.
+     * @return \Illuminate\Http\JsonResponse L'école créée sous forme de JSON.
+     */
     public function store(EcoleStoreRequest $request)
     {
+        // Initialise le chemin du logo à null
         $logoPath = null;
+
+        // Si un fichier de logo est présent dans la requête, le sauvegarde dans le dossier "logos" dans le stockage public.
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('logos', 'public');
         }
+
+        // Crée une nouvelle école avec les données fournies et le chemin du logo (si disponible).
         $ecole = Ecole::create([
             'nom' => $request->nom,
             'email' => $request->email,
-            'password' => bcrypt($request->password ?? "password"),
+            'password' => bcrypt($request->password ?? "password"),  // Hash du mot de passe par défaut s'il n'est pas fourni
             'adresse' => $request->adresse,
             'telephone' => $request->contact,
             'logo' => $logoPath,
-            // 'capacite' => $request->capacite ?? 0,
-            'centre_de_composition' => $request->centre_de_composition == "true",
+            'centre_de_composition' => $request->centre_de_composition == "true",  // Convertit en booléen
         ]);
 
+        // Retourne la nouvelle école créée en format JSON.
         return response()->json([
             "success" => true,
             "data" => $ecole
@@ -48,7 +63,10 @@ class EcoleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Affiche les informations d'une école spécifique.
+     *
+     * @param Ecole $ecole L'école à afficher.
+     * @return \Illuminate\Http\JsonResponse Les informations de l'école.
      */
     public function show(Ecole $ecole)
     {
@@ -59,19 +77,28 @@ class EcoleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour les informations d'une école existante.
+     *
+     * @param UpdateEcoleRequest $request La requête validée contenant les nouvelles données.
+     * @return \Illuminate\Http\JsonResponse Les informations de l'école mise à jour.
      */
     public function update(UpdateEcoleRequest $request)
     {
+        // Récupère l'école actuellement authentifiée.
         $ecole = auth()->user();
+        
+        // Initialise le chemin du logo actuel de l'école.
         $logoPath = $ecole->logo;
+
+        // Si un nouveau fichier de logo est présent, supprime l'ancien logo et sauvegarde le nouveau.
         if ($request->hasFile('logo')) {
-            if($logoPath  !== null){
+            if ($logoPath !== null) {
                 Storage::disk("public")->delete($logoPath);
             }
             $logoPath = $request->file('logo')->store('logos', 'public');
         }
 
+        // Met à jour les données de l'école avec les informations fournies dans la requête.
         $ecole->update([
             'nom' => $request->nom,
             'email' => $request->email,
@@ -79,9 +106,10 @@ class EcoleController extends Controller
             'adresse' => $request->adresse,
             'telephone' => $request->contact ?? $ecole->telephone,
             'logo' => $logoPath,
-            // 'capacite' => $request->capacite ?? $ecole->capacite,
             'centre_de_composition' => $request->centre_de_composition ?? $ecole->centre_de_composition,
         ]);
+
+        // Retourne l'école mise à jour en format JSON.
         return response()->json([
             "success" => true,
             "data" => new EcoleResource($ecole)
@@ -89,61 +117,57 @@ class EcoleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime une école de la base de données.
+     *
+     * @param Ecole $ecole L'école à supprimer.
+     * @return \Illuminate\Http\JsonResponse Réponse vide en cas de succès.
      */
     public function destroy(Ecole $ecole)
     {
+        // Supprime l'école spécifiée de la base de données.
         $ecole->delete();
-        return response()->json([
 
-        ],204);
+        return response()->json([], 204);
     }
+
+    /**
+     * Récupère les élèves et les classes associés à une école spécifique.
+     *
+     * @param Ecole $ecole L'école dont on souhaite obtenir les informations.
+     * @return \Illuminate\Http\JsonResponse La liste des élèves et classes de l'école.
+     */
     public function ecoles_eleves(Ecole $ecole)
     {
         return response()->json([
             "success" => true,
-            "data" => EcoleEleveResource::collection(Ecole::with(["eleves","classes"])->get())
+            "data" => EcoleEleveResource::collection(Ecole::with(["eleves", "classes"])->get())
         ]);
     }
-    // public function getEcolesAnneesClassesEleves(){
-    //     $annees = Annee::all();
-    //     session()->put("annees",$annees);
-    //     $ecoles = Ecole::with(["classes.eleves"])->get();
-    //     $es = collect();
-    //     foreach($ecoles as $ecole){
-    //         $ecole->annees = session()->get("annees");
-    //         foreach($ecole->annees as $annee){
-    //             $annee->classes = $this->getClasses($ecole,$annee);
-    //         }
-    //         //return $ecoles->first()->annees->first();
-    //     }
-    //     //return $es->first();
-    //     return $ecoles->first()->annees->first();
-    //     session()->forget("annees");
-    //     return response()->json([
-    //         "success" => true,
-    //         "data" => EcoleAnneeClasseEleveResourceEcole::collection($ecoles)
-    //     ]);
-    // }
+
+    /**
+     * Récupère les écoles avec leurs années académiques, classes, et élèves.
+     *
+     * @return \Illuminate\Http\JsonResponse La liste structurée des écoles, années, classes et élèves.
+     */
     public function getEcolesAnneesClassesEleves()
     {
         // Récupère toutes les années académiques
         $annees = Annee::all();
 
-        // Charge toutes les écoles avec leurs classes et élèves
+        // Récupère toutes les écoles avec leurs classes et leurs élèves associés
         $ecoles = Ecole::with(["classes.eleves"])->get();
 
-        // Structure de la réponse JSON
+        // Structure de la réponse en JSON
         $responseData = $ecoles->map(function ($ecole) use ($annees) {
             return [
                 'ecole_id' => $ecole->id,
                 'nom' => $ecole->nom,
                 'annees' => $annees->map(function ($annee) use ($ecole) {
-                    // Récupère les classes de l'école pour l'année académique courante
+                    // Récupère les classes de l'école pour l'année académique en cours
                     $classes = $this->getClasses($ecole, $annee);
                     return [
                         'annee_id' => $annee->id,
-                        'annee_academique' => $annee->annee_academique,  // Utilise l'année académique ici
+                        'annee_academique' => $annee->annee_academique,
                         'classes' => $classes->map(function ($classe) {
                             return [
                                 'classe_id' => $classe->id,
@@ -169,9 +193,17 @@ class EcoleController extends Controller
         ]);
     }
 
-
-    private function getClasses($ecole,$annee){
-        return $ecole->classes->filter(function($classe) use ($annee){
+    /**
+     * Filtre et retourne les classes d'une école pour une année académique spécifique.
+     *
+     * @param Ecole $ecole L'école pour laquelle on récupère les classes.
+     * @param Annee $annee L'année académique pour le filtrage des classes.
+     * @return \Illuminate\Support\Collection Les classes filtrées.
+     */
+    private function getClasses($ecole, $annee)
+    {
+        // Filtre les classes créées avant la fin de l'année académique spécifiée.
+        return $ecole->classes->filter(function ($classe) use ($annee) {
             return $classe->created_at->isBefore($annee->date_fin);
         });
     }

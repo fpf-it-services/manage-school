@@ -148,11 +148,11 @@ export default function FinanceTable({ onFinanceSelect }) {
           frais_reinscription: finance.isEditing ? (
             <MDInput
               type="number"
-              value={finance.montants[0].frais_formation}
+              value={finance.montants[0].frais_reinscription}
               onChange={(e) => handleInputChange(finance.montants[0].id, "frais_reinscription", e.target.value)}
             />
           ) : (
-            finance.montants[0].frais_formation
+            finance.montants[0].frais_reinscription
           ),
           frais_formation: (
             <MDTypography variant="caption" fontWeight="medium">

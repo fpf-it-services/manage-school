@@ -29,6 +29,9 @@ class EditFraisMontantRequest extends FormRequest
             "tranche2" => ["required","integer","min:0"],
             "tranche3" => ["required","integer","min:0"],
             // "avant_la_rentree" => [Rule::in([true])],
+            "echeance_tranche1" => ["required", "date"],
+            "echeance_tranche2" => ["required", "date"],
+            "echeance_tranche3" => ["required", "date"],
             "somme_tranches" => [Rule::in([0])],
         ];
     }
@@ -41,7 +44,7 @@ class EditFraisMontantRequest extends FormRequest
     public function prepareForvalidation(){
         $this->merge([
             "somme_tranches" => $this->tranche1 + $this->tranche2 + $this->tranche3 - $this->frais_formation,
-            "avant_la_rentree" => Annee::where("id",$this->route("montant")->id)->first()->date_debut?->isAfter(now()),
+            // "avant_la_rentree" => Annee::where("id",$this->route("montant")->id)->first()->date_debut?->isAfter(now()),
         ]);
     }
 }

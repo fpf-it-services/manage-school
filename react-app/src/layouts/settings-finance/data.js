@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead, TableFooter, TableContainer, Paper, } from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableFooter, TableContainer, Paper } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
@@ -21,7 +21,7 @@ export default function LevelsTable() {
     frais_inscription: 0,
     frais_reinscription: 0,
     frais_annexe: 0,
-    tranche: [0, 0, 0],
+    tranche: [{ montant: 0, dueDate: "" }, { montant: 0, dueDate: "" }, { montant: 0, dueDate: "" }],
     niveau_id: null,
   });
 
@@ -43,8 +43,8 @@ export default function LevelsTable() {
         const response = await serieService.getSeries();
         setSeries(response.data || []);
       } catch (error) {
-        console.error("Erreur lors de la récupération des series", error);
-        setError("Une erreur est survenue lors de la récupération des series.");
+        console.error("Erreur lors de la récupération des séries", error);
+        setError("Une erreur est survenue lors de la récupération des séries.");
       } finally {
         setLoading(false);
       }
@@ -61,7 +61,13 @@ export default function LevelsTable() {
   const closeDialog = () => {
     setOpenDialog(false);
     setSelectedLevel(null);
-    setFees({ frais_formation: 0, frais_inscription: 0, frais_reinscription: 0, frais_annexe: 0, tranche: [0, 0, 0] });
+    setFees({
+      frais_formation: 0,
+      frais_inscription: 0,
+      frais_reinscription: 0,
+      frais_annexe: 0,
+      tranche: [{ montant: 0, dueDate: "" }, { montant: 0, dueDate: "" }, { montant: 0, dueDate: "" }],
+    });
   };
 
   const handleFeeChange = (field, value) => {
@@ -72,39 +78,34 @@ export default function LevelsTable() {
     }));
   };
 
-  const handleTrancheChange = (index, value) => {
+  const handleTrancheChange = (index, field, value) => {
     setFees((prevFees) => {
       const newTranches = [...prevFees.tranche];
-      newTranches[index] = Number(value);
+      newTranches[index][field] = field === "montant" ? Number(value) : value;
       return { ...prevFees, tranche: newTranches, niveau_id: selectedLevel.id, serie_id: serie };
     });
   };
 
   const isTotalValid = () => {
-    const totalTranches = fees.tranche.reduce((sum, tranche) => sum + tranche, 0);
+    const totalTranches = fees.tranche.reduce((sum, tranche) => sum + tranche.montant, 0);
     return totalTranches === fees.frais_formation && fees.frais_formation > 0;
   };
 
   const handleChange = (value) => {
-    setSerie(value)
+    setSerie(value);
   };
 
-
   const secondCycleChosen = () => {
-    if (["2E", "2e", "Seconde", "SECONDE", "Premiere", "PREMIERE", "Première", "1ERE", "TERMINALE", "Terminale", "TLE"].includes(selectedLevel.niveau)) {
-      return true;
-    } 
-    return false;
-  }
+    return ["2E", "2e", "Seconde", "SECONDE", "Premiere", "PREMIERE", "Première", "1ERE", "TERMINALE", "Terminale", "TLE"].includes(selectedLevel?.niveau);
+  };
 
   const saveFees = async () => {
     try {
       await FinanceService.saveFees(fees);
+      console.log(fees)
       closeDialog();
-      // alert("Frais enregistrés avec succès !");
     } catch (error) {
       console.error("Erreur lors de l'enregistrement des frais", error);
-      // alert("Une erreur est survenue lors de l'enregistrement des frais.");
     }
   };
 
@@ -116,25 +117,16 @@ export default function LevelsTable() {
       <MDBox display="flex" justifyContent="center" padding={4}>
         <TableContainer component={Paper} variant="outlined">
           <Table>
-            {/* <TableHead>
-              <TableRow>
-                <TableCell style={{ border: "1px solid #ddd", width: '10%' }}><strong>#</strong></TableCell>
-                <TableCell style={{ border: "1px solid #ddd", width: '50%' }}><strong>Niveau</strong></TableCell>
-                <TableCell style={{ border: "1px solid #ddd" }}><strong>Action</strong></TableCell>
-              </TableRow>
-            </TableHead> */}
             <TableBody>
               {levels.map((level, idx) => (
                 <TableRow key={level.id}>
-                    <TableCell style={{ border: "1px solid #ddd", width: '10%' }}>{idx + 1}</TableCell>
-                    <TableCell style={{ border: "1px solid #ddd", width: '50%' }}>{level.niveau}</TableCell>
-                    <TableCell style={{ border: "1px solid #ddd" }}>
-                        <Button onClick={() => handleAddClick(level)} color="primary">
-                            Ajouter
-                        </Button>
-                    </TableCell>
+                  <TableCell style={{ border: "1px solid #ddd", width: '10%' }}>{idx + 1}</TableCell>
+                  <TableCell style={{ border: "1px solid #ddd", width: '50%' }}>{level.niveau}</TableCell>
+                  <TableCell style={{ border: "1px solid #ddd" }}>
+                    <Button onClick={() => handleAddClick(level)} color="primary">Ajouter</Button>
+                  </TableCell>
                 </TableRow>
-            ))}
+              ))}
             </TableBody>
             <TableFooter>
               <TableRow>
@@ -153,70 +145,39 @@ export default function LevelsTable() {
         <DialogTitle>Définir les frais pour le niveau {selectedLevel?.niveau}</DialogTitle>
         <DialogContent sx={{ width: "600px", maxWidth: "100%" }}>
           <MDBox display="flex" flexDirection="column" marginBlockStart="20px" gap={2}>
-            <MDInput
-              label="Frais de Scolarité"
-              type="number"
-              value={fees.frais_formation}
-              onChange={(e) => handleFeeChange("frais_formation", e.target.value)}
-            />
-            <MDInput
-              label="Frais d'Inscription"
-              type="number"
-              value={fees.frais_inscription}
-              onChange={(e) => handleFeeChange("frais_inscription", e.target.value)}
-            />
-            <MDInput
-              label="Frais de Reinscription"
-              type="number"
-              value={fees.frais_reinscription}
-              onChange={(e) => handleFeeChange("frais_reinscription", e.target.value)}
-            />
-            <MDInput
-              label="Frais Annexes"
-              type="number"
-              value={fees.frais_annexe}
-              onChange={(e) => handleFeeChange("frais_annexe", e.target.value)}
-            />
-            { openDialog ? secondCycleChosen() ? 
-              <select
-                name="serie"
-                value={serie}
-                onChange={(e) => handleChange(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px' }}
-              >
-                {
-                  series.length > 0 ? (
-                    series.map((serie) => (
-                      <option key={serie.id} value={serie.id}>{serie.serie}</option>
-                    ))
-                  ) : (
-                    <option value="" disabled>Pas de séries disponibles</option>
-                  )
-                }
-              </select> : <></> : <></> 
-            }
+            <MDInput label="Frais de Scolarité" type="number" value={fees.frais_formation} onChange={(e) => handleFeeChange("frais_formation", e.target.value)} />
+            <MDInput label="Frais d'Inscription" type="number" value={fees.frais_inscription} onChange={(e) => handleFeeChange("frais_inscription", e.target.value)} />
+            <MDInput label="Frais de Reinscription" type="number" value={fees.frais_reinscription} onChange={(e) => handleFeeChange("frais_reinscription", e.target.value)} />
+            <MDInput label="Frais Annexes" type="number" value={fees.frais_annexe} onChange={(e) => handleFeeChange("frais_annexe", e.target.value)} />
+
+            {openDialog && secondCycleChosen() && (
+              <select name="serie" value={serie} onChange={(e) => handleChange(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px' }}>
+                {series.length > 0 ? (
+                  series.map((serie) => <option key={serie.id} value={serie.id}>{serie.serie}</option>)
+                ) : (
+                  <option value="" disabled>Pas de séries disponibles</option>
+                )}
+              </select>
+            )}
 
             <Table>
               <TableBody>
                 {fees.tranche.map((tranche, index) => (
                   <TableRow key={index}>
-                    <TableCell style={{ border: "1px solid #ddd", textAlign: "center" }}>
-                      Tranche {index + 1}
+                    <TableCell style={{ border: "1px solid #ddd", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>Tranche {index + 1}</TableCell>
+                    <TableCell style={{ border: "1px solid #ddd", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>
+                      <MDInput type="number" value={tranche.montant} onChange={(e) => handleTrancheChange(index, "montant", e.target.value)} />
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #ddd", textAlign: "center" }}>
-                      <MDInput
-                        type="number"
-                        value={tranche}
-                        onChange={(e) => handleTrancheChange(index, e.target.value)}
-                      />
+                    <TableCell style={{ border: "1px solid #ddd", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>
+                      <MDInput type="date" value={tranche.dueDate} onChange={(e) => handleTrancheChange(index, "dueDate", e.target.value)} />
                     </TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
                   <TableCell style={{ border: "1px solid #ddd", textAlign: "center" }}>Total</TableCell>
-                  <TableCell style={{ border: "1px solid #ddd", textAlign: "center" }}>
+                  <TableCell style={{ border: "1px solid #ddd", textAlign: "center" }} colSpan={2}>
                     <MDTypography color={isTotalValid() ? "success" : "error"}>
-                      {fees.tranche.reduce((sum, tranche) => sum + tranche, 0)} / {fees.frais_formation}
+                      {fees.tranche.reduce((sum, tranche) => sum + tranche.montant, 0)} / {fees.frais_formation}
                     </MDTypography>
                   </TableCell>
                 </TableRow>
@@ -226,9 +187,7 @@ export default function LevelsTable() {
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDialog}>Annuler</Button>
-          <Button color="primary" disabled={!isTotalValid()} onClick={saveFees}>
-            Enregistrer
-          </Button>
+          <Button onClick={saveFees} disabled={!isTotalValid()}>Enregistrer</Button>
         </DialogActions>
       </Dialog>
     </>
