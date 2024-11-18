@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Ecole;
 use App\Models\Annee;
+use App\Models\Niveau;
 // use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EcoleResource;
@@ -141,6 +142,25 @@ class EcoleController extends Controller
         return response()->json([
             "success" => true,
             "data" => EcoleEleveResource::collection(Ecole::with(["eleves", "classes"])->get())
+        ]);
+    }
+    public function getLevels(){
+        $annee_courante = Annee::orderBy("id","desc")->first("id");
+        
+        if($annee_courante === null)
+            return response()->json([
+                "success" => false,
+                "message" => "Aucune année définie",
+            ],404);
+        $ecoles = Ecole::all();
+        foreach($ecoles as $ecole){
+            $ecole->niveaux = Niveau::whereHas("montants" , function($query) use ($annee_courante,$ecole){
+                $query->where("ecole_id", "=", $ecole->id)->where("annee_id",$annee_courante->id);
+            })->get();
+        }
+        return response()->json([
+            "success" => true,
+            "data" => $ecoles
         ]);
     }
 

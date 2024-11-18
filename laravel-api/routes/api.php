@@ -44,6 +44,12 @@ Route::prefix("v2")->group(function(){
         Route::post("montants",[TransactionController::class, "save"]);
         Route::get("montants/statistiques/{eleve}",[TransactionController::class, "stats_eleves"]);
         Route::post("inscription/attente",[InscriptionEnAttente::class, "register"]);
+
+
+        Route::post("inscription/attente/eleve",[InscriptionEnAttente::class, "register_student"]);
+        Route::get("niveaux-ecoles",[EcoleController::class, "getLevels"]);
+
+
         Route::prefix("ecole")->group(function () {
             //Route::post('login', [AuthController::class, 'login_ecole']);
             Route::group(['middleware' => ['auth:ecole']], function () {

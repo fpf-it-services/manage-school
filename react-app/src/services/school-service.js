@@ -13,6 +13,13 @@ class SchoolService {
     return await HttpService.get(endpoint);
   };
 
+  getSchoolsAndLevels = async () => {
+    const endpoint = `niveaux-ecoles`;
+    return await HttpService.get(endpoint);
+  };
+
+  
+
   // Créer une nouvelle école
   createSchool = async (schoolData) => {
     const endpoint = 'ecoles';

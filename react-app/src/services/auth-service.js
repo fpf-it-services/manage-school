@@ -7,7 +7,8 @@ class AuthService {
   };
 
   depotDossier = async (payload) => {
-    const loginEndpoint = 'login';
+    console.log(payload)
+    const loginEndpoint = 'inscription/attente/eleve';
     return await HttpService.post(loginEndpoint, payload);
   };
 

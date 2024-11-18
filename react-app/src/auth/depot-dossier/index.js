@@ -12,6 +12,9 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
+import { getSchoolsAndLevels } from "./data";
+import AuthService from "services/auth-service";
+import { CircularProgress } from "@mui/material";
 
 function DepotDossier() {
   const [inputs, setInputs] = useState({
@@ -27,14 +30,18 @@ function DepotDossier() {
     guardian1Name: "",
     guardian1Phone: "",
     guardian1Email: "",
+    adresse1: "",
     guardian2Name: "",
     guardian2Phone: "",
     guardian2Email: "",
+    adresse2: "",
     prevTranscript: null,
     examTranscript: null,
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [data, setData] = useState([]);
+  const [levels, setLevels] = useState([]);
   const [errors, setErrors] = useState({});
 
   const [enabledFields, setEnabledFields] = useState({
@@ -54,12 +61,23 @@ function DepotDossier() {
     }
   }, [alert]);
 
+  useEffect(async () => {
+    const ecoles = await getSchoolsAndLevels()
+    setData(ecoles)
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     setInputs({ ...inputs, [name]: type === "file" ? files[0] : value });
 
     if (name === "school" && value) {
       setEnabledFields({ ...enabledFields, level: true });
+
+        
+        const selectedSchoolData = data.find(school => school.id === e.target.value);
+        setLevels(selectedSchoolData.niveaux)
+      
+    
     }
 
     if (name === "level" && value) {
@@ -86,6 +104,7 @@ function DepotDossier() {
       guardian1NameError: false,
       guardian1PhoneError: false,
       guardian1EmailError: false,
+      adresse1Error: false,
       photoError: false,
       prevTranscriptError: false,
       examTranscriptError: false,
@@ -96,6 +115,13 @@ function DepotDossier() {
       setErrorMessage("Le nom est requis.");
       hasErrors = true;
     }
+
+    if (inputs.adresse1.trim().length === 0) {
+      newErrors.adresse1Error = true;
+      setErrorMessage("L'adresse est requis.");
+      hasErrors = true;
+    }
+
 
     if (inputs.lastName.trim().length === 0) {
       newErrors.firstNameError = true;
@@ -205,11 +231,13 @@ function DepotDossier() {
     formData.append("nom_tuteur1", inputs.guardian1Name);
     formData.append("telephone_tuteur1", inputs.guardian1Phone);
     formData.append("email_tuteur1", inputs.guardian1Email);
+    formData.append("adresse_tuteur1", inputs.adresse1);
 
     if (inputs.guardian2Name) {
       formData.append("nom_tuteur2", inputs.guardian2Name);
       formData.append("telephone_tuteur2", inputs.guardian2Phone);
       formData.append("email_tuteur2", inputs.guardian2Email);
+      formData.append("adresse_tuteur2", inputs.adresse2);
     }
     if (inputs.prevTranscript) {
       formData.append("releve_de_notes", inputs.prevTranscript);
@@ -222,7 +250,8 @@ function DepotDossier() {
     }
 
     try {
-      // const response = await AuthService.depotDossier(formData);
+      console.log("cc")
+      const response = await AuthService.depotDossier(formData);
       setAlert({
         open: true,
         message: "Dossier envoyé avec succès !",
@@ -304,9 +333,12 @@ function DepotDossier() {
                       style={{ borderRadius: "8px", height: "45px" }}
                       disabled={!enabledFields.school}
                     >
-                      <MenuItem value="Ecole1">École 1</MenuItem>
-                      <MenuItem value="Ecole2">École 2</MenuItem>
-                      <MenuItem value="Ecole3">École 3</MenuItem>
+                      {data.map((school) => (
+                    <MenuItem key={school.id} value={school.id}>
+                      {school.nom}
+                    </MenuItem>
+                  ))}
+                      
                     </Select>
                   </FormControl>
                 </MDBox>
@@ -320,13 +352,11 @@ function DepotDossier() {
                       style={{ borderRadius: "8px", height: "45px" }}
                       disabled={!enabledFields.level}
                     >
-                      <MenuItem value="6e">6e</MenuItem>
-                      <MenuItem value="5e">5e</MenuItem>
-                      <MenuItem value="4e">4e</MenuItem>
-                      <MenuItem value="3e">3e</MenuItem>
-                      <MenuItem value="2nde">2nde</MenuItem>
-                      <MenuItem value="1ère">1ère</MenuItem>
-                      <MenuItem value="Tle">Terminale</MenuItem>
+                      {levels.map((level) => (
+                    <MenuItem key={level.id} value={level.id}>
+                      {level.niveau}
+                    </MenuItem>
+                  ))}
                     </Select>
                   </FormControl>
                 </MDBox>
@@ -418,6 +448,16 @@ function DepotDossier() {
                     disabled={!enabledFields.remaining}
                   />
                 </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="file"
+                    label="Acte de naissance"
+                    fullWidth
+                    name="birthCertificate"
+                    onChange={handleChange}
+                    disabled={!enabledFields.remaining}
+                  />
+                </MDBox>
               </Grid>
 
               <Grid item xs={12} md={6}>
@@ -460,6 +500,18 @@ function DepotDossier() {
                 <MDBox mb={2}>
                   <MDInput
                     type="text"
+                    label="Adresse Tuteur 1"
+                    fullWidth
+                    name="adresse1"
+                    value={inputs.adresse1}
+                    onChange={handleChange}
+                    error={errors.adresse1Error}
+                    disabled={!enabledFields.remaining}
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    type="text"
                     label="Nom Tuteur 2"
                     fullWidth
                     name="guardian2Name"
@@ -492,17 +544,19 @@ function DepotDossier() {
                 </MDBox>
                 <MDBox mb={2}>
                   <MDInput
-                    type="file"
-                    label="Acte de naissance"
+                    type="text"
+                    label="Adresse Tuteur 2"
                     fullWidth
-                    name="birthCertificate"
+                    name="adresse1"
+                    value={inputs.adresse2}
                     onChange={handleChange}
                     disabled={!enabledFields.remaining}
                   />
                 </MDBox>
+                
 
                 {/* Relevés */}
-                <MDBox mb={2}>
+                {/* <MDBox mb={2}>
                   <MDInput
                     type="file"
                     label="Acte de naissance"
@@ -511,7 +565,7 @@ function DepotDossier() {
                     onChange={handleChange}
                     disabled={!enabledFields.remaining}
                   />
-                </MDBox>
+                </MDBox> */}
                 <MDBox mb={2}>
                   <MDInput
                     type="file"

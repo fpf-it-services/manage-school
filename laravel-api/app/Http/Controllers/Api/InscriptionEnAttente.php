@@ -7,6 +7,10 @@ use Mail;
 use App\Mail\InscriptionEnAttente as InscriptionEnAttenteMail;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\AddEleveEnAttenteRequest;
+use App\Models\EleveEnAttente;
+use App\Mail\NotificationMailInscriptionAttente;
+use App\Models\Ecole;
 
 class InscriptionEnAttente extends Controller
 {
@@ -33,5 +37,45 @@ class InscriptionEnAttente extends Controller
         return response()->json([
             'success' => true,
         ], 200);
+    }
+    public function register_student(AddEleveEnAttenteRequest $request){
+        try {
+            $photo = $request->file("photo")->store("eleves_attente/photos","public");
+            $releve_de_notes = $request->file("releve_de_notes")?->store("eleves_attente/releve_de_notes","public");
+            $releve_de_notes_examen = $request->file("releve_de_notes_examen")?->store("eleves_attente/releve_de_notes_examen","public");
+            $acte_de_naissance = $request->file("acte_de_naissance")->store("eleves_attente/acte_de_naissance","public");
+            $eleve = EleveEnAttente::create([
+                "niveau_id" => $request->niveau,
+                "ecole_id" => $request->ecole,
+                "nom" => $request->nom,
+                "prenoms" => $request->prenoms,
+                "date_naissance" => $request->date_de_naissance,
+                "lieu_naissance" => $request->lieu_de_naissance,
+                "nationalite" => $request->nationalite,
+                "sexe" => $request->sexe,
+                "photo" => $photo,               //---------------
+                "nom_complet_tuteur1" => $request->nom_tuteur1,
+                "telephone_tuteur1" => $request->telephone_tuteur1,
+                "adresse_tuteur1" => $request->adresse_tuteur1,
+                "email_tuteur1" => $request->email_tuteur1,
+                "nom_complet_tuteur2" => $request->nom_tuteur2,
+                "telephone_tuteur2" => $request->telephone_tuteur2,
+                "adresse_tuteur2" => $request->adresse_tuteur2,
+                "email_tuteur2" => $request->email_tuteur2,
+                "releve_de_notes" => $releve_de_notes,
+                "releve_de_notes_examen" => $releve_de_notes_examen,
+                "acte_de_naissance" => $acte_de_naissance
+            ]);
+
+            $mailData = [
+                "email" => $eleve->email_tuteur1,
+                "password" => "password",   // Récupère l'adresse de l'utilisateur,
+                "ecole" => Ecole::where("id",$request->ecole)->first()->nom
+            ];
+            Mail::to($eleve->email_tuteur1)->send(new NotificationMailInscriptionAttente($mailData));
+            return response()->json([], 201);
+        } catch (\Exception $th) {
+            return response()->json(["success" => false,"error" => "Une erreur est survenue"], 500);
+        }
     }
 }
