@@ -16,6 +16,8 @@ import ClassManagement from "layouts/class-management";
 import Paiement from "layouts/payment";
 import Historique from "layouts/history";
 import SettingsFinances from "layouts/settings-finance";
+import DepotDossier from "auth/depot-dossier";
+import TransactionHistory from "layouts/history-transaction";
 
 
 // const routes = [
@@ -106,7 +108,14 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">person</Icon>,
       route: "/public/voir-historique",
       component: <Historique />,
-    }
+    }, {
+      type: "auth",
+      name: "Depot de Dossier",
+      key: "depot_de_dossier",
+      icon: <Icon fontSize="small">folder</Icon>,
+      route: "/auth/depot-de-dossier",
+      component: <DepotDossier />,
+    },
   ];
 
   const adminRoutes = [
@@ -138,6 +147,13 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">hourglass_empty</Icon>,
       route: "/pending-registration",
       component: <Dashboard />,
+    }, {
+      type: "examples",
+      name: "Historique des transactions",
+      key: "history-transaction",
+      icon: <Icon fontSize="small">hourglass_empty</Icon>,
+      route: "/history-transaction",
+      component: <TransactionHistory />,
     }, {
       type: "collapse",
       name: "Programmer une session d'examen",

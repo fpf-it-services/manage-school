@@ -6,6 +6,11 @@ class AuthService {
     return await HttpService.post(loginEndpoint, payload);
   };
 
+  depotDossier = async (payload) => {
+    const loginEndpoint = 'login';
+    return await HttpService.post(loginEndpoint, payload);
+  };
+
   register = async (credentials) => {
     const registerEndpoint = 'inscription/attente';
     return await HttpService.post(registerEndpoint, credentials);

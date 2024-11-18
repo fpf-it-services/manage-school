@@ -22,6 +22,7 @@ import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import { Helmet } from "react-helmet";
 import func_routes from "routes";
+import DepotDossier from "auth/depot-dossier";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -169,6 +170,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/auth/login" />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
+          <Route path="/auth/depot-de-dossier" element={<DepotDossier />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
           <Route
