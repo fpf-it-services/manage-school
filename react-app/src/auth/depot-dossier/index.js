@@ -62,9 +62,40 @@ function DepotDossier() {
   }, [alert]);
 
   useEffect(async () => {
-    const ecoles = await getSchoolsAndLevels()
-    setData(ecoles)
+    const ecoles = await getSchoolsAndLevels();
+    setData(ecoles);
   }, []);
+
+  const validateAllInputs = (updatedInputs) => {
+    const requiredFields = [
+      "school",
+      "level",
+      "lastName",
+      "firstName",
+      "birthDate",
+      "birthPlace",
+      "nationality",
+      "gender",
+      "photo",
+      "guardian1Name",
+      "guardian1Phone",
+      "guardian1Email",
+      "adresse1",
+    ];
+
+    const allValid = requiredFields.every((field) => updatedInputs[field]?.trim().length > 0);
+
+    const isPhotoValid =
+      updatedInputs.photo && ["image/jpeg", "image/png"].includes(updatedInputs.photo.type);
+    const isPrevTranscriptValid =
+      !updatedInputs.prevTranscript || updatedInputs.prevTranscript.type === "application/pdf";
+    const isExamTranscriptValid =
+      !updatedInputs.examTranscript || updatedInputs.examTranscript.type === "application/pdf";
+
+    setIsSubmitDisabled(
+      !(allValid && isPhotoValid && isPrevTranscriptValid && isExamTranscriptValid)
+    );
+  };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -73,11 +104,8 @@ function DepotDossier() {
     if (name === "school" && value) {
       setEnabledFields({ ...enabledFields, level: true });
 
-        
-        const selectedSchoolData = data.find(school => school.id === e.target.value);
-        setLevels(selectedSchoolData.niveaux)
-      
-    
+      const selectedSchoolData = data.find((school) => school.id === e.target.value);
+      setLevels(selectedSchoolData.niveaux);
     }
 
     if (name === "level" && value) {
@@ -87,6 +115,8 @@ function DepotDossier() {
         examTranscript: value === "6e" || value === "2nde",
       });
     }
+
+    validateAllInputs({ ...inputs, [name]: type === "file" ? files[0] : value });
   };
 
   const validateInputs = () => {
@@ -121,7 +151,6 @@ function DepotDossier() {
       setErrorMessage("L'adresse est requis.");
       hasErrors = true;
     }
-
 
     if (inputs.lastName.trim().length === 0) {
       newErrors.firstNameError = true;
@@ -179,32 +208,31 @@ function DepotDossier() {
       newErrors.photoError = true;
       setErrorMessage("Le fichier photo doit être au format JPG ou PNG.");
       hasErrors = true;
-    } else if (inputs.photo.size > 2 * 1024 * 1024) { 
+    } else if (inputs.photo.size > 2 * 1024 * 1024) {
       newErrors.photoError = true;
       setErrorMessage("La taille de la photo ne doit pas dépasser 2 Mo.");
       hasErrors = true;
     }
-  
+
     if (inputs.prevTranscript && !["application/pdf"].includes(inputs.prevTranscript.type)) {
       newErrors.prevTranscriptError = true;
       setErrorMessage("Le relevé de notes doit être un fichier PDF.");
       hasErrors = true;
-    } else if (inputs.prevTranscript && inputs.prevTranscript.size > 5 * 1024 * 1024) { 
+    } else if (inputs.prevTranscript && inputs.prevTranscript.size > 5 * 1024 * 1024) {
       newErrors.prevTranscriptError = true;
       setErrorMessage("Le relevé de notes ne doit pas dépasser 5 Mo.");
       hasErrors = true;
     }
-  
+
     if (inputs.examTranscript && !["application/pdf"].includes(inputs.examTranscript.type)) {
       newErrors.examTranscriptError = true;
       setErrorMessage("Le relevé de notes d'examen doit être un fichier PDF.");
       hasErrors = true;
-    } else if (inputs.examTranscript && inputs.examTranscript.size > 5 * 1024 * 1024) { 
+    } else if (inputs.examTranscript && inputs.examTranscript.size > 5 * 1024 * 1024) {
       newErrors.examTranscriptError = true;
       setErrorMessage("Le relevé de notes d'examen ne doit pas dépasser 5 Mo.");
       hasErrors = true;
     }
-  
 
     setErrors(newErrors);
     return !hasErrors;
@@ -250,14 +278,12 @@ function DepotDossier() {
     }
 
     try {
-      console.log("cc")
       const response = await AuthService.depotDossier(formData);
       setAlert({
         open: true,
         message: "Dossier envoyé avec succès !",
         type: "success",
       });
-      // console.log(formData);
       setInputs({
         nom: "",
         prenoms: "",
@@ -334,11 +360,10 @@ function DepotDossier() {
                       disabled={!enabledFields.school}
                     >
                       {data.map((school) => (
-                    <MenuItem key={school.id} value={school.id}>
-                      {school.nom}
-                    </MenuItem>
-                  ))}
-                      
+                        <MenuItem key={school.id} value={school.id}>
+                          {school.nom}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </MDBox>
@@ -353,10 +378,10 @@ function DepotDossier() {
                       disabled={!enabledFields.level}
                     >
                       {levels.map((level) => (
-                    <MenuItem key={level.id} value={level.id}>
-                      {level.niveau}
-                    </MenuItem>
-                  ))}
+                        <MenuItem key={level.id} value={level.id}>
+                          {level.niveau}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </MDBox>
@@ -444,7 +469,7 @@ function DepotDossier() {
                     name="photo"
                     onChange={handleChange}
                     error={errors.photoError}
-    helperText={errors.photoError ? "La photo est invalide ou manquante." : ""}
+                    helperText={errors.photoError ? "La photo est invalide ou manquante." : ""}
                     disabled={!enabledFields.remaining}
                   />
                 </MDBox>
@@ -553,19 +578,7 @@ function DepotDossier() {
                     disabled={!enabledFields.remaining}
                   />
                 </MDBox>
-                
-
                 {/* Relevés */}
-                {/* <MDBox mb={2}>
-                  <MDInput
-                    type="file"
-                    label="Acte de naissance"
-                    fullWidth
-                    name="prevTranscript"
-                    onChange={handleChange}
-                    disabled={!enabledFields.remaining}
-                  />
-                </MDBox> */}
                 <MDBox mb={2}>
                   <MDInput
                     type="file"
@@ -574,7 +587,9 @@ function DepotDossier() {
                     name="prevTranscript"
                     onChange={handleChange}
                     error={errors.prevTranscriptError}
-                    helperText={errors.prevTranscriptError ? "Le fichier doit être un PDF valide." : ""}
+                    helperText={
+                      errors.prevTranscriptError ? "Le fichier doit être un PDF valide." : ""
+                    }
                     disabled={!enabledFields.remaining}
                   />
                 </MDBox>
@@ -587,7 +602,9 @@ function DepotDossier() {
                       name="examTranscript"
                       onChange={handleChange}
                       error={errors.examTranscript}
-                      helperText={errors.examTranscript ? "Le fichier doit être un PDF valide." : ""}
+                      helperText={
+                        errors.examTranscript ? "Le fichier doit être un PDF valide." : ""
+                      }
                       disabled={!enabledFields.remaining}
                     />
                   </MDBox>
@@ -600,10 +617,10 @@ function DepotDossier() {
                 color="info"
                 fullWidth
                 type="submit"
-                disabled={!enabledFields.remaining || isLoading}
+                disabled={!enabledFields.remaining || isSubmitDisabled || isLoading}
                 startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
               >
-                {isLoading ? "Chargement..." : "Soumettre"}
+                {isLoading ? "Patientez..." : "Soumettre"}
               </MDButton>
             </MDBox>
           </form>

@@ -18,8 +18,8 @@ import ResetPassword from "auth/reset-password";
 import Login from "auth/login";
 import Register from "auth/register";
 import { AuthContext } from "context";
-import UserProfile from "layouts/user-profile";
-import UserManagement from "layouts/user-management";
+// import UserProfile from "layouts/user-profile";
+// import UserManagement from "layouts/user-management";
 import { Helmet } from "react-helmet";
 import func_routes from "routes";
 import DepotDossier from "auth/depot-dossier";
@@ -173,7 +173,7 @@ export default function App() {
           <Route path="/auth/depot-de-dossier" element={<DepotDossier />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route
+          {/* <Route
             exact
             path="user-profile"
             element={
@@ -192,9 +192,9 @@ export default function App() {
               </ProtectedRoute>
             }
             key="user-management"
-          />
+          /> */}
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/mes-classes" />} />
+          <Route path="*" element={<Navigate to="/auth/login" />} />
         </Routes>
       </ThemeProvider>
     </>
