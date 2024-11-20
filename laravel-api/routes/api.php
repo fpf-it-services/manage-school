@@ -47,6 +47,7 @@ Route::prefix("v2")->group(function(){
 
 
         Route::post("inscription/attente/eleve",[InscriptionEnAttente::class, "register_student"]);
+        Route::get("inscription/attente/eleve",[InscriptionEnAttente::class, "getRegistredStudent"]);
         Route::get("niveaux-ecoles",[EcoleController::class, "getLevels"]);
 
 

@@ -5,9 +5,6 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 
 import { useNavigate } from "react-router-dom";
-
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import { getSchoolsAndStudents, getAcademicYears, postPaymentData } from "./data";
 import { useKKiaPay } from "kkiapay-react";
 

@@ -41,7 +41,9 @@ const AuthContextProvider = ({ children }) => {
     if(role === "admin"){
       navigate("/gestion-ecoles");
     } else if(role === "ecole"){
-      navigate("/mes-classes");
+      navigate("/my-classes");
+    } else {
+      navigate("/my-transactions");
     }
   };
 

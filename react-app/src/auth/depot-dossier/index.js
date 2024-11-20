@@ -20,17 +20,17 @@ function DepotDossier() {
   const [inputs, setInputs] = useState({
     school: "",
     level: "",
-    lastName: "",
-    firstName: "",
-    birthDate: "",
-    birthPlace: "",
-    nationality: "",
-    gender: "",
+    lastName: "AVOHOU",
+    firstName: "Prince",
+    birthDate: "2010-12-11",
+    birthPlace: "Cotonou",
+    nationality: "Béninoise",
+    gender: "M",
     photo: null,
-    guardian1Name: "",
-    guardian1Phone: "",
-    guardian1Email: "",
-    adresse1: "",
+    guardian1Name: "AVOHOU Boris",
+    guardian1Phone: "52234512",
+    guardian1Email: "avohouprince@gmail.com",
+    adresse1: "Cotonou",
     guardian2Name: "",
     guardian2Phone: "",
     guardian2Email: "",
@@ -61,41 +61,20 @@ function DepotDossier() {
     }
   }, [alert]);
 
-  useEffect(async () => {
-    const ecoles = await getSchoolsAndLevels();
-    setData(ecoles);
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const ecoles = await getSchoolsAndLevels();
+        setData(ecoles);
+      } catch (error) {
+        setAlert({ open: true, message: "Erreur lors du chargement des écoles.", type: "error" });
+      }
+    };
+  
+    fetchSchools();
   }, []);
+  
 
-  const validateAllInputs = (updatedInputs) => {
-    const requiredFields = [
-      "school",
-      "level",
-      "lastName",
-      "firstName",
-      "birthDate",
-      "birthPlace",
-      "nationality",
-      "gender",
-      "photo",
-      "guardian1Name",
-      "guardian1Phone",
-      "guardian1Email",
-      "adresse1",
-    ];
-
-    const allValid = requiredFields.every((field) => updatedInputs[field]?.trim().length > 0);
-
-    const isPhotoValid =
-      updatedInputs.photo && ["image/jpeg", "image/png"].includes(updatedInputs.photo.type);
-    const isPrevTranscriptValid =
-      !updatedInputs.prevTranscript || updatedInputs.prevTranscript.type === "application/pdf";
-    const isExamTranscriptValid =
-      !updatedInputs.examTranscript || updatedInputs.examTranscript.type === "application/pdf";
-
-    setIsSubmitDisabled(
-      !(allValid && isPhotoValid && isPrevTranscriptValid && isExamTranscriptValid)
-    );
-  };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -115,8 +94,6 @@ function DepotDossier() {
         examTranscript: value === "6e" || value === "2nde",
       });
     }
-
-    validateAllInputs({ ...inputs, [name]: type === "file" ? files[0] : value });
   };
 
   const validateInputs = () => {
@@ -281,7 +258,7 @@ function DepotDossier() {
       const response = await AuthService.depotDossier(formData);
       setAlert({
         open: true,
-        message: "Dossier envoyé avec succès !",
+        message: "Dossier envoyé avec succès ! Un mail vous a été envoyé à l'adresse fourni.",
         type: "success",
       });
       setInputs({
@@ -617,7 +594,7 @@ function DepotDossier() {
                 color="info"
                 fullWidth
                 type="submit"
-                disabled={!enabledFields.remaining || isSubmitDisabled || isLoading}
+                disabled={!enabledFields.remaining || isLoading}
                 startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
               >
                 {isLoading ? "Patientez..." : "Soumettre"}

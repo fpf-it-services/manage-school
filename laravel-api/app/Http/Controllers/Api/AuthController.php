@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use DB;
 use App\Models\User;
+use App\Models\StudentParent;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
@@ -154,19 +155,40 @@ class AuthController extends Controller
      */
     private function local_login($request, $userLogged = null)
     {
+        $studentParent = null;
         // Si l'utilisateur est déjà authentifié, le connecter directement
         if($userLogged !== null) {
             Auth::login($userLogged);
+        }else{
+            $studentParent = StudentParent::where("email",$request->email)->first();
+            
+            if($studentParent !== null && !Hash::check($request->password, $studentParent?->password))
+                $studentParent = null;
+            
+                if($studentParent !== null) {
+                    Auth::login($studentParent);
+                }
         }
 
         // Authentification standard si non déjà connecté
-        if ($userLogged !== null || Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if ($userLogged !== null || $studentParent !== null || Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            unset($user->updated_at); // Retirer le champ `updated_at` de la réponse
+            if($user?->updated_at)
+                unset($user->updated_at); // Retirer le champ `updated_at` de la réponse
             $client = $this->getClientInfos();
 
             // Détermination du rôle en fonction du type d'utilisateur
-            $role = $userLogged === null ? "admin" : "ecole";
+            //$role = $userLogged === null ? "admin" : "ecole";
+            $role = null;
+            if($userLogged === null){
+                if($studentParent !== null){
+                    $role = "parent";
+                }else{
+                    $role = "admin";
+                }
+            }else{
+                $role = "ecole";
+            }
 
             // Création du jeton d'accès et ajout au modèle de l'utilisateur
             $user['token'] = $user->createToken('Token-name')->accessToken;

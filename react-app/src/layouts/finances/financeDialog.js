@@ -10,7 +10,6 @@ export default function FinanceDialog({ open, onClose, finance }) {
     return `${year}-${month}-${day}`;
   }
   
-  console.log(finance)
   const [frais_formation, setFraisFormation] = useState(finance.montants[0].frais_formation);
   const [tranche1, setTranche1] = useState(finance.montants[0].tranches[0].montant);
   const [tranche2, setTranche2] = useState(finance.montants[0].tranches[1].montant);

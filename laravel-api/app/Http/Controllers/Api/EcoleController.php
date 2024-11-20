@@ -160,7 +160,18 @@ class EcoleController extends Controller
         }
         return response()->json([
             "success" => true,
-            "data" => $ecoles
+            "data" => $ecoles->map(function ($ecole){
+                return [
+                    'id' => $ecole->id,
+                    'nom' => $ecole->nom,
+                    'niveaux' => $ecole->niveaux->map(function ($niveau){
+                        return [
+                            'id' => $niveau->id,
+                            'niveau' => $niveau->niveau,
+                        ];
+                    })
+                ];
+            })
         ]);
     }
 

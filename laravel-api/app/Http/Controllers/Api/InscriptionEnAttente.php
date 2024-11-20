@@ -11,6 +11,10 @@ use App\Http\Requests\AddEleveEnAttenteRequest;
 use App\Models\EleveEnAttente;
 use App\Mail\NotificationMailInscriptionAttente;
 use App\Models\Ecole;
+use App\Models\StudentParent;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Http\Resources\PendingStudentResource;
 
 class InscriptionEnAttente extends Controller
 {
@@ -66,16 +70,38 @@ class InscriptionEnAttente extends Controller
                 "releve_de_notes_examen" => $releve_de_notes_examen,
                 "acte_de_naissance" => $acte_de_naissance
             ]);
-
-            $mailData = [
-                "email" => $eleve->email_tuteur1,
-                "password" => "password",   // Récupère l'adresse de l'utilisateur,
-                "ecole" => Ecole::where("id",$request->ecole)->first()->nom
-            ];
-            Mail::to($eleve->email_tuteur1)->send(new NotificationMailInscriptionAttente($mailData));
+            if(StudentParent::where("email",$request->email_tuteur1)->first("email") == null){
+                $password = Str::random(10);
+                $studentParent = StudentParent::create([
+                    "nom" => $request->nom_tuteur1,
+                    "email" => $request->email_tuteur1,
+                    "password" => Hash::make($password)
+                ]);
+                $mailData = [
+                    "email" => $studentParent->email,
+                    "password" => $password,   // Récupère l'adresse de l'utilisateur,
+                    "ecole" => Ecole::where("id",$request->ecole)->first()->nom,
+                    "nouveau" => true,
+                    "eleve" => $eleve->nom . ' ' . $eleve->prenoms,
+                ];
+                Mail::to($studentParent->email)->send(new NotificationMailInscriptionAttente($mailData));
+            }else{
+                $mailData = [
+                    "eleve" => $eleve->nom . ' ' . $eleve->prenoms,
+                    "nouveau" => false,
+                    "ecole" => Ecole::where("id",$request->ecole)->first()->nom
+                ];
+                Mail::to($request->email_tuteur1)->send(new NotificationMailInscriptionAttente($mailData));
+            }
             return response()->json([], 201);
         } catch (\Exception $th) {
             return response()->json(["success" => false,"error" => "Une erreur est survenue"], 500);
         }
+    }
+    public function getRegistredStudent(){
+        return response()->json([
+            'success' => true,
+            'data' => PendingStudentResource::collection(EleveEnAttente::with(["ecole", "niveau"])->get()),
+        ], 200);
     }
 }

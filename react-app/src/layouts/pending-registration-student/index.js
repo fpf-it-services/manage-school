@@ -8,10 +8,25 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import useTransactionTable from "layouts/mes-transactions/data"; 
+import useTable from "layouts/pending-registration-student/data"; 
+import FileDialog from "./fileDialog"; 
 
-const MesTransactions = () => {
-const { columns, rows } = useTransactionTable(); 
+const PendingStudents = () => {
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const onFileSelect = (file) => {
+    setSelectedFile(file);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedFile(null);
+  };
+
+const { columns, rows } = useTable({onFileSelect}); 
 
   return (
     <DashboardLayout>
@@ -31,7 +46,7 @@ const { columns, rows } = useTransactionTable();
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Mes Transactions
+                  Inscriptions en Attente
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -41,7 +56,7 @@ const { columns, rows } = useTransactionTable();
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
-                  onRowClick={onFinanceSelect} 
+                  onRowClick={onFileSelect} 
                 />
               </MDBox>
             </Card> 
@@ -49,8 +64,15 @@ const { columns, rows } = useTransactionTable();
         </Grid>
       </MDBox>
       <Footer />
+      {selectedFile && (
+        <FileDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          file={selectedFile}
+        />
+      )}
     </DashboardLayout>
   );
 };
 
-export default MesTransactions;
+export default PendingStudents;

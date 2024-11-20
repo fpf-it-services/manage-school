@@ -30,4 +30,15 @@ class EleveEnAttente extends Model
         "releve_de_notes_examen",
         "acte_de_naissance"
     ];
+    public function ecole(){
+        return $this->belongsTo(Ecole::class);
+    }
+    public function niveau(){
+        return $this->belongsTo(Niveau::class);
+    }
+    public function casts(){
+        return [
+            "date_naissance" => "datetime",
+        ];
+    }
 }

@@ -4,7 +4,6 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import MDTypography from "components/MDTypography";
 import FormSchool from "./form";
 import UploadStudentExcel from "./fromExcel"; 
 import MDButton from "components/MDButton";

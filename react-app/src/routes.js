@@ -20,6 +20,7 @@ import DepotDossier from "auth/depot-dossier";
 import TransactionHistory from "layouts/history-transaction";
 import Payment from "layouts/payments";
 import MesTransactions from "layouts/mes-transactions";
+import PendingStudents from "layouts/pending-registration-student";
 
 
 // const routes = [
@@ -58,7 +59,7 @@ const func_routes = (role) => {
       component: <ForgotPassword />,
     }, {
       type: "examples",
-      name: "My Profile",
+      name: "Mon Profil",
       key: "my-profile",
       icon: <Icon fontSize="small">person</Icon>,
       route: "/my-profile",
@@ -72,7 +73,7 @@ const func_routes = (role) => {
       component: <Paiement />,
     }, {
       type: "public",
-      name: "View History",
+      name: "Historique des Transcations",
       key: "view-history",
       icon: <Icon fontSize="small">history</Icon>,
       route: "/public/view-history",
@@ -161,21 +162,21 @@ const func_routes = (role) => {
   const schoolRoutes = [
     {
       type: "examples",
-      name: "My Classes",
+      name: "Mes Classes",
       key: "my-classes",
       icon: <Icon fontSize="small">list</Icon>,
       route: "/my-classes",
       component: <ClassManagement />,
     }, {
       type: "examples",
-      name: "Pending Student Registrations",
-      key: "pending-student-registrations",
+      name: "Inscription en Attente",
+      key: "pending-registrations",
       icon: <Icon fontSize="small">hourglass_empty</Icon>,
       route: "/pending-student-registrations",
-      component: <Dashboard />,
+      component: <PendingStudents />,
     }, {
       type: "examples",
-      name: "Add Student",
+      name: "Ajouter Élève",
       key: "add-student",
       icon: <Icon fontSize="small">person_add</Icon>,
       route: "/add-student",
@@ -189,14 +190,14 @@ const func_routes = (role) => {
       component: <Finances />,
     }, {
       type: "examples",
-      name: "Student Transactions",
+      name: "Transactions des Élèves",
       key: "student-transactions",
       icon: <Icon fontSize="small">history</Icon>,
       route: "/student-transactions",
       component: <Finances />,
     }, {
       type: "examples",
-      name: "School Finances",
+      name: "Paramètres",
       key: "school-finances",
       icon: <Icon fontSize="small">settings</Icon>,
       route: "/school-finances",
@@ -213,15 +214,12 @@ const func_routes = (role) => {
 
   if (role === "admin") {
     return [...commonRoutes, ...adminRoutes];
-  } else if (role === "school") {
+  } else if (role === "ecole") {
     return [...commonRoutes, ...schoolRoutes];
   } else {
     return [...commonRoutes, ...otherRoutes];
   }
 };
-
-export default func_routes;
-
 
 export default func_routes;
 

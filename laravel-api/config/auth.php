@@ -47,7 +47,11 @@ return [
         'ecole' => [
            'driver' => 'passport',
            'provider' => 'ecoles',
-       ],
+        ],
+        'parent' => [
+           'driver' => 'passport',
+           'provider' => 'parents',
+        ],
     ],
 
     /*
@@ -75,6 +79,10 @@ return [
         'ecoles' => [
             'driver' => 'eloquent',
             'model' => App\Models\Ecole::class,
+        ],
+        'parents' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\StudentParent::class,
         ],
 
         // 'users' => [
