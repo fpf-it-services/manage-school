@@ -6,7 +6,7 @@ export const getClassesAndTransactionByYear = async (year) => {
         return [];
     }
   try {
-    const response = await TransactionService.getClassesAllTransactions(year);
+    const response = await TransactionService.getAllTransactions(year);
     if (response && response.data) {  
       return response.data;
     }
@@ -20,6 +20,7 @@ export const getClassesAndTransactionByYear = async (year) => {
 export const getAcademicYears = async () => {
   try {
     const response = await AcademicYearService.getAcademicYears();
+    console.log(response)
     if (response && response.data) {
       return response.data;
     }

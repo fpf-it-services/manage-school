@@ -25,7 +25,7 @@ class TransactionService {
   async getAllTransactions(year) {
     try {
       const response = await HttpService.get(`montants/historique?annee_id=${year}`);
-      return response.data; 
+      return response ? response.data : []; 
     } catch (error) {
       console.error(`Erreur lors de la récupération des transactions:`, error);
       throw error; 
@@ -34,7 +34,6 @@ class TransactionService {
 
   sendPaymentData = async (paymentData) => {
     const endpoint = `montants`;
-    console.log(paymentData)
     return await HttpService.post(endpoint, paymentData);
   };
 }

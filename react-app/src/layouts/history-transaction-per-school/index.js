@@ -15,6 +15,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import { getAcademicYears, getClassesAndTransactionByYear } from "./data";
+import { CircularProgress } from "@mui/material";
 
 const TransactionHistory = () => {
   const [academicYears, setAcademicYears] = useState([]);
@@ -24,16 +25,27 @@ const TransactionHistory = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setAcademicYears(getAcademicYears());
+    const fetchAcademicYears = async () => {
+      const response = await getAcademicYears();
+      setAcademicYears(response);
+    };
+    fetchAcademicYears();
   }, []);
 
-  useEffect(() => {
-    setClasses(getClassesAndTransactionByYear(selectedYear));
-  }, [selectedYear]);
 
-  const handleYearChange = (event) => {
+  const handleYearChange = async (event) => {
     setSelectedYear(event.target.value);
-    setFilter("");
+    setFilter(""); 
+    setLoading(true);
+
+    try {
+      const response = await getClassesAndTransactionByYear(event.target.value);
+      setClasses(response); 
+    } catch (error) {
+      console.error("Erreur lors de la récupération des classes :", error);
+    } finally {
+      setLoading(false); 
+    }
   };
 
   const handleFilterChange = (event) => {
@@ -43,7 +55,7 @@ const TransactionHistory = () => {
   const filteredClasses = classes.map((classe) => ({
     ...classe,
     students: classe.students.filter((student) =>
-      student.name.toLowerCase().includes(filter)
+      student.nom.toLowerCase().includes(filter) || student.prenoms.toLowerCase().includes(filter)
     ),
   }));
 
@@ -77,13 +89,14 @@ const TransactionHistory = () => {
                       onChange={handleYearChange}
                       displayEmpty
                       variant="outlined"
+                      style={{ borderRadius: "6px", height: "43px" }}
                     >
                       <MenuItem value="" disabled>
                         Sélectionnez une année académique
                       </MenuItem>
                       {academicYears.map((year) => (
                         <MenuItem key={year.id} value={year.id}>
-                          {year.name}
+                          {year.annee_academique}
                         </MenuItem>
                       ))}
                     </Select>
@@ -95,15 +108,14 @@ const TransactionHistory = () => {
                       onChange={handleFilterChange}
                       label="Rechercher un élève"
                       variant="outlined"
+                      disabled={!classes.length}
                     />
                   </Grid>
                 </Grid>
               </MDBox>
               <MDBox pt={3}>
                 {loading ? (
-                  <MDTypography variant="body1" align="center">
-                    Chargement des données...
-                  </MDTypography>
+                  <CircularProgress size={25} color="inherit" />
                 ) : (
                   filteredClasses.map((classe) => (
                     <Accordion key={classe.id}>
@@ -127,13 +139,13 @@ const TransactionHistory = () => {
                               { Header: "Observations", accessor: "observation", align: "center" },
                             ],
                             rows: classe.students.map((student, idx) => ({
-                              index: idx,
+                              index: idx + 1,
                               name: `${student.nom} ${student.prenoms}`,
                               reference: student.reference,
                               amount_paid: student.montant,
                               mail: student.email,
-                              date: student.totalPaid,
-                              observation: student.remainingAmount === 0 ? "Soldé ": student.remainingAmount,
+                              date: student.date, // Assurez-vous que 'date' est présent dans vos données
+                              observation: student.remainingAmount === 0 ? "Soldé" : student.remainingAmount,
                             })),
                           }}
                           isSorted={false}
@@ -156,3 +168,5 @@ const TransactionHistory = () => {
 };
 
 export default TransactionHistory;
+
+

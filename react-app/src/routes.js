@@ -17,7 +17,7 @@ import Paiement from "layouts/payment";
 import Historique from "layouts/history";
 import SettingsFinances from "layouts/settings-finance";
 import DepotDossier from "auth/depot-dossier";
-import TransactionHistory from "layouts/history-transaction";
+import TransactionHistory from "layouts/history-transaction-per-school";
 import Payment from "layouts/payments";
 import MesTransactions from "layouts/mes-transactions";
 import PendingStudents from "layouts/pending-registration-student";
@@ -194,7 +194,7 @@ const func_routes = (role) => {
       key: "student-transactions",
       icon: <Icon fontSize="small">history</Icon>,
       route: "/student-transactions",
-      component: <Finances />,
+      component: <TransactionHistory />,
     }, {
       type: "examples",
       name: "Paramètres",
