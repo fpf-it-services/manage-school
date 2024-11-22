@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\MontantVerificationRequest; 
 use App\Models\Transaction;  
 use App\Models\Classe;  
+use App\Models\Cursus; 
 use App\Models\Montant;  
 use App\Models\Eleve;  
 use App\Models\Annee;  
@@ -69,6 +70,53 @@ class TransactionController extends Controller
             "success" => true,  // Indique que la requête a réussi
             "montant" => $montant_total - $montant_paye  // Montant restant à payer
         ]);
+    }
+    public function getAllTransactions(Request $request){
+        /*
+        { Header: "N°", accessor: "index", align: "left" },
+                              { Header: "Nom et Prénoms", accessor: "name", align: "center" },
+                              { Header: "Référence", accessor: "reference", align: "center" },
+                              { Header: "Montant Payé", accessor: "amount_paid", align: "center" },
+                              { Header: "Payeur", accessor: "mail", align: "center" },
+                              { Header: "Date", accessor: "date", align: "center" },
+                              { Header: "Observations", accessor: "observation", align: "center" },
+*/
+
+
+        if($request->annee_id == null || $request->classe_id == null){
+            return response()->json([
+                "success" => false,  // Indique que la requête a réussi
+                "error" => [
+                    "message" => "Le champ annee_id ou classe_id est non fourni"
+                ]
+            ],422);
+        }// auth()->user()->id
+        $transactions = Transaction::where("annee_id",$request->annee_id)->where("classe_id",$request->classe_id)->with(["eleve","classe"])->get();
+
+        $data= [];
+
+        foreach($transactions as $transaction){
+            $montant = MontantService::getMontantOfClasse($transaction->classe, $transaction->annee_id);
+            if($montant == null){
+                return response()->json([
+                    "success" => false,
+                    "message" => "Le montant n'est pas défini pour la classe " . $transaction->classe->nom . " de l'école " . (Ecole::where("id", $transaction->classe->ecole_id)->first()->nom)
+                ]);
+            }
+            $data[] = [
+                "eleve" => $transaction->eleve->nom . ' ' . $transaction->eleve->prenoms,
+                "ref" => $transaction->reference,
+                "type" => $transaction->type_frais,
+                "montant_paye" => $transaction->montant,
+                "payeur" => $transaction->email,
+                "date" => $transaction->created_at->format("d/m/Y"),
+                "reste" => $this->getMontantPrice($montant,$transaction->type_frais) - $this->getLastTransactionsMontantSum($transactions,$transaction->type_frais,$transaction->created_at),
+            ];
+        }
+        return response()->json([
+            "success" => true,
+            "data" => $data
+        ], 200);
     }
 
     /**
@@ -144,5 +192,35 @@ class TransactionController extends Controller
                 "montant_du" => $montant_a_payer - $montant_payer,  // Montant restant dû
             ]
         ]);
+    }
+    private function getLastTransactionsMontantSum($transactions,$type_frais,$dateTransaction){
+        $frais = 0;
+        foreach ($transactions as $transaction) {
+            if($transaction->created_at->isBefore($dateTransaction) && $transaction->type_frais === $type_frais){
+                $frais += $transaction->montant;
+            }
+        }
+        return $frais;
+    }
+    private function getMontantPrice($montant,$type_frais){
+        $frais = 0;
+        switch ($type_frais) {
+            case 'frais_inscription':
+                $frais = $montant->frais_inscription;
+                break;
+            case 'frais_reinscription':
+                $frais = $montant->frais_reinscription;
+                break;
+            case 'frais_formation':
+                $frais = $montant->frais_formation;
+                break;
+            case 'frais_annexe':
+                $frais = $montant->frais_annexe;
+                break;
+            default:
+                # code...
+                break;
+        }
+        return $frais;
     }
 }

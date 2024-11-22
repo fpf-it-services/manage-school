@@ -14,12 +14,14 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
-import { getAcademicYears, getClassesAndTransactionByYear } from "./data";
+import { getAcademicYears, getClassesAndTransactionByYear, getClasses } from "./data";
 import { CircularProgress } from "@mui/material";
 
 const TransactionHistory = () => {
   const [academicYears, setAcademicYears] = useState([]);
+  const [data, setData] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
   const [classes, setClasses] = useState([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,10 +41,27 @@ const TransactionHistory = () => {
     setLoading(true);
 
     try {
-      const response = await getClassesAndTransactionByYear(event.target.value);
+      const response = await getClasses(event.target.value);
       setClasses(response); 
     } catch (error) {
       console.error("Erreur lors de la récupération des classes :", error);
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  const handleClassChange = async (event) => {
+    setSelectedClass(event.target.value);
+    setFilter(""); 
+    setLoading(true);
+
+    try {
+      
+      const response = await getClassesAndTransactionByYear(event.target.value);
+      setData(response); 
+      console.log(response)
+    } catch (error) {
+      console.error("Erreur lors de la récupération des élèves :", error);
     } finally {
       setLoading(false); 
     }
@@ -52,9 +71,9 @@ const TransactionHistory = () => {
     setFilter(event.target.value.toLowerCase());
   };
 
-  const filteredClasses = classes.map((classe) => ({
-    ...classe,
-    students: classe.students.filter((student) =>
+  const filteredClasses = data.map((dt) => ({
+    ...dt,
+    students: dt.students.filter((student) =>
       student.nom.toLowerCase().includes(filter) || student.prenoms.toLowerCase().includes(filter)
     ),
   }));
@@ -82,7 +101,7 @@ const TransactionHistory = () => {
               </MDBox>
               <MDBox pt={3} px={3}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={4}>
                     <Select
                       fullWidth
                       value={selectedYear}
@@ -101,7 +120,27 @@ const TransactionHistory = () => {
                       ))}
                     </Select>
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={4}>
+                    <Select
+                      fullWidth
+                      value={selectedClass}
+                      onChange={handleClassChange}
+                      displayEmpty
+                      variant="outlined"
+                      disabled={!academicYears.length}
+                      style={{ borderRadius: "6px", height: "43px" }}
+                    >
+                      <MenuItem value="" disabled>
+                        Sélectionnez une classe
+                      </MenuItem>
+                      {classes.map((classe) => (
+                        <MenuItem key={classe.id} value={classe.id}>
+                          {classe.nom}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       value={filter}

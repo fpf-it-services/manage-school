@@ -16,15 +16,36 @@ class StudentService {
     return await HttpService.get(endpoint);
   };
 
+  getMyChildren = async () => {
+    const endpoint = `parents/eleves/attente`;
+    return await HttpService.get(endpoint);
+  };
+
+  getMyChildrenRegistred = async () => {
+    const endpoint = `parents/eleves`;
+    return await HttpService.get(endpoint);
+  };
+
+  updateInformation = async (id, data) => {
+    const endpoint = `parents/eleves/attente/${id}`;
+    return await HttpService.post(endpoint, data );
+  };
+
+  getFieldToChange = async (id, data) => {
+    const endpoint = `parents/eleves/attente/${id}`;
+    return await HttpService.get(endpoint);
+  };
+  //    
+
   acceptRegistration = async (id) => {
-    const endpoint = `acceptRegistration`;
-    return await HttpService.post(endpoint, id);
+    const endpoint = `inscription/attente/${id}`;
+    return await HttpService.put(endpoint, {status: "accepte"});
   };
 
   
-  rejectRegistration = async (rejectData) => {
-    const endpoint = `rejectRegistration`;
-    return await HttpService.post(endpoint, rejectData);
+  rejectRegistration = async (id, rejectData) => {
+    const endpoint = `inscription/attente/${id}`;
+    return await HttpService.put(endpoint, rejectData);
   };
 
 }

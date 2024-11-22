@@ -157,7 +157,7 @@ function Overview() {
                 ]}
               />
             </Grid>
-            <Grid item xs={12} md={6} xl={3}>
+            {/* <Grid item xs={12} md={6} xl={3}>
               <DefaultProjectCard
                 image={homeDecor4}
                 label="project #4"
@@ -176,7 +176,7 @@ function Overview() {
                   { image: team1, name: "Elena Morison" },
                 ]}
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         </MDBox>
       </Header>

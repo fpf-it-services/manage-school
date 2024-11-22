@@ -15,6 +15,7 @@ use App\Models\StudentParent;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Http\Resources\PendingStudentResource;
+use App\Mail\NotificationEtatInscriptionEnAttente;
 
 class InscriptionEnAttente extends Controller
 {
@@ -101,7 +102,89 @@ class InscriptionEnAttente extends Controller
     public function getRegistredStudent(){
         return response()->json([
             'success' => true,
-            'data' => PendingStudentResource::collection(EleveEnAttente::with(["ecole", "niveau"])->get()),
+            'data' => PendingStudentResource::collection(EleveEnAttente::where("ecole_id",auth()->user()->id)->where("status",null)->with(["ecole", "niveau"])->get()),
+        ], 200);
+    }
+    private function setStatus(EleveEnAttente $eleve,$status){
+        if($eleve->status == "rejete" || $eleve->status == "accepte"|| $eleve->status == "attente_paiement")
+            return;
+        $eleve->update([
+            "status" => $status
+        ]);
+    }
+    public function setStatusEleve(Request $request,$id){
+        if($request->status !=='accepte' && $request->status !=='rejete' && $request->status !=='rejete_partiellement'){
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    "status" => "Le status doit être accepte,rejete ou rejete_partiellement"
+                ],
+            ], 422);
+        }
+        if(($request->status ==='rejete' || $request->status ==='rejete_partiellement') && $request->motif == null){
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    "motif" => "Le motif est obligatoire"
+                ],
+            ], 422);
+        }
+        $eleve = EleveEnAttente::where("id",$id)->where("ecole_id",auth()->user()?->id)->first();
+        if($eleve == null){
+            return response()->json([
+                'success' => false
+            ], 404);
+        }
+        $status = $request->status;
+        if($status === "rejete_partiellement"){
+            $status = "modifiable";
+        }elseif($status === "accepte"){
+            $status = "attente_paiement";
+        }
+        //$this->setStatus($eleve,$status);
+        if($eleve->status == "rejete" || $eleve->status == "accepte"|| $eleve->status == "attente_paiement")
+            return response()->json([
+                'success' => false
+            ], 404);
+        $updatedData = [
+            "status" => $status
+        ];
+        if($request->status !=='accepte'){
+            $updatedData["motif"] = $request->motif;
+        }
+        if($request->status ==='rejete_partiellement'){
+            try {
+                $updatedData["champs"] = json_encode($request->champs ?? []);
+            } catch (\Exception $th) {
+
+            }
+        }
+        $eleve->update($updatedData);
+        $mailData = [
+            "ecole" => Ecole::where("id",$eleve->ecole_id)->first()->nom,
+            "motif" => null,
+            "champs" => [],
+            "etat" => "    ",
+            "eleve" => $eleve->nom . ' ' . $eleve->prenoms,
+        ];
+        if($request->status !=='accepte'){
+            $mailData["motif"] = $request->motif;
+        }
+        if($request->status ==='accepte'){
+            $mailData["etat"] = "acceptée et vous devez payer les frais d'inscription pour que l'inscription soit prise en compte";
+        }else if($request->status ==='rejete'){
+            $mailData["etat"] = "rejetée";
+        }else if($request->status ==='rejete_partiellement'){
+            $mailData["etat"] = "rejetée sous réserve que vous modifiez le dossier en modifiant les informations demandées";
+            try {
+                $mailData["champs"] = $request->champs ?? [];
+            } catch (\Exception $th) {
+
+            }
+        }
+        //Mail::to($eleve->email_tuteur1)->send(new NotificationEtatInscriptionEnAttente($mailData));
+        return response()->json([
+            'success' => true
         ], 200);
     }
 }

@@ -18,4 +18,11 @@ class Transaction extends Model
         "montant",
         "reference"
     ];
+
+    public function eleve(){
+        return $this->belongsTo(Eleve::class);
+    }
+    public function classe(){
+        return $this->belongsTo(Classe::class);
+    }
 }

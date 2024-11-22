@@ -22,9 +22,9 @@ class TransactionService {
     }
   }
 
-  async getAllTransactions(year) {
+  async getAllTransactions(year, classe) {
     try {
-      const response = await HttpService.get(`montants/historique?annee_id=${year}`);
+      const response = await HttpService.get(`transactions?annee_id=${year}&classe_id=${classe}`);
       return response ? response.data : []; 
     } catch (error) {
       console.error(`Erreur lors de la récupération des transactions:`, error);

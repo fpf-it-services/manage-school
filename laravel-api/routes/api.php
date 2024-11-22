@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\NiveauController;
 use App\Http\Controllers\Api\MontantController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\InscriptionEnAttente;
+use App\Http\Controllers\Api\ParentController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -47,13 +48,17 @@ Route::prefix("v2")->group(function(){
 
 
         Route::post("inscription/attente/eleve",[InscriptionEnAttente::class, "register_student"]);
-        Route::get("inscription/attente/eleve",[InscriptionEnAttente::class, "getRegistredStudent"]);
+        Route::get("inscription/attente/eleve",[InscriptionEnAttente::class, "getRegistredStudent"])
+        ->middleware(['auth:ecole']);
+        Route::put("inscription/attente/{id}",[InscriptionEnAttente::class, "setStatusEleve"])
+        ->middleware(['auth:ecole']);
         Route::get("niveaux-ecoles",[EcoleController::class, "getLevels"]);
-
+        Route::get("transactions",[TransactionController::class, "getAllTransactions"]);
 
         Route::prefix("ecole")->group(function () {
             //Route::post('login', [AuthController::class, 'login_ecole']);
             Route::group(['middleware' => ['auth:ecole']], function () {
+                Route::get("transactions",[TransactionController::class, "getAllTransactions"]);
                 Route::get('me', [AuthController::class, 'ecole_me']);
                 Route::apiResource("classes", ClasseController::class,['parameters' => [
                     'classes' => 'classe'
@@ -65,6 +70,13 @@ Route::prefix("v2")->group(function(){
                 Route::apiResource("eleves", EleveController::class)->except(["show","destroy"]);
                 Route::post('/eleves/classe/{classe}', [EleveController::class, 'ajout_eleve_classe']);
                 Route::get("montants-par-niveau",[MontantController::class,"montant_niveau"]);
+            });
+        });
+        Route::prefix("parents")->group(function () {
+            Route::group(['middleware' => ['auth:parent']], function () {
+                Route::get("eleves/attente",[ParentController::class, "eleve_en_attentes"]);
+                Route::post("eleves/attente/{id}",[ParentController::class, "updatePendingStudent"]);
+                Route::get("eleves",[ParentController::class, "eleves"]);
             });
         });
     });

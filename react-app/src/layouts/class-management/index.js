@@ -64,7 +64,7 @@ const ClassManagement = () => {
     setClasses([]);
     setStudents([]);
 
-    if (["2E", "2e", "Seconde", "SECONDE", "Premiere", "PREMIERE", "Première", "1ERE", "TERMINALE", "Terminale", "TLE"].includes(level.niveau)) {
+    if (["2nde", "1ere", "Tle"].includes(level.niveau)) {
       const seriesData = await getSeriesByLevel(level.id);
       setSeries(seriesData);
     } else {

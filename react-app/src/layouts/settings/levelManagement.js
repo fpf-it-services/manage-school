@@ -12,9 +12,28 @@ const LevelManagement = () => {
     setLevel(e.target.value);
   };
 
+  const normalizeLevel = (level) => {
+    const normalized = level.trim().toLowerCase();
+    if (["2nde", "2nd", "2nde", "seconde"].includes(normalized)) {
+      return "2nde";
+    }
+    if (
+      ["1ere", "1ère", "première", "premiere", "1ere", "1ère"].includes(normalized)
+    ) {
+      return "1ere";
+    }
+    if (
+      ["Tle", "Terminale", "Terminal"].includes(normalized)
+    ) {
+      return "Tle";
+    }
+    return level.trim();
+  };
+
   const handleAddLevel = async () => {
     try {
-      await LevelService.createLevel({ niveau }); 
+      const normalizedLevel = normalizeLevel(niveau);
+      await LevelService.createLevel({ niveau: normalizedLevel }); 
       setLevel(""); 
       fetchLevels(); 
     } catch (error) {

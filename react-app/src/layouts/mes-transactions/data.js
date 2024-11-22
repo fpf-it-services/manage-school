@@ -3,8 +3,9 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import CircularProgress from "@mui/material/CircularProgress";
 import TransactionService from "services/transaction-service";
+import StudentService from 'services/student-service';
 
-export default function TransactionTable() {
+export const useTransactionTable = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,6 +54,7 @@ export default function TransactionTable() {
           observations: "",
         },
       ],
+      childrenData: [],
     };
   }
 
@@ -76,6 +78,7 @@ export default function TransactionTable() {
           observations: "",
         },
       ],
+      childrenData: [],
     };
   }
 
@@ -143,5 +146,17 @@ export default function TransactionTable() {
               observations: "",
             },
           ],
+          childrenData: transactions
   };
+}
+
+
+export const fetchChildrens = async () => {
+  try {
+    const response = await StudentService.getMyChildren();
+    return response ? response.data : []
+  } catch (error) {
+    console.error("Erreur lors de la récupération des enfants", error);
+    return []
+  }
 }

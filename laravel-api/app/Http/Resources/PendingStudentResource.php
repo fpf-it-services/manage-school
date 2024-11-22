@@ -16,6 +16,7 @@ class PendingStudentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
             "niveau_id" => $this->niveau->niveau,
             "ecole_id" => $this->ecole->nom,
             "nom" => $this->nom,

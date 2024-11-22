@@ -16,6 +16,7 @@ export default function PendingTable({ onFileSelect }) {
     const fetchStudents = async () => {
       try {
         const response = await StudentService.getPendingRegistration();
+        console.log(response.data)
         setStudentsPendings(response.data || []);
         setLoading(false);
       } catch (error) {
@@ -80,6 +81,12 @@ export default function PendingTable({ onFileSelect }) {
         <div id="champsPartiels" style="display: none; text-align: left;">
           <label for="champs" style="font-weight: bold; margin-bottom: 3px; display: block;">Champs à reprendre</label>
           <select id="champs" class="swal2-select" style="width: 80%; font-size: 14px;" multiple>
+            <option value="nom">Nom</option>
+            <option value="prenoms">Prénoms</option>
+            <option value="sexe">Sexe</option>
+            <option value="lieu_naissance">Lieu de naissance</option>
+             <option value="date_naissance">Date de naissance</option>
+            <option value="nationalite">Nationalité</option>
             <option value="photo">Photo</option>
             <option value="releve_de_notes">Relevé de notes</option>
             <option value="releve_de_notes_examen">Relevé de notes examen</option>
@@ -126,16 +133,8 @@ export default function PendingTable({ onFileSelect }) {
 
     if (formValues) {
       const { motif, typeRejet, champs } = formValues;
-
       try {
-        await StudentService.rejectRegistration({
-          id,
-          data: {
-            motif,
-            type: typeRejet,
-            champs: typeRejet === "partiel" ? champs : [],
-          },
-        });
+        typeRejet === "partiel" ? await StudentService.rejectRegistration(id, { motif, champs: champs, status: "rejete_partiellement" }) : await StudentService.rejectRegistration(id, { motif, status: "rejete" })
         Swal.fire("Rejeté", "L'inscription a été rejetée avec succès.", "success");
         setStudentsPendings((prev) => prev.filter((student) => student.id !== id));
       } catch (error) {
@@ -304,6 +303,7 @@ export default function PendingTable({ onFileSelect }) {
                 variant="text"
                 color="info"
                 onClick={() => handleViewFile(studentsPending.releve_de_notes_examen)}
+                disabled = {!studentsPending.releve_de_notes_examen.split(".")[studentsPending.releve_de_notes_examen.length - 1]}
               >
                 Voir
               </MDButton>

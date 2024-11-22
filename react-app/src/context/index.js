@@ -43,7 +43,7 @@ const AuthContextProvider = ({ children }) => {
     } else if(role === "ecole"){
       navigate("/my-classes");
     } else {
-      navigate("/my-transactions");
+      navigate("/en-attente");
     }
   };
 

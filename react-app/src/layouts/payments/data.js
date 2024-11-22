@@ -1,6 +1,7 @@
 import SchoolService from '../../services/school-service'; 
 import AcademicYearService from '../../services/academic-years-service';
 import transactionService from 'services/transaction-service';
+import StudentService from 'services/student-service';
 
 export const getSchoolsAndStudents = async () => {
   try {
@@ -18,7 +19,7 @@ export const getSchoolsAndStudents = async () => {
 
 export const getAcademicYears = async () => {
   try {
-    const response = await AcademicYearService.getAcademicYears();
+    const response = await AcademicYearService.getCurrentAcademicYear();
     if (response && response.data) {
       return response.data;
     }
@@ -28,6 +29,20 @@ export const getAcademicYears = async () => {
     return [];
   }
 };
+
+export const getMyChildrenRegistred = async () => {
+  try {
+    const response = await StudentService.getMyChildrenRegistred();
+    if (response && response.data) {
+      return [response.data];
+    }
+    return [];
+  } catch (error) {
+    console.error("Erreur lors de la récupération des enfants:", error);
+    return [];
+  }
+};
+
 
 export const postPaymentData = async (paymentData) => {
   try {

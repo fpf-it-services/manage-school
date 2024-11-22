@@ -14,7 +14,7 @@ export default function FileDialog({ open, onClose, file }) {
           alignItems="center"
           style={{ height: "100vh", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         >
-          {file ? (
+          {file && file.split(".")[file.length - 1] ? (
             <iframe src={file} title="Fichier" style={{ width: "100%", height: "100%" }} />
           ) : (
             <MDTypography>Aucun fichier à afficher</MDTypography>

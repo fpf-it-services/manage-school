@@ -13,4 +13,7 @@ class Cursus extends Model
     public function classe(){
         return $this->belongsTo(Classe::class);
     }
+    public function eleve(){
+        return $this->belongsTo(Eleve::class);
+    }
 }

@@ -7,12 +7,17 @@
 </head>
 <body>
     Bonjour Parent.Nous avons reçu une demande d'inscription pour votre enfant {{ $mailData['eleve'] }} dans l'école {{ $mailData['ecole'] }}.
-    @if($mailData['nouveau'])
-    Pour suivre cette demande,un compte vous a été crée et les informations de connexion sont:
-        <p>Email : {{ $mailData['email'] }}</p>
-        <p>Mot de passe : {{ $mailData['password'] }}</p>
-    @else       
-    Vos informations de connexion restent les mêmes. 
+    La demande a été traitée et est {{ $mailData['etat'] }}.
+    @if($mailData['motif'])
+    <p>Motif : {{ $mailData['motif'] }}</p>
+    @endif
+    @if(count($mailData["champs"]) != 0)
+    <p>Vous devez modifier : </p>
+    <ul>
+        @foreach($mailData["champs1"] as $champ)
+        <li> {{ $champ ?? "" }} </li>
+        @endforeach
+    </ul>
     @endif
 </body>
 </html>

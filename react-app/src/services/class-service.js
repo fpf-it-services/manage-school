@@ -2,8 +2,8 @@ import HttpService from "./htttp.service";
 
 class ClassService {
   // Récupérer la liste des classes
-  getClasses = async () => {
-    const endpoint = 'ecole/classes'; 
+  getClasses = async (an = 0 ) => {
+    const endpoint = an === 0 ? `ecole/classes` : `ecole/classes?annee_id=${an}`; 
     return await HttpService.get(endpoint);
   };
 
@@ -22,3 +22,5 @@ class ClassService {
 }
 
 export default new ClassService();
+
+

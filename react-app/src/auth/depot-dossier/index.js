@@ -20,6 +20,7 @@ function DepotDossier() {
   const [inputs, setInputs] = useState({
     school: "",
     level: "",
+    serie: "",
     lastName: "AVOHOU",
     firstName: "Prince",
     birthDate: "2010-12-11",
@@ -42,6 +43,7 @@ function DepotDossier() {
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
   const [levels, setLevels] = useState([]);
+  const [series, setSeries] = useState([]);
   const [errors, setErrors] = useState({});
 
   const [enabledFields, setEnabledFields] = useState({
@@ -84,7 +86,8 @@ function DepotDossier() {
       setEnabledFields({ ...enabledFields, level: true });
 
       const selectedSchoolData = data.find((school) => school.id === e.target.value);
-      setLevels(selectedSchoolData.niveaux);
+      setLevels(selectedSchoolData?.niveaux || []);
+      setSeries(selectedSchoolData?.series || []);
     }
 
     if (name === "level" && value) {
@@ -96,11 +99,19 @@ function DepotDossier() {
     }
   };
 
+  const isFileRequired = (fileName) => {
+    if (fileName === "examTranscript" && (inputs.level === "6e" || inputs.level === "2nde")) {
+      return true;
+    }
+    return false;
+  };
+
   const validateInputs = () => {
     let hasErrors = false;
     const newErrors = {
       schoolError: false,
       levelError: false,
+      serie: false,
       lastNameError: false,
       firstNameError: false,
       birthDateError: false,
@@ -177,6 +188,12 @@ function DepotDossier() {
       hasErrors = true;
     }
 
+    if (isFileRequired("examTranscript") && !inputs.examTranscript) {
+      newErrors.examTranscriptError = true;
+      setErrorMessage("Le relevé de notes d'examen est obligatoire.");
+      hasErrors = true;
+    }
+
     if (!inputs.photo) {
       newErrors.photoError = true;
       setErrorMessage("La photo est obligatoire.");
@@ -226,6 +243,7 @@ function DepotDossier() {
 
     formData.append("ecole", inputs.school);
     formData.append("niveau", inputs.level);
+    formData.append("serie", inputs.serie);
     formData.append("nom", inputs.lastName);
     formData.append("prenoms", inputs.firstName);
     formData.append("date_de_naissance", inputs.birthDate);
@@ -362,6 +380,22 @@ function DepotDossier() {
                     </Select>
                   </FormControl>
                 </MDBox>
+                {["2nde", "Tle", "1ère"].includes(inputs.level) && (
+                  <MDBox mb={2}>
+                    <FormControl fullWidth>
+                      <InputLabel>Champ Conditionnel</InputLabel>
+                      <Select
+                        name="Serie"
+                        value={inputs.serie || ""}
+                        onChange={handleChange}
+                        style={{ borderRadius: "8px", height: "45px" }}
+                      >
+                        <MenuItem value="option1">Option 1</MenuItem>
+                        <MenuItem value="option2">Option 2</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </MDBox>
+                )}
                 <MDBox mb={2}>
                   <MDInput
                     type="text"

@@ -36,6 +36,9 @@ return new class extends Migration
             $table->string('releve_de_notes')->nullable();
             $table->string('releve_de_notes_examen')->nullable();
             $table->string('acte_de_naissance')->nullable();
+            $table->enum("status",["accepte","rejete","modifable"])->nullable();
+            $table->string('motif')->nullable();
+            $table->string('champs')->nullable();
             $table->timestamps();
         });
     }

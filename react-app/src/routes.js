@@ -21,6 +21,8 @@ import TransactionHistory from "layouts/history-transaction-per-school";
 import Payment from "layouts/payments";
 import MesTransactions from "layouts/mes-transactions";
 import PendingStudents from "layouts/pending-registration-student";
+import Overview from "layouts/profile";
+import MyChildren from "layouts/mes-enfants";
 
 
 // const routes = [
@@ -64,13 +66,6 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">person</Icon>,
       route: "/my-profile",
       component: <UserProfile />,
-    }, {
-      type: "public",
-      name: "Payment",
-      key: "pay-fees",
-      icon: <Icon fontSize="small">payment</Icon>,
-      route: "/public/pay-fees",
-      component: <Paiement />,
     }, {
       type: "public",
       name: "Historique des Transcations",
@@ -137,14 +132,22 @@ const func_routes = (role) => {
   const otherRoutes = [
     {
       type: "examples",
-      name: "My Transactions",
+      name: "En Attente",
+      key: "en-attente",
+      icon: <Icon fontSize="small">hourglass_empty</Icon>,
+      route: "/en-attente",
+      component: <MyChildren />,
+    }, 
+    {
+      type: "examples",
+      name: "Mes Transactions", 
       key: "my-transactions",
       icon: <Icon fontSize="small">receipt_long</Icon>,
       route: "/my-transactions",
       component: <MesTransactions />,
     }, {
       type: "examples",
-      name: "Pay Fees",
+      name: "Payer Frais",
       key: "pay-fees",
       icon: <Icon fontSize="small">payment</Icon>,
       route: "/pay-fees",

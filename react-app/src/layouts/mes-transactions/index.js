@@ -1,17 +1,41 @@
-import React, { useState } from "react";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
+import React, { useEffect, useState } from "react";
 import MDBox from "components/MDBox";
+import { Tab, Tabs, Card, Grid, Box } from "@mui/material";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import useTransactionTable from "layouts/mes-transactions/data"; 
+import { useTransactionTable, fetchChildrens } from "./data";
 
 const MesTransactions = () => {
-const { columns, rows } = useTransactionTable(); 
+  // const { columns, rows } = useTransactionTable();
+
+  // const childrenData = [
+  //   { id: 1, name: "Jean Dupont" },
+  //   { id: 2, name: "Claire Dupont" },
+  // ];
+
+  const [activeTab, setActiveTab] = useState(0);
+  const [variables, setVariables] = useState({})
+  const [childrenData, setChildrenData] = useState([])
+
+  useEffect(async () => {
+      try {
+        const response = await fetchChildrens();
+        setChildrenData(response || []);
+      } catch (error) {
+        setChildrenData([]);
+        console.error("Erreur lors de la récupération des transactions", error);
+      }
+  }, []);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    // const { columns, rows } = useTransactionTable();
+    setVariables(useTransactionTable())
+  };
 
   return (
     <DashboardLayout>
@@ -35,16 +59,22 @@ const { columns, rows } = useTransactionTable();
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <Tabs value={activeTab} onChange={handleTabChange}>
+                    {childrenData.map((child, index) => (
+                      <Tab key={child.id} label={`${child.nom} ${child.prenoms}`} />
+                    ))}
+                  </Tabs>
+                </Box>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={variables}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
-                  onRowClick={onFinanceSelect} 
                 />
               </MDBox>
-            </Card> 
+            </Card>
           </Grid>
         </Grid>
       </MDBox>
