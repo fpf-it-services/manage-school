@@ -3,7 +3,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import CircularProgress from "@mui/material/CircularProgress";
 import TransactionService from "services/transaction-service";
-import StudentService from 'services/student-service';
+import StudentService from "services/student-service";
 
 export const useTransactionTable = () => {
   const [transactions, setTransactions] = useState([]);
@@ -11,10 +11,14 @@ export const useTransactionTable = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchTransactions = async (id) => {
+    const fetchTransactions = async (id = 0) => {
       try {
-        const response = await TransactionService.getTransactions(id);
-        setTransactions(response.data || []);
+        if (id !== 0) {
+          const response = await TransactionService.getTransactions(id);
+          setTransactions(response.data || []);
+        } else {
+          setTransactions([])
+        }
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des transactions", error);
@@ -46,15 +50,8 @@ export const useTransactionTable = () => {
               <CircularProgress />
             </MDBox>
           ),
-          name: "",
-          ecole: "",
-          date: "",
-          montant_paye: "",
-          payeur: "",
-          observations: "",
         },
       ],
-      childrenData: [],
     };
   }
 
@@ -70,15 +67,8 @@ export const useTransactionTable = () => {
               </MDTypography>
             </MDBox>
           ),
-          name: "",
-          ecole: '',
-          date: "",
-          montant_paye: "",
-          payeur: "",
-          observations: "",
         },
       ],
-      childrenData: [],
     };
   }
 
@@ -98,9 +88,9 @@ export const useTransactionTable = () => {
               </MDTypography>
             ),
             ecole: (
-                <MDTypography variant="caption" fontWeight="medium">
-                    {transaction.ecole}
-                </MDTypography>
+              <MDTypography variant="caption" fontWeight="medium">
+                {transaction.ecole}
+              </MDTypography>
             ),
             date: (
               <MDTypography variant="caption" fontWeight="medium">
@@ -133,30 +123,22 @@ export const useTransactionTable = () => {
             {
               numero: (
                 <MDBox display="flex" justifyContent="center" alignItems="center" height="100%">
-                  <MDTypography variant="caption" color="text">
+                  <MDTypography variant="caption" fontWeight="bold" color="text">
                     Aucune donnée transactionnelle disponible.
                   </MDTypography>
                 </MDBox>
               ),
-              name: "",
-              ecole: "",
-              date: "",
-              montant_paye: "",
-              payeur: "",
-              observations: "",
             },
           ],
-          childrenData: transactions
   };
-}
-
+};
 
 export const fetchChildrens = async () => {
   try {
-    const response = await StudentService.getMyChildren();
-    return response ? response.data : []
+    const response = await StudentService.getMyChildrenRegistred();
+    return response ? response.data : [];
   } catch (error) {
     console.error("Erreur lors de la récupération des enfants", error);
-    return []
+    return [];
   }
-}
+};

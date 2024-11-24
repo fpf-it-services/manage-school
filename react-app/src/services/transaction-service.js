@@ -32,6 +32,13 @@ class TransactionService {
     }
   }
 
+  sendRegisterPaymentData = async (id, paymentData) => {
+    const endpoint = `parents/eleves/accepte/${id}`;
+    return await HttpService.post(endpoint, paymentData);
+  };
+
+  
+
   sendPaymentData = async (paymentData) => {
     const endpoint = `montants`;
     return await HttpService.post(endpoint, paymentData);

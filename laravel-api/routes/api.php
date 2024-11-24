@@ -77,6 +77,7 @@ Route::prefix("v2")->group(function(){
                 Route::get("eleves/attente",[ParentController::class, "eleve_en_attentes"]);
                 Route::post("eleves/attente/{id}",[ParentController::class, "updatePendingStudent"]);
                 Route::get("eleves",[ParentController::class, "eleves"]);
+                Route::post("eleves/accepte/{id}",[TransactionController::class, "saveInscriptionFree"]);
             });
         });
     });

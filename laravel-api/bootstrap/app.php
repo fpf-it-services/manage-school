@@ -26,4 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => $e->validator->errors()->all()
             ], 422);
         });
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    "message"  => "Not found"
+                ]
+            ], 404);
+        });
     })->create();

@@ -3,9 +3,9 @@ import { Grid, Card, Select, MenuItem, Button, TextField } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
-
+import Swal from "sweetalert2";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getSchoolsAndStudents, getAcademicYears, postPaymentData, getMyChildrenRegistred } from "./data";
+import { getSchoolsAndStudents, getAcademicYears, postPaymentData, getMyChildrenRegistred, getStats, sendRegisterPaymentData } from "./data";
 import { useKKiaPay } from "kkiapay-react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -15,7 +15,7 @@ const Payment = () => {
   const { state } = useLocation();
   const [child, setChild] = useState(state?.child);
   const [children, setChildren] = useState([]);
-  // const [acceptes, setAcceptes] = useState([]);
+  const [fromI, setFromI] = useState(true);
   const [isFromMyChildren, setIsFromMyChildren] = useState(state?.isFromMyChildren);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedSchool, setSelectedSchool] = useState("");
@@ -60,9 +60,6 @@ const Payment = () => {
     if (!selectedFee) newErrors.fee = "Sélectionnez un type de frais";
     if (!amount) newErrors.amount = "Le montant est requis";
     if (!selectedYear) newErrors.year = "Sélectionnez une année académique";
-
-
-    console.log(newErrors)
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -81,8 +78,23 @@ const Payment = () => {
         //   reference: response.transactionId,
         // })
       ) {
+        Swal.fire("Réussi", "Votre paiement a été effectué avec succès. Vous recevrez votre reçu par mail.", "success");
         resetForm();
-        navigate("/my-transactions");
+        // navigate("/my-transactions");
+      }
+      console.log(fromI)
+      if(fromI){
+        sendRegisterPaymentData(selectedStudent, { montant: amount, reference: response.transactionId}  )
+      } else {
+        postPaymentData({
+          eleve_id: selectedStudent,
+          type_frais: selectedFee,
+          ecole_id: selectedSchool,
+          annee_id: selectedYear,
+          classe_id: niveau,
+          montant: amount,
+          reference: response.transactionId,
+        })
       }
     },
     [amount, selectedStudent, selectedFee, selectedSchool, selectedYear, selectedClass, navigate]
@@ -93,10 +105,12 @@ const Payment = () => {
   }, []);
 
   useEffect(() => {
+    console.log(state)
     if (state?.child) {
       setChild(state.child);
     }
     if (state?.isFromMyChildren) {
+      setFromI(true)
       setIsFromMyChildren(state.isFromMyChildren);
     }
   }, [state]);
@@ -113,6 +127,7 @@ const Payment = () => {
   }, [child]);
 
   useEffect(() => {
+    
     addKkiapayListener("success", successHandler);
     addKkiapayListener("failed", failureHandler);
 
@@ -171,18 +186,44 @@ const Payment = () => {
     }
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (validateFields()) {
-      openKkiapayWidget({
-        amount,
-        api_key: "f11e39e0652511efbf02478c5adba4b8",
-        sandbox: true,
-        phone: "97000000",
+      const result = await Swal.fire({
+        title: "Confirmer ce paiement ?",
+        text: `Vous confirmez le payment d'une somme de ${amount} FCFA.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Oui, accepter",
+        cancelButtonText: "Annuler",
       });
+
+      if (result.isConfirmed) {
+        openKkiapayWidget({
+          amount,
+          api_key: "f11e39e0652511efbf02478c5adba4b8",
+          sandbox: true,
+          phone: "97000000",
+        });
+      }
     }
   };
 
+
+  
+
+  const handleSelectFeeChange = async (e) => {
+    setSelectedFee(e.target.value)
+    try {
+      const response = selectedStudent ? await getStats(selectedStudent) : null;
+      console.log(response)
+    } catch (error) {
+      console.error("Erreur lors de la récupération des enfants :", error);
+      setChildren([]);
+    }
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -297,7 +338,7 @@ const Payment = () => {
                           displayEmpty
                           value={selectedFee}
                           disabled={!selectedStudent}
-                          onChange={(e) => setSelectedFee(e.target.value)}
+                          onChange={(e) => handleSelectFeeChange(e)}
                           variant="outlined"
                           error={!!errors.fee}
                           helperText={errors.fee}

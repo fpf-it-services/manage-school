@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Classe;  
 use App\Models\Cursus; 
 use App\Models\Montant;  
+use App\Models\EleveEnAttente;
 use App\Models\Eleve;  
 use App\Models\Annee;  
 use App\Models\Ecole;  
@@ -16,7 +17,8 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\AddMontantRequest; 
 use App\Http\Resources\TransactionResource;  
 use App\Http\Services\Api\MontantService;  
-use App\Http\Requests\AddTransactionRequest;  
+use App\Http\Requests\AddTransactionRequest;
+use App\Http\Services\Api\EleveEnAttente as ServiceEleveEnAttente;
 
 class TransactionController extends Controller
 {
@@ -70,6 +72,51 @@ class TransactionController extends Controller
             "success" => true,  // Indique que la requête a réussi
             "montant" => $montant_total - $montant_paye  // Montant restant à payer
         ]);
+    }
+    /**
+     * postPaymentData({
+        //   eleve_id: selectedStudent,
+        //   montant: amount,
+        //   reference: response.transactionId,
+        //   email: response.email,
+     */
+    public function saveInscriptionFree(Request $request,$eleve_attente_id){
+        $eleve = EleveEnAttente::where('id',$eleve_attente_id)->with(["ecole","niveau"])->first();
+        if($eleve == null){
+            return response()->json([
+                "success" => false,
+                "message" => "L'élève n'est pas retrouvé"
+            ],404);
+        }
+        $montant = MontantService::getMontantOfInfos($eleve->ecole_id,$eleve->niveau_id,$eleve->serie_id);
+        if($montant == null){
+            return response()->json([
+                "success" => false,
+                "message" => "Montant non défini pour ce niveau"
+            ],404);
+        }
+        if($request->reference == null){
+            return response()->json([
+                "success" => false,
+                "message" => "Référence manquante"
+            ],422);
+        }
+        if($request->montant == $montant->frais_inscription){
+            if($request->reference != null){
+                $response = ServiceEleveEnAttente::acceptPendingStudent($eleve,$request->reference,$montant->frais_inscription,$request->email);
+                return response()->json(["message" => $response[1] ?? "" ],$response[2]);
+            }else{
+                return response()->json([
+                    "success" => false,
+                    "message" => "Référence manquante"
+                ],422);
+            }
+        }else{
+            return response()->json([
+                "success" => false,
+                "message" => "Les frais d'inscription doivent être " . $montant->frais_inscription
+            ],422);
+        }
     }
     public function getAllTransactions(Request $request){
         /*

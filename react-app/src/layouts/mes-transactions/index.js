@@ -21,19 +21,30 @@ const MesTransactions = () => {
   const [variables, setVariables] = useState({})
   const [childrenData, setChildrenData] = useState([])
 
+  const { columns, rows } = useTransactionTable();
+
   useEffect(async () => {
-      try {
-        const response = await fetchChildrens();
-        setChildrenData(response || []);
-      } catch (error) {
+    try {
+      const response = await fetchChildrens();
+      console.log(response)
+      if (response && response[0]) {
+        const { acceptes = [], inscrits = [] } = response[0];
+        const childrenArray = [...inscrits];
+        console.log(childrenArray)
+        setChildrenData(childrenArray);
+      } else {
+        console.error("Données manquantes dans la réponse.");
         setChildrenData([]);
-        console.error("Erreur lors de la récupération des transactions", error);
       }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des enfants :", error);
+      setChildrenData([]);
+    }
   }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    // const { columns, rows } = useTransactionTable();
+    // 
     setVariables(useTransactionTable())
   };
 
@@ -67,7 +78,7 @@ const MesTransactions = () => {
                   </Tabs>
                 </Box>
                 <DataTable
-                  table={variables}
+                  table={{ columns, rows }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
