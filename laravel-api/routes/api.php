@@ -70,6 +70,7 @@ Route::prefix("v2")->group(function(){
                 Route::apiResource("eleves", EleveController::class)->except(["show","destroy"]);
                 Route::post('/eleves/classe/{classe}', [EleveController::class, 'ajout_eleve_classe']);
                 Route::get("montants-par-niveau",[MontantController::class,"montant_niveau"]);
+                Route::post('/logout', [AuthController::class, 'logout']);
             });
         });
         Route::prefix("parents")->group(function () {
@@ -78,6 +79,7 @@ Route::prefix("v2")->group(function(){
                 Route::post("eleves/attente/{id}",[ParentController::class, "updatePendingStudent"]);
                 Route::get("eleves",[ParentController::class, "eleves"]);
                 Route::post("eleves/accepte/{id}",[TransactionController::class, "saveInscriptionFree"]);
+                Route::post('/logout', [AuthController::class, 'logout']); 
             });
         });
     });

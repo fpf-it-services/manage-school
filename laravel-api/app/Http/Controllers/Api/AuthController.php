@@ -105,14 +105,20 @@ class AuthController extends Controller
      *
      * @return JsonResponse Réponse JSON indiquant le succès de la déconnexion
      */
-    public function logout(): JsonResponse
+    public function logout() /*: JsonResponse*/
     {
-        Auth::user()->tokens()->delete();
+        if(Auth::user()){
+            Auth::user()->tokens()->delete();
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Logged out successfully.',
+            ], 204);
+        }
         return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully.',
-        ], 204);
+            'success' => false,
+            'message' => 'Non autorisé',
+        ], 401);
     }
 
     /**

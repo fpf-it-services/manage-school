@@ -75,10 +75,6 @@ class TransactionController extends Controller
     }
     /**
      * postPaymentData({
-        //   eleve_id: selectedStudent,
-        //   montant: amount,
-        //   reference: response.transactionId,
-        //   email: response.email,
      */
     public function saveInscriptionFree(Request $request,$eleve_attente_id){
         $eleve = EleveEnAttente::where('id',$eleve_attente_id)->with(["ecole","niveau"])->first();

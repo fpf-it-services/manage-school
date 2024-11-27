@@ -17,8 +17,15 @@ class AuthService {
     return await HttpService.post(registerEndpoint, credentials);
   };
 
-  logout = async () => {
-    const logoutEndpoint = 'logout';
+  logout = async (role) => {
+    let logoutEndpoint;
+    if(role === "admin"){
+      logoutEndpoint = 'logout'
+    } else if(role === "ecole"){
+      logoutEndpoint = 'ecole/logout'
+    } else {
+      logoutEndpoint = 'parents/logout'
+    }
     return await HttpService.post(logoutEndpoint);
   };
 

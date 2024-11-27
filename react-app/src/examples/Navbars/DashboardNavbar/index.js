@@ -66,7 +66,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   });
 
   const handleLogOut = async () => {
-    const response = await AuthService.logout();
+    const response = await AuthService.logout(authContext.role);
     authContext.logout();
   };
 

@@ -6,20 +6,24 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDAlert from "components/MDAlert";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import AuthService from "services/auth-service";
 import { AuthContext } from "context";
-import { InputLabel } from "@mui/material";
 
 function Register() {
   const authContext = useContext(AuthContext);
+  const [alert, setAlert] = useState({ open: false, message: "", type: "" });
 
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
-    password: "",
     address: "",
+    academicPeriod: "",
     phone: "",
     logo: null,
     agree: false,
@@ -28,8 +32,8 @@ function Register() {
   const [errors, setErrors] = useState({
     nameError: false,
     emailError: false,
-    passwordError: false,
     addressError: false,
+    academicPeriodError: false,
     phoneError: false,
     logoError: false,
     agreeError: false,
@@ -45,9 +49,15 @@ function Register() {
     });
   };
 
+  useEffect(() => {
+    if (alert.open) {
+      const timer = setTimeout(() => setAlert({ open: false, message: "", type: "" }), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("cccc")
 
     const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const phoneFormat = /^[0-9]{10,15}$/;
@@ -62,13 +72,13 @@ function Register() {
       return;
     }
 
-    // if (inputs.password.trim().length < 8) {
-    //   setErrors({ ...errors, passwordError: true });
-    //   return;
-    // }
-
     if (inputs.address.trim().length === 0) {
       setErrors({ ...errors, addressError: true });
+      return;
+    }
+
+    if (inputs.academicPeriod.trim().length === 0) {
+      setErrors({ ...errors, academicPeriodError: true });
       return;
     }
 
@@ -90,38 +100,22 @@ function Register() {
     const formData = new FormData();
     formData.append("name", inputs.name);
     formData.append("email", inputs.email);
-    // formData.append("password", inputs.password);
+    formData.append("academic_period", inputs.academicPeriod);
     formData.append("address", inputs.address);
     formData.append("phone", inputs.phone);
     formData.append("logo", inputs.logo);
-    
-    // const myData = {
-    //   data: {
-    //     type: "users",
-    //     attributes: { ...inputs, password_confirmation: inputs.password },
-    //     relationships: {
-    //       roles: {
-    //         data: [
-    //           {
-    //             type: "roles",
-    //             id: "1",
-    //           },
-    //         ],
-    //       },
-    //     },
-    //   },
-    // };
-    console.log("cccc2")
 
     try {
       const response = await AuthService.register(formData);
-
-      // authContext.login(response.access_token, response.refresh_token);
-
+      setAlert({
+        open: true,
+        message: "Dossier envoyé avec succès ! Un mail vous a été envoyé à l'adresse fourni.",
+        type: "success",
+      });
       setInputs({
         name: "",
         email: "",
-        password: "",
+        academicPeriod: "",
         address: "",
         phone: "",
         logo: null,
@@ -131,7 +125,7 @@ function Register() {
       setErrors({
         nameError: false,
         emailError: false,
-        passwordError: false,
+        academicPeriodError: false,
         addressError: false,
         phoneError: false,
         logoError: false,
@@ -142,6 +136,11 @@ function Register() {
     } catch (err) {
       setErrors({ ...errors, error: true, errorText: err.message });
       console.error(err);
+      setAlert({
+        open: true,
+        message: "Une erreur est survenue. Veuillez réessayer.",
+        type: "error",
+      });
     }
   };
 
@@ -164,6 +163,13 @@ function Register() {
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
+        {alert.open && (
+            <MDBox mb={3}>
+              <MDAlert color={alert.type} dismissible onClose={() => setAlert({ open: false })}>
+                {alert.message}
+              </MDAlert>
+            </MDBox>
+          )}
           <MDBox component="form" role="form" method="POST" onSubmit={submitHandler}>
             <MDBox mb={2}>
               <MDInput
@@ -216,6 +222,26 @@ function Register() {
                 </MDTypography>
               )}
             </MDBox> */}
+            <MDBox mb={2}>
+                  <FormControl fullWidth>
+                    <InputLabel>Période Académique</InputLabel>
+                    <Select
+                      name="academicPeriod"
+                      value={inputs.academicPeriod}
+                      onChange={changeHandler}
+                      style={{ borderRadius: "8px", height: "45px" }}
+                      error={errors.academicPeriodError}
+                    >
+                      <MenuItem value="trimestre">Trimestre</MenuItem>
+                      <MenuItem value="semestre">Semestre</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {errors.academicPeriodError && (
+                <MDTypography variant="caption" color="error" fontWeight="light">
+                  Veuillez choisir une option
+                </MDTypography>
+              )}
+                </MDBox>
             <MDBox mb={2}>
               <MDInput
                 type="text"
