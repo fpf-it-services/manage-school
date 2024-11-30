@@ -4,7 +4,6 @@ class TransactionService {
   async getTransactions(studentId) {
     try {
       const response = await HttpService.get(`montants/historique/${studentId}`);
-      console.log(response)
       return response.data; 
     } catch (error) {
       console.error(`Erreur lors de la récupération des transactions pour l'élève avec ID ${studentId}:`, error);
@@ -37,7 +36,17 @@ class TransactionService {
     return await HttpService.post(endpoint, paymentData);
   };
 
-  
+  checkPaymentRegister = async (id) => {
+    const endpoint = `parents/eleves/verifier-disponibilite/${id}`;
+    return await HttpService.post(endpoint);
+  };
+
+/*   checkPaymentOther = async (id, checkData) => {
+    const endpoint = `parents/eleves/accepte/${id}`;
+    return await HttpService.post(endpoint, checkData);
+  };
+
+   */
 
   sendPaymentData = async (paymentData) => {
     const endpoint = `montants`;

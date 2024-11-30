@@ -38,11 +38,11 @@ const AuthContextProvider = ({ children }) => {
     localStorage.setItem("role", userRole);
     setRole(userRole)
     setIsAuthenticated(true);
-    if(role === "admin"){
-      navigate("/gestion-ecoles");
-    } else if(role === "ecole"){
+    if(userRole === "admin"){
+      navigate("/school-management");
+    } else if(userRole === "ecole"){
       navigate("/my-classes");
-    } else {
+    } else if(userRole === "parent") {
       navigate("/en-attente");
     }
   };

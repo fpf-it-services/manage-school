@@ -8,8 +8,8 @@ export const getClassesAndTransactionByYear = async (year, classe) => {
     }
   try {
     const response = await TransactionService.getAllTransactions(year, classe);
-    if (response && response.data) {  
-      return response.data;
+    if (response) {  
+      return response;
     }
     return []; 
   } catch (error) {
@@ -21,7 +21,6 @@ export const getClassesAndTransactionByYear = async (year, classe) => {
 export const getAcademicYears = async () => {
   try {
     const response = await AcademicYearService.getAcademicYears();
-    console.log(response)
     if (response && response.data) {
       return response.data;
     }
@@ -36,7 +35,6 @@ export const getAcademicYears = async () => {
 export const getClasses = async (an) => {
   try {
     const response = await ClassService.getClasses(an);
-    console.log(response)
     if (response && response.data) {
       return response.data;
     }

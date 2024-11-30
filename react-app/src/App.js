@@ -9,8 +9,8 @@ import Configurator from "examples/Configurator";
 import theme from "assets/theme";
 import themeDark from "assets/theme-dark";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
-import brandWhite from "assets/images/logo-ct.png";
-import brandDark from "assets/images/logo-ct-dark.png";
+import brandWhite from "assets/images/apple-icon.png";
+import brandDark from "assets/images/apple-icon.png";
 import { setupAxiosInterceptors } from "./services/interceptor";
 import ProtectedRoute from "examples/ProtectedRoute";
 import ForgotPassword from "auth/forgot-password";
@@ -18,8 +18,6 @@ import ResetPassword from "auth/reset-password";
 import Login from "auth/login";
 import Register from "auth/register";
 import { AuthContext } from "context";
-// import UserProfile from "layouts/user-profile";
-// import UserManagement from "layouts/user-management";
 import { Helmet } from "react-helmet";
 import func_routes from "routes";
 import DepotDossier from "auth/depot-dossier";
@@ -156,7 +154,7 @@ export default function App() {
             <Sidenav
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="Manage School"
+              brandName="School Manager"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
@@ -168,31 +166,12 @@ export default function App() {
         {layout === "vr" && <Configurator />}
         <Routes>
           <Route path="/" element={<Navigate to="/auth/login" />} />
+          <Route path="/" element={<Login />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/depot-de-dossier" element={<DepotDossier />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
-          {/* <Route
-            exact
-            path="user-profile"
-            element={
-              <ProtectedRoute isAuthenticated={authContext.isAuthenticated}>
-                <UserProfile />
-              </ProtectedRoute>
-            }
-            key="user-profile"
-          />
-          <Route
-            exact
-            path="user-management"
-            element={
-              <ProtectedRoute isAuthenticated={authContext.isAuthenticated}>
-                <UserManagement />
-              </ProtectedRoute>
-            }
-            key="user-management"
-          /> */}
           {getRoutes(routes)}
           <Route path="*" element={<Navigate to="/auth/login" />} />
         </Routes>

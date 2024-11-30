@@ -21,8 +21,8 @@ function Login() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const [inputs, setInputs] = useState({
-    email: "admin@jsonapi.com",
-    password: "secret",
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({
@@ -68,7 +68,6 @@ function Login() {
 
     try {
       const response = await AuthService.login(myData);
-      console.log(response)
       authContext.login(response.token, response.role, response.refresh_token);
     } catch (res) {
       if (res.hasOwnProperty("message")) {
@@ -171,7 +170,7 @@ function Login() {
               </MDTypography>
             </MDBox>
             <MDBox mb={1} textAlign="center">
-              <MDTypography variant="button" color="text">
+              <MDTypography mr={2} variant="button" color="text">
                 Vous n&apos;avez pas de compte ?{" "}
                 <MDTypography
                   component={Link}
@@ -179,9 +178,21 @@ function Login() {
                   variant="button"
                   color="info"
                   fontWeight="medium"
+                  fontSize="12px"
                   textGradient
                 >
-                  S'inscrire
+                  École
+                </MDTypography>{" || "}
+                <MDTypography
+                  component={Link}
+                  to="/auth/depot-de-dossier"
+                  variant="button"
+                  color="info"
+                  fontWeight="medium"
+                  fontSize="12px"
+                  textGradient
+                >
+                  Dépot de Dossier
                 </MDTypography>
               </MDTypography>
             </MDBox>

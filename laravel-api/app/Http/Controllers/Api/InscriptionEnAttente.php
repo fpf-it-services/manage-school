@@ -102,7 +102,9 @@ class InscriptionEnAttente extends Controller
     public function getRegistredStudent(){
         return response()->json([
             'success' => true,
-            'data' => PendingStudentResource::collection(EleveEnAttente::where("ecole_id",auth()->user()->id)->where("status",null)->with(["ecole", "niveau"])->get()),
+            'data' => PendingStudentResource::collection(EleveEnAttente::where("ecole_id",auth()->user()->id)->where(function($query){
+                $query->where("status",null)->orWhere("status",'modifiable');
+            })->with(["ecole", "niveau"])->get()),
         ], 200);
     }
     private function setStatus(EleveEnAttente $eleve,$status){

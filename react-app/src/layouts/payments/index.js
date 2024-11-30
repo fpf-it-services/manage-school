@@ -5,7 +5,7 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import Swal from "sweetalert2";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getSchoolsAndStudents, getAcademicYears, postPaymentData, getMyChildrenRegistred, getStats, sendRegisterPaymentData } from "./data";
+import { getSchoolsAndStudents, getAcademicYears, postPaymentData, getMyChildrenRegistred, getStats, sendRegisterPaymentData, checkPaymentOther, checkPaymentRegister } from "./data";
 import { useKKiaPay } from "kkiapay-react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -66,25 +66,15 @@ const Payment = () => {
 
   const successHandler = useCallback(
     (response) => {
-      console.log(selectedStudent, selectedFee, selectedYear, selectedSchool, niveau, amount) 
-      if (true
-        // postPaymentData({
-        //   eleve_id: selectedStudent,
-        //   type_frais: selectedFee,
-        //   ecole_id: selectedSchool,
-        //   annee_id: selectedYear,
-        //   classe_id: niveau,
-        //   montant: amount,
-        //   reference: response.transactionId,
-        // })
-      ) {
-        Swal.fire("Réussi", "Votre paiement a été effectué avec succès. Vous recevrez votre reçu par mail.", "success");
-        resetForm();
-        // navigate("/my-transactions");
-      }
-      console.log(fromI)
       if(fromI){
-        sendRegisterPaymentData(selectedStudent, { montant: amount, reference: response.transactionId}  )
+        try {
+          sendRegisterPaymentData(selectedStudent, { montant: amount, reference: response.transactionId}  )
+          Swal.fire("Réussi", "Votre paiement a été effectué avec succès. Vous recevrez votre reçu par mail.", "success");
+          resetForm();
+        } catch (e) {
+          Swal.fire("Echec", "Aucune classe disponible pour l'instant. Veuillez patientez", "error");
+        }
+        
       } else {
         postPaymentData({
           eleve_id: selectedStudent,
@@ -101,11 +91,11 @@ const Payment = () => {
   );
 
   const failureHandler = useCallback((error) => {
+    Swal.fire("Echec", `Une erreur est survenue lors du paiement. Veuillez réessayer plus tard.`, "error");
     console.log(error);
   }, []);
 
   useEffect(() => {
-    console.log(state)
     if (state?.child) {
       setChild(state.child);
     }
@@ -199,8 +189,25 @@ const Payment = () => {
         confirmButtonText: "Oui, accepter",
         cancelButtonText: "Annuler",
       });
+      let response;
+      if(fromI){
+        response = await checkPaymentRegister(selectedStudent)
+      } 
+      /* else {
+        response = await checkPaymentOther(selectedStudent, {
+          type_frais: selectedFee,
+          ecole_id: selectedSchool,
+          annee_id: selectedYear,
+          classe_id: niveau,
+          montant: amount,
+        })
+      } */
 
-      if (result.isConfirmed) {
+      if(!response.success) {
+        Swal.fire("Echec", `${response.error}. Veuillez réessayer demain ${new Date() +1}.`, "error");
+      }
+
+      if (result.isConfirmed && response.success) {
         openKkiapayWidget({
           amount,
           api_key: "f11e39e0652511efbf02478c5adba4b8",
@@ -218,7 +225,6 @@ const Payment = () => {
     setSelectedFee(e.target.value)
     try {
       const response = selectedStudent ? await getStats(selectedStudent) : null;
-      console.log(response)
     } catch (error) {
       console.error("Erreur lors de la récupération des enfants :", error);
       setChildren([]);
@@ -262,6 +268,7 @@ const Payment = () => {
                           displayEmpty
                           value={selectedStudent}
                           onChange={handleStudentChange}
+                          disabled={fromI}
                           variant="outlined"
                           error={!!errors.student}
                           helperText={errors.student}
@@ -287,7 +294,7 @@ const Payment = () => {
                           fullWidth
                           displayEmpty
                           value={selectedSchool || ""}
-                          disabled={!selectedStudent}
+                          disabled={!selectedStudent || fromI}
                           variant="outlined"
                           error={!!errors.school}
                           helperText={errors.school}
@@ -337,7 +344,7 @@ const Payment = () => {
                           fullWidth
                           displayEmpty
                           value={selectedFee}
-                          disabled={!selectedStudent}
+                          disabled={!selectedStudent || fromI}
                           onChange={(e) => handleSelectFeeChange(e)}
                           variant="outlined"
                           error={!!errors.fee}
@@ -366,6 +373,7 @@ const Payment = () => {
                             type="text"
                             label="Niveau"
                             fullWidth
+                            disabled
                             value={selectedLevel || ""}
                             onChange={(e) => setSelectedLevel(e.target.value)}
                             error={!!errors.level}
@@ -402,8 +410,8 @@ const Payment = () => {
                         <MDInput
                           type="number"
                           label="Montant"
-                          fullWidth
-                          disabled={!selectedStudent}
+                          fullWidth 
+                          disabled={!selectedStudent || fromI}
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
                           error={!!errors.amount}

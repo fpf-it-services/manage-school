@@ -61,31 +61,31 @@
     <div class="recu-body">
         <div class="header">
             <div class="logo">
-                <img src="{{ storage_path($recu->logo_ecole) }}" alt="Logo" style="max-width: 100px;">
+                <img src="{{ storage_path('app/public/' . $recu['logo_ecole']) }}" alt="Logo" style="max-width: 100px;">
             </div>
             <h1>Reçu de paiement</h1>
         </div>
 
         <div class="content">
             <div class="info-destinataire">
-                <p> {{ $recu->sexe == "M" ? "Mr" : "Mme" }} {{$recu->nom_prenoms}}  <br> {{$recu->adresse_eleve}} </p>
+                <p> {{ $recu['sexe'] == "M" ? "Mr" : "Mme" }} {{$recu['nom_tuteur1']}}  <br> {{$recu['adresse_eleve']}} </p>
             </div>
 
-            <p>Nous avons bien reçu le {{$recu->date_transaction}} la somme de {{$recu->montant_lettre}} FCFA  ( {{number_format($recu->montant)}} FCFA) pour le compte
-                @if ($recu->type_frais == "frais_inscription")
+            <p>Nous avons bien reçu le {{$recu['date_transaction']}} la somme de {{$recu['montant_lettre']}} FCFA  ( {{number_format($recu['montant'])}} FCFA) pour le compte
+                @if ($recu['type_frais'] == "frais_inscription")
                     {{"de l'inscription de "}}
-                @elseif($recu->type_frais == "frais_reinscription")
+                @elseif($recu['type_frais'] == "frais_reinscription")
                 {{"de la réinscription de "}}
-                @elseif($recu->type_frais == "frais_formation")
+                @elseif($recu['type_frais'] == "frais_formation")
                 {{"de la scolarité de "}} 
                 @else
                 {{"des frais annexes de "}} 
                 @endif
-                {{ $recu->sexe == "M" ? "Mr" : "Mme" }} {{$recu->nom_prenoms}}.
+                {{ $recu['sexe'] == "M" ? "Mr" : "Mme" }} {{$recu['nom_prenoms']}}.
             </p>
 
             <div class="signature-section">
-                <p>Fait à {{$recu->adresse_ecole}} le {{$recu->date_transaction}}</p>
+                <p>Fait à {{$recu['adresse_ecole']}} le {{$recu['date_transaction']}}</p>
                 <div class="signature-box">Signature :</div>
             </div>
         </div>

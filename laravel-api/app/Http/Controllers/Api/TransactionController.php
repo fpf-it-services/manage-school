@@ -23,6 +23,8 @@ use App\Mail\RecuMailable;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Services\Api\ClasseService;
+use App\Mail\NotificationVerificationInscriptionMail;
 
 class TransactionController extends Controller
 {
@@ -78,6 +80,38 @@ class TransactionController extends Controller
             "montant" => $montant_total - $montant_paye  // Montant restant à payer
         ]);
     }
+    public function verifier_disponibilite(Request $request, $eleve_attente_id){
+        $eleve = EleveEnAttente::where('id', $eleve_attente_id)->with(["ecole", "niveau"])->first();
+        $message = null;
+        if ($eleve == null) {
+            return response()->json([
+                "success" => false,
+                "error" => "L'élève n'est pas retrouvé"
+            ]);
+        }
+        $montant = MontantService::getMontantOfInfos($eleve->ecole_id, $eleve->niveau_id, $eleve->serie_id);
+        if ($montant == null) {
+            $message = "Montant non défini pour le niveau " . $eleve->niveau?->niveau;
+        }
+        $annee_id = Annee::orderByDesc("id")->first()?->id;
+            if($annee_id == null){
+                $message = "Aucune année créée";
+            }
+        $classe_id = ClasseService::getFreeClassByInfos($eleve->ecole_id,$eleve->niveau_id,$eleve->serie_id);
+        if($classe_id == null){
+            $message = "Aucune classe disponible pour le niveau " . $eleve->niveau?->niveau;
+        }
+        if($message !== null){
+            Mail::to($eleve->ecole?->email)->send(new NotificationVerificationInscriptionMail($message));
+            return response()->json([
+                "success" => false,
+                "error" => $message
+            ]);
+        }
+        return response()->json([
+            "success" => true
+        ]);
+    }
     /**
      * postPaymentData({
      */
@@ -106,6 +140,32 @@ class TransactionController extends Controller
         if ($request->montant == $montant->frais_inscription) {
             if ($request->reference != null) {
                 $response = ServiceEleveEnAttente::acceptPendingStudent($eleve, $request->reference, $montant->frais_inscription, $request->email);
+
+                $transaction = $response[3];
+                $recu = [
+                    "logo_ecole" => $eleve->ecole->logo,
+                    "sexe" => $eleve->sexe,
+                    "nom_tuteur1" => $eleve->nom_complet_tuteur1,
+                    "nom_prenoms" => $eleve->nom . ' ' . $eleve->prenoms,
+                    "adresse_eleve" => $eleve->adresse_tuteur1,
+                    "date_transaction" => $transaction->created_at->format("d/m/Y"),
+                    "montant" => $transaction->montant,
+                    "montant_lettre" => $this->convertirEnLettres($transaction->montant),
+                    "type_frais" => $transaction->type_frais,
+                    "adresse_ecole" => $eleve->ecole->adresse
+                ];
+                $pdf = Pdf::loadView('pdf.recu', ["recu" => $recu]);
+
+                $date = date('Y-m-d_H-i-s');
+                $filePath = "pdf/recu_{$date}.pdf";
+
+                // Enregistrer le fichier dans le dossier 'storage/app/public/pdf'
+                Storage::disk('public')->put($filePath, $pdf->output());
+
+                // Envoyer l'email avec le fichier attaché
+                Mail::to($eleve->email_tuteur1)->send(new RecuMailable($filePath));
+
+
                 return response()->json(["message" => $response[1] ?? ""], $response[2]);
             } else {
                 return response()->json([
@@ -207,16 +267,17 @@ class TransactionController extends Controller
         ], 201);  // Retourne le code HTTP 201 (Créé)
     }
 
-    function convertirEnLettres($nombre)
+    function convertirEnLettres($nombre) // 100
     {
-        $unites = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-        $dizaines = ['', 'dix', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
+        return $nombre;
+        $unites = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf','dix'];
+        $dizaines = ['','vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix','cent'];
 
         if ($nombre == 0) {
             return 'zéro euro';
         }
 
-        $parties = explode('.', number_format($nombre, 2, '.', ''));
+        $parties = explode('.', number_format($nombre, 2, '.', '')); // [100,00]
         $euros = intval($parties[0]);
         $centimes = intval($parties[1]);
 
@@ -237,9 +298,9 @@ class TransactionController extends Controller
             $specials = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
             return $specials[$nombre - 10];
         } else {
-            $dizaine = intval($nombre / 10);
-            $unite = $nombre % 10;
-            $lettre = $dizaines[$dizaine];
+            $dizaine = intval($nombre / 10); //10
+            $unite = $nombre % 10; //0
+            $lettre = $dizaines[$dizaine-1]; // cent
             if ($unite > 0) {
                 if ($dizaine == 7 || $dizaine == 9) {
                     $lettre = $dizaines[$dizaine - 1] . '-dix';

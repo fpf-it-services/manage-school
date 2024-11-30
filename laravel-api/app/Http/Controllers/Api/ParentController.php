@@ -18,7 +18,7 @@ class ParentController extends Controller
         //rejete
         return response()->json([
             'success' => true,
-            'data' => Service::getJsonArray(EleveEnAttente::where("email_tuteur1",auth()->user()->email)->with(["ecole","niveau"])->get())
+            'data' => Service::getJsonArray(EleveEnAttente::where("email_tuteur1",auth()->user()->email)->where('status','!=','accepte')->with(["ecole","niveau"])->get())
         ], 200);
     }
     public function eleves(){

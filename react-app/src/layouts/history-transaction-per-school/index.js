@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import MDBox from "components/MDBox";
+import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -34,36 +31,42 @@ const TransactionHistory = () => {
     fetchAcademicYears();
   }, []);
 
-
   const handleYearChange = async (event) => {
-    setSelectedYear(event.target.value);
-    setFilter(""); 
+    const newYear = event.target.value;
+    setSelectedYear(newYear);
+    setFilter("");
     setLoading(true);
-
+  
     try {
-      const response = await getClasses(event.target.value);
-      setClasses(response); 
+      const responseClasses = await getClasses(newYear);
+      setClasses(responseClasses);
+      if (selectedClass) {
+        const responseTransactions = await getClassesAndTransactionByYear(newYear, selectedClass);
+        setData(responseTransactions);
+      } else {
+        setData([]);
+      }
     } catch (error) {
-      console.error("Erreur lors de la récupération des classes :", error);
+      console.error("Erreur lors de la récupération des données :", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
+  
 
   const handleClassChange = async (event) => {
     setSelectedClass(event.target.value);
-    setFilter(""); 
+    setFilter("");
     setLoading(true);
 
     try {
-      
-      const response = await getClassesAndTransactionByYear(event.target.value);
-      setData(response); 
+      const response = await getClassesAndTransactionByYear(selectedYear, event.target.value);
+      setData(response);
       console.log(response)
     } catch (error) {
-      console.error("Erreur lors de la récupération des élèves :", error);
+      console.error("Erreur lors de la récupération des transactions :", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -71,12 +74,7 @@ const TransactionHistory = () => {
     setFilter(event.target.value.toLowerCase());
   };
 
-  const filteredClasses = data.map((dt) => ({
-    ...dt,
-    students: dt.students.filter((student) =>
-      student.nom.toLowerCase().includes(filter) || student.prenoms.toLowerCase().includes(filter)
-    ),
-  }));
+  const filteredData = data.filter((item) => item.eleve.toLowerCase().includes(filter));
 
   return (
     <DashboardLayout>
@@ -156,45 +154,45 @@ const TransactionHistory = () => {
                 {loading ? (
                   <CircularProgress size={25} color="inherit" />
                 ) : (
-                  filteredClasses.map((classe) => (
-                    <Accordion key={classe.id}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls={`panel-${classe.id}-content`}
-                        id={`panel-${classe.id}-header`}
-                      >
-                        <MDTypography variant="h6">{classe.name}</MDTypography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <DataTable
-                          table={{
-                            columns: [
-                              { Header: "N°", accessor: "index", align: "left" },
-                              { Header: "Nom et Prénoms", accessor: "name", align: "center" },
-                              { Header: "Référence", accessor: "reference", align: "center" },
-                              { Header: "Montant Payé", accessor: "amount_paid", align: "center" },
-                              { Header: "Payeur", accessor: "mail", align: "center" },
-                              { Header: "Date", accessor: "date", align: "center" },
-                              { Header: "Observations", accessor: "observation", align: "center" },
-                            ],
-                            rows: classe.students.map((student, idx) => ({
-                              index: idx + 1,
-                              name: `${student.nom} ${student.prenoms}`,
-                              reference: student.reference,
-                              amount_paid: student.montant,
-                              mail: student.email,
-                              date: student.date, // Assurez-vous que 'date' est présent dans vos données
-                              observation: student.remainingAmount === 0 ? "Soldé" : student.remainingAmount,
-                            })),
-                          }}
-                          isSorted={false}
-                          entriesPerPage={false}
-                          showTotalEntries={false}
-                          noEndBorder
-                        />
-                      </AccordionDetails>
-                    </Accordion>
-                  ))
+                  <DataTable
+                    table={{
+                      columns: [
+                        { Header: "N°", accessor: "index", align: "left" },
+                        { Header: "Référence", accessor: "ref", align: "left" },
+                        { Header: "Nom et Prénoms", accessor: "eleve", align: "center" },
+                        { Header: "Montant Payé", accessor: "montant_paye", align: "center" },
+                        { Header: "Payeur", accessor: "payeur", align: "center" },
+                        { Header: "Date", accessor: "date", align: "center" },
+                        { Header: "Observations", accessor: "reste", align: "center" },
+                        { Header: "Reçu", accessor: "recu", align: "center" }, 
+                      ],
+                      rows: filteredData.map((item, index) => ({
+                        index: index + 1,
+                        ref: item.ref,
+                        eleve: item.eleve,
+                        montant_paye: `${item.montant_paye} (${item.type.split("_")[1]?.charAt(0).toUpperCase() + item.type.split("_")[1]?.slice(1)})`,
+                        payeur: item.payeur,
+                        date: item.date,
+                        reste: item.reste === 0 ? "Soldé" : `Reste ${" "}${item.reste}`,
+                        recu: (
+                          <MDButton variant="text" color="primary">
+                            <a
+                              href={item.recu_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              
+                            >
+                              Voir
+                            </a>
+                          </MDButton>
+                        ),
+                      })),
+                    }}
+                    isSorted={false}
+                    entriesPerPage={false}
+                    showTotalEntries={false}
+                    noEndBorder
+                  />
                 )}
               </MDBox>
             </Card>
@@ -207,5 +205,3 @@ const TransactionHistory = () => {
 };
 
 export default TransactionHistory;
-
-

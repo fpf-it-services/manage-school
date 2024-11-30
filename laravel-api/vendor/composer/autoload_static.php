@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit826f4752621057a727e69cbc918e7722
+class ComposerStaticInit2279055ed7bc5816c3447fd5d7f702ba
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -373,8 +373,8 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -426,8 +426,8 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -665,6 +665,7 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
         'App\\Mail\\NotificationEtatInscriptionEnAttente' => __DIR__ . '/../..' . '/app/Mail/NotificationEtatInscriptionEnAttente.php',
         'App\\Mail\\NotificationMailInscriptionAttente' => __DIR__ . '/../..' . '/app/Mail/NotificationMailInscriptionAttente.php',
         'App\\Mail\\NotificationMailTranche' => __DIR__ . '/../..' . '/app/Mail/NotificationMailTranche.php',
+        'App\\Mail\\RecuMailable' => __DIR__ . '/../..' . '/app/Mail/RecuMailable.php',
         'App\\Models\\Annee' => __DIR__ . '/../..' . '/app/Models/Annee.php',
         'App\\Models\\Classe' => __DIR__ . '/../..' . '/app/Models/Classe.php',
         'App\\Models\\Cursus' => __DIR__ . '/../..' . '/app/Models/Cursus.php',
@@ -7506,9 +7507,9 @@ class ComposerStaticInit826f4752621057a727e69cbc918e7722
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit826f4752621057a727e69cbc918e7722::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit826f4752621057a727e69cbc918e7722::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit826f4752621057a727e69cbc918e7722::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit2279055ed7bc5816c3447fd5d7f702ba::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit2279055ed7bc5816c3447fd5d7f702ba::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit2279055ed7bc5816c3447fd5d7f702ba::$classMap;
 
         }, null, ClassLoader::class);
     }

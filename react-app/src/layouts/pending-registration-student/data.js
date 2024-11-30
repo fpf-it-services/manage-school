@@ -16,7 +16,6 @@ export default function PendingTable({ onFileSelect }) {
     const fetchStudents = async () => {
       try {
         const response = await StudentService.getPendingRegistration();
-        console.log(response.data)
         setStudentsPendings(response.data || []);
         setLoading(false);
       } catch (error) {

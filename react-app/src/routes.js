@@ -3,7 +3,6 @@ import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import AddSchool from "layouts/add-school";
 // import Settings from "layouts/settings";
-
 import Login from "auth/login";
 import Register from "auth/register";
 import ForgotPassword from "auth/forgot-password";
@@ -13,7 +12,6 @@ import Settings from "layouts/settings";
 import AddStudent from "layouts/add-student";
 import Finances from "layouts/finances";
 import ClassManagement from "layouts/class-management";
-import Paiement from "layouts/payment";
 import Historique from "layouts/history";
 import SettingsFinances from "layouts/settings-finance";
 import DepotDossier from "auth/depot-dossier";
@@ -21,7 +19,6 @@ import TransactionHistory from "layouts/history-transaction-per-school";
 import Payment from "layouts/payments";
 import MesTransactions from "layouts/mes-transactions";
 import PendingStudents from "layouts/pending-registration-student";
-import Overview from "layouts/profile";
 import MyChildren from "layouts/mes-enfants";
 
 
@@ -59,7 +56,11 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">lock_reset</Icon>,
       route: "/auth/forgot-password",
       component: <ForgotPassword />,
-    }, {
+    },
+  ];
+
+  const adminRoutes = [
+    {
       type: "examples",
       name: "Mon Profil",
       key: "my-profile",
@@ -67,66 +68,34 @@ const func_routes = (role) => {
       route: "/my-profile",
       component: <UserProfile />,
     }, {
-      type: "public",
-      name: "Historique des Transcations",
-      key: "view-history",
-      icon: <Icon fontSize="small">history</Icon>,
-      route: "/public/view-history",
-      component: <Historique />,
-    }, {
-      type: "auth",
-      name: "Document Submission",
-      key: "document-submission",
-      icon: <Icon fontSize="small">folder</Icon>,
-      route: "/auth/document-submission",
-      component: <DepotDossier />,
-    },
-  ];
-
-  const adminRoutes = [
-    {
       type: "examples",
-      name: "School Management",
+      name: "Gestion Écoles",
       key: "school-management",
       icon: <Icon fontSize="small">list</Icon>,
       route: "/school-management",
       component: <UserManagement />,
     }, {
       type: "examples",
-      name: "Add School",
+      name: "Ajouter École",
       key: "add-school",
       icon: <Icon fontSize="small">add</Icon>,
       route: "/add-school",
       component: <AddSchool />,
     }, {
       type: "examples",
-      name: "School Settings",
+      name: "Paramètres scolaires",
       key: "school-settings",
       icon: <Icon fontSize="small">settings</Icon>,
       route: "/school-settings",
       component: <Settings />,
     }, {
       type: "examples",
-      name: "Pending Registrations",
+      name: "Enregistrements en Attente",
       key: "pending-registrations",
       icon: <Icon fontSize="small">hourglass_empty</Icon>,
       route: "/pending-registrations",
       component: <Dashboard />,
-    }, {
-      type: "examples",
-      name: "Transaction History",
-      key: "transaction-history",
-      icon: <Icon fontSize="small">history</Icon>,
-      route: "/transaction-history",
-      component: <TransactionHistory />,
-    }, {
-      type: "collapse",
-      name: "Schedule Exam Session",
-      key: "schedule-exam-session",
-      icon: <Icon fontSize="small">dashboard</Icon>,
-      route: "/dashboard",
-      component: <Dashboard />,
-    },
+    }, 
   ];
 
   const otherRoutes = [
@@ -154,7 +123,7 @@ const func_routes = (role) => {
       component: <Payment />,
     }, {
       type: "examples",
-      name: "Academic Results",
+      name: "Résultats Académiques",
       key: "academic-results",
       icon: <Icon fontSize="small">grading</Icon>,
       route: "/academic-results",
@@ -164,6 +133,13 @@ const func_routes = (role) => {
 
   const schoolRoutes = [
     {
+      type: "examples",
+      name: "Mon Profil",
+      key: "my-profile",
+      icon: <Icon fontSize="small">person</Icon>,
+      route: "/my-profile",
+      component: <UserProfile />,
+    }, {
       type: "examples",
       name: "Mes Classes",
       key: "my-classes",
@@ -205,13 +181,6 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">settings</Icon>,
       route: "/school-finances",
       component: <SettingsFinances />,
-    }, {
-      type: "collapse",
-      name: "Join Exam Session",
-      key: "join-exam-session",
-      icon: <Icon fontSize="small">dashboard</Icon>,
-      route: "/dashboard",
-      component: <Dashboard />,
     },
   ];
 

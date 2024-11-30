@@ -15,8 +15,12 @@ import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import { getSchoolsAndLevels } from "./data";
 import AuthService from "services/auth-service";
 import { CircularProgress } from "@mui/material";
+import { useNavigate } from 'react-router-dom'; 
+
+
 
 function DepotDossier() {
+  const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     school: "",
     level: "",
@@ -276,7 +280,7 @@ function DepotDossier() {
       const response = await AuthService.depotDossier(formData);
       setAlert({
         open: true,
-        message: "Dossier envoyé avec succès ! Un mail vous a été envoyé à l'adresse fourni.",
+        message: "Dossier envoyé avec succès ! Un mail vous a été envoyé à l'adresse fourni du tuteur 1. \n",
         type: "success",
       });
       setInputs({
@@ -297,7 +301,12 @@ function DepotDossier() {
         adresse_tuteur2: "",
         email_tuteur2: "",
       });
+
       setErrors({});
+
+      setTimeout(() => {
+        navigate("/auth/login");
+      }, 6000);
     } catch (error) {
       console.error("Erreur lors de l'envoi:", error);
       setAlert({

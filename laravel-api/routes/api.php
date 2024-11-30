@@ -79,6 +79,7 @@ Route::prefix("v2")->group(function(){
                 Route::post("eleves/attente/{id}",[ParentController::class, "updatePendingStudent"]);
                 Route::get("eleves",[ParentController::class, "eleves"]);
                 Route::post("eleves/accepte/{id}",[TransactionController::class, "saveInscriptionFree"]);
+                Route::post("eleves/verifier-disponibilite/{id}",[TransactionController::class, "verifier_disponibilite"]);
                 Route::post('/logout', [AuthController::class, 'logout']); 
             });
         });

@@ -77,7 +77,7 @@ class EleveEnAttente
     public static function acceptPendingStudent(Model $eleve,$ref,$montant,$email = null){
         $eleveInscrit = null;
         DB::beginTransaction();
-
+        $transaction = null;
         try {
             $eleveInscrit = Eleve::create(
                 [
@@ -103,7 +103,7 @@ class EleveEnAttente
             ]);
             $classe_id = ClasseService::getFreeClassByInfos($eleve->ecole_id,$eleve->niveau_id,$eleve->serie_id);
             if($classe_id == null){
-                throw new \Exception("Aucune classe disponible", 1);
+                throw new \Exception("Aucune classe disponible pour ce niveau", 1);
             }
             $annee_id = Annee::orderByDesc("id")->first()?->id;
             if($annee_id == null){
@@ -115,7 +115,7 @@ class EleveEnAttente
                 'classe_id' => $classe_id,
                 'annee_id' => $annee_id
             ]);
-            Transaction::create([
+            $transaction = Transaction::create([
                 "email" => $email ?? $eleve->email_tuteur1,
                 "annee_id" => $annee_id,
                 "eleve_id" => $eleveInscrit->id,
@@ -126,13 +126,13 @@ class EleveEnAttente
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            if($e->getMessage() == "Aucune classe disponible" || $e->getMessage() == "Aucune année créée"){
+            if($e->getMessage() == "Aucune classe disponible pour ce niveau" || $e->getMessage() == "Aucune année créée"){
                 return [null,$e->getMessage(),404];
             }
-            return [null,"Une erreur est survenue",500];
+            return [null,"Une erreur est survenue côté serveur",500];
         }
 
         DB::commit();
-        return [0,"Opération réussie",200]; 
+        return [0,"Opération réussie",200,$transaction]; 
     }
 }

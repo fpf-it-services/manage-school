@@ -67,10 +67,20 @@ export const postPaymentData = async (paymentData) => {
   }
 };
 
+export const checkPaymentRegister = async (id) => {
+  try {
+    const response = await TransationService.checkPaymentRegister(id); 
+    return response;
+  } catch (error) {
+    console.error("Erreur :", error);
+    return false;
+  }
+};
 
 
 export const sendRegisterPaymentData = async (id, paymentData) => {
   try {
+    console.log("cc")
     const response = await TransationService.sendRegisterPaymentData(id, paymentData); 
     return true;
   } catch (error) {

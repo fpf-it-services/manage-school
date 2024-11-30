@@ -62,6 +62,7 @@ return array(
     'App\\Mail\\NotificationEtatInscriptionEnAttente' => $baseDir . '/app/Mail/NotificationEtatInscriptionEnAttente.php',
     'App\\Mail\\NotificationMailInscriptionAttente' => $baseDir . '/app/Mail/NotificationMailInscriptionAttente.php',
     'App\\Mail\\NotificationMailTranche' => $baseDir . '/app/Mail/NotificationMailTranche.php',
+    'App\\Mail\\RecuMailable' => $baseDir . '/app/Mail/RecuMailable.php',
     'App\\Models\\Annee' => $baseDir . '/app/Models/Annee.php',
     'App\\Models\\Classe' => $baseDir . '/app/Models/Classe.php',
     'App\\Models\\Cursus' => $baseDir . '/app/Models/Cursus.php',
