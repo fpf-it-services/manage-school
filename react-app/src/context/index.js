@@ -23,7 +23,7 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const isPublicRoute = location.pathname.startsWith("/auth/") || location.pathname.startsWith("/public/");
     if (!token && !localStorage.getItem("role") && !isPublicRoute) {
-      navigate("/auth/login");
+      navigate("/homepage");
       return;
     }
     
@@ -48,7 +48,7 @@ const AuthContextProvider = ({ children }) => {
   };
 
   const register = () => {
-    navigate("/auth/login")
+    navigate("/homepage")
   }
 
   const logout = () => {
@@ -56,7 +56,7 @@ const AuthContextProvider = ({ children }) => {
     localStorage.removeItem("role");
     setIsAuthenticated(false);
     setRole(null)
-    navigate("/auth/login");
+    navigate("/homepage");
   };
 
   return (
@@ -116,7 +116,7 @@ function MaterialUIControllerProvider({ children }) {
     fixedNavbar: true,
     openConfigurator: false,
     direction: "ltr",
-    layout: "dashboard",
+    layout: "homepage",
     darkMode: false,
   };
 

@@ -29,6 +29,7 @@ export default function PendingTable({ onFileSelect }) {
   }, []);
 
   const handleViewFile = (file) => {
+    console.log(file)
     onFileSelect(file);
   };
 

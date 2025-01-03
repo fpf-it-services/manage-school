@@ -17,15 +17,16 @@ function BasicLayout({ image, children }) {
           width="100%"
           minHeight="100vh"
           sx={{
-            backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-              image &&
-              `${linearGradient(
-                rgba(gradients.dark.main, 0.6),
-                rgba(gradients.dark.state, 0.6)
-              )}, url(${image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
+            
+            backgroundImage: `linear-gradient(
+              135deg, 
+              color-mix(in srgb, var(--accent-color), transparent 95%) 50%, 
+              color-mix(in srgb, var(--accent-color), transparent 98%) 25%, 
+              transparent 50%
+            )`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
           }}
         >
           <MDBox

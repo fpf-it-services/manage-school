@@ -145,7 +145,6 @@ function Register() {
       <Card>
         <MDBox
           variant="gradient"
-          bgColor="info"
           borderRadius="lg"
           coloredShadow="success"
           mx={2}
@@ -153,6 +152,7 @@ function Register() {
           p={3}
           mb={1}
           textAlign="center"
+          sx={{ backgroundColor: "#0D83FD" }}
         >
           <MDTypography display="block" variant="button" color="white" my={1}>
             Entrez vos informations à l'administration pour vous inscrire
@@ -218,26 +218,7 @@ function Register() {
                 </MDTypography>
               )}
             </MDBox> */}
-            <MDBox mb={2}>
-                  <FormControl fullWidth>
-                    <InputLabel>Période Académique</InputLabel>
-                    <Select
-                      name="academicPeriod"
-                      value={inputs.academicPeriod}
-                      onChange={changeHandler}
-                      style={{ borderRadius: "8px", height: "45px" }}
-                      error={errors.academicPeriodError}
-                    >
-                      <MenuItem value="trimestre">Trimestre</MenuItem>
-                      <MenuItem value="semestre">Semestre</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {errors.academicPeriodError && (
-                <MDTypography variant="caption" color="error" fontWeight="light">
-                  Veuillez choisir une option
-                </MDTypography>
-              )}
-                </MDBox>
+            
             <MDBox mb={2}>
               <MDInput
                 type="text"
@@ -273,6 +254,27 @@ function Register() {
               )}
             </MDBox>
             <MDBox mb={2}>
+                  <FormControl fullWidth>
+                    <InputLabel>Période Académique</InputLabel>
+                    <Select
+                      variant="standard"
+                      name="academicPeriod"
+                      value={inputs.academicPeriod}
+                      onChange={changeHandler}
+                      style={{ borderRadius: "8px" }}
+                      error={errors.academicPeriodError}
+                    >
+                      <MenuItem value="trimestre">Trimestre</MenuItem>
+                      <MenuItem value="semestre">Semestre</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {errors.academicPeriodError && (
+                <MDTypography variant="caption" color="error" fontWeight="light">
+                  Veuillez choisir une option
+                </MDTypography>
+              )}
+                </MDBox>
+            <MDBox mb={2}>
               <MDInput
                 type="file"
                 label="Logo"
@@ -288,6 +290,7 @@ function Register() {
                 </MDTypography>
               )}
             </MDBox>
+            
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Checkbox name="agree" id="agree" onChange={changeHandler} />
               <InputLabel
@@ -321,7 +324,7 @@ function Register() {
               </MDTypography>
             )}
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth type="submit">
+              <MDButton variant="gradient" sx={{ backgroundColor: '#0D83FD' }} color="info" fullWidth type="submit">
                 S'inscrire
               </MDButton>
             </MDBox>

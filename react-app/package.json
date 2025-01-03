@@ -1,5 +1,6 @@
 {
   "name": "manage-school",
+  "homepage": "https://al-hal.net",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,7 +13,9 @@
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.5.1",
+    "aos": "^3.0.0-beta.6",
     "axios": "^1.5.1",
+    "bootstrap": "^5.3.3",
     "chart.js": "^4.4.0",
     "chroma-js": "2.4.2",
     "kkiapay": "^2.0.26",
@@ -30,6 +33,7 @@
     "stylis-plugin-rtl": "2.1.1",
     "sweetalert2": "^11.14.5",
     "sweetalert2-react-content": "^5.0.7",
+    "swiper": "^11.2.0",
     "web-vitals": "^3.4.0",
     "xlsx": "^0.18.5",
     "yup": "^1.3.1"

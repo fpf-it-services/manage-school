@@ -9,6 +9,7 @@ export const getClassesAndTransactionByYear = async (year, classe) => {
   try {
     const response = await TransactionService.getAllTransactions(year, classe);
     if (response) {  
+      console.log(response)
       return response;
     }
     return []; 

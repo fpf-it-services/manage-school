@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\MontantVerificationRequest;
-use App\Models\Transaction;
+use App\Models\Annee;
+use App\Models\Ecole;
+use App\Models\Eleve;
 use App\Models\Classe;
 use App\Models\Cursus;
 use App\Models\Montant;
-use App\Models\EleveEnAttente;
-use App\Models\Eleve;
-use App\Models\Annee;
-use App\Models\Ecole;
-use Illuminate\Validation\Rule;
-use App\Http\Requests\AddMontantRequest;
-use App\Http\Resources\TransactionResource;
-use App\Http\Services\Api\MontantService;
-use App\Http\Requests\AddTransactionRequest;
-use App\Http\Services\Api\EleveEnAttente as ServiceEleveEnAttente;
 use App\Mail\RecuMailable;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use App\Models\EleveEnAttente;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\AddMontantRequest;
 use App\Http\Services\Api\ClasseService;
+use App\Http\Services\Api\MontantService;
+use App\Http\Resources\TransactionResource;
+use App\Http\Requests\AddTransactionRequest;
+use App\Http\Requests\MontantVerificationRequest;
 use App\Mail\NotificationVerificationInscriptionMail;
+use App\Http\Services\Api\EleveEnAttente as ServiceEleveEnAttente;
 
 class TransactionController extends Controller
 {
@@ -159,6 +159,10 @@ class TransactionController extends Controller
                 $date = date('Y-m-d_H-i-s');
                 $filePath = "pdf/recu_{$date}.pdf";
 
+                $transaction->update([
+                    "recu" => $filePath
+                ]);
+
                 // Enregistrer le fichier dans le dossier 'storage/app/public/pdf'
                 Storage::disk('public')->put($filePath, $pdf->output());
 
@@ -213,6 +217,10 @@ class TransactionController extends Controller
                     "message" => "Le montant n'est pas défini pour la classe " . $transaction->classe->nom . " de l'école " . (Ecole::where("id", $transaction->classe->ecole_id)->first()->nom)
                 ]);
             }
+            $montant_restant = [];
+            foreach(Transaction::getTransactionsTypes() as $type){
+                $montant_restant[$type] = $this->getMontantPrice($montant, $type) - $this->getLastTransactionsMontantSum($transactions, $type, $transaction->created_at);
+            }
             $data[] = [
                 "eleve" => $transaction->eleve->nom . ' ' . $transaction->eleve->prenoms,
                 "ref" => $transaction->reference,
@@ -220,7 +228,8 @@ class TransactionController extends Controller
                 "montant_paye" => $transaction->montant,
                 "payeur" => $transaction->email,
                 "date" => $transaction->created_at->format("d/m/Y"),
-                "reste" => $this->getMontantPrice($montant, $transaction->type_frais) - $this->getLastTransactionsMontantSum($transactions, $transaction->type_frais, $transaction->created_at),
+                "recu" => Storage::disk('public')->url($transaction->recu),
+                "reste" => $montant_restant,
             ];
         }
         return response()->json([
@@ -380,7 +389,7 @@ class TransactionController extends Controller
     {
         $frais = 0;
         foreach ($transactions as $transaction) {
-            if ($transaction->created_at->isBefore($dateTransaction) && $transaction->type_frais === $type_frais) {
+            if ($transaction->created_at->lessThanOrEqualTo($dateTransaction) && $transaction->type_frais === $type_frais) {
                 $frais += $transaction->montant;
             }
         }

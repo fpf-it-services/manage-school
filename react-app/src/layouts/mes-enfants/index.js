@@ -10,8 +10,8 @@ import {
   CircularProgress,
   IconButton,
   Tooltip,
-  MenuItem, 
-  FormControl, 
+  MenuItem,
+  FormControl,
   InputLabel,
   Select
 } from "@mui/material";
@@ -79,7 +79,6 @@ function MyChildren() {
 
 
   const handleChange = (field, value) => {
-    console.log(formData)
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -201,100 +200,100 @@ function MyChildren() {
       <Footer />
 
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-  <DialogTitle>Modifier les Informations de {selectedChild?.nom}</DialogTitle>
-  <DialogContent>
-    {selectedChild && (
-      <Grid container spacing={2}>
-        {JSON.parse(JSON.parse(selectedChild.champs || "[]")).map((field) => (
-          <Grid item xs={12} key={field}>
-            {["photo", "releve_de_notes", "releve_de_notes_examen", "acte_de_naissance"].includes(field) ? (
-              <MDBox mb={2} display="flex" alignItems="center" justifyContent="space-between">
-                <MDBox flex={1} mr={1}>
-                  <MDTypography variant="caption" display="block" fontWeight="medium">
-                    {field.replace(/_/g, " ")}
-                  </MDTypography> 
-                  <MDInput
-                    fullWidth
-                    type="file"
-                    name={field}
-                    onChange={(e) => handleChange(field, e.target.files[0])}
-                  />
-                </MDBox>
+        <DialogTitle>Modifier les Informations de {selectedChild?.nom}</DialogTitle>
+        <DialogContent>
+          {selectedChild && (
+            <Grid container spacing={2}>
+              {JSON.parse(JSON.parse(selectedChild.champs || "[]")).map((field) => (
+                <Grid item xs={12} key={field}>
+                  {["photo", "releve_de_notes", "releve_de_notes_examen", "acte_de_naissance"].includes(field) ? (
+                    <MDBox mb={2} display="flex" alignItems="center" justifyContent="space-between">
+                      <MDBox flex={1} mr={1}>
+                        <MDTypography variant="caption" display="block" fontWeight="medium">
+                          {field.replace(/_/g, " ")}
+                        </MDTypography>
+                        <MDInput
+                          fullWidth
+                          type="file"
+                          name={field}
+                          onChange={(e) => handleChange(field, e.target.files[0])}
+                        />
+                      </MDBox>
 
-                {selectedChild.fields[field] && (
-                  <Tooltip title="Voir l'ancien fichier">
-                    <IconButton
-                      href={selectedChild.fields[field]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      color="primary"
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </MDBox>
-            ) : field === "sexe" ? (
-              <MDBox mb={2}>
-                <MDTypography variant="caption" display="block" fontWeight="medium">
-                  Sexe
-                </MDTypography>
-                <Select
-                  fullWidth
-                  value={formData[field] || ""}
-                  style={{ borderRadius: "8px", height: "40px" }}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                  displayEmpty
-                >
-                  <MenuItem value="" disabled>
-                    Sélectionnez le sexe
-                  </MenuItem>
-                  <MenuItem value="M">Masculin</MenuItem>
-                  <MenuItem value="F">Féminin</MenuItem>
-                </Select>
-              </MDBox>
-            ) : field === "date_naissance" ? (
-              <MDBox mb={2}>
-                <MDTypography variant="caption" display="block" fontWeight="medium">
-                  Date de naissance
-                </MDTypography>
-                <MDInput
-                  fullWidth
-                  type="date"
-                  name={field}
-                  value={formData[field].split("T")[0] || ""}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                />
-              </MDBox>
-            ) : (
-              <MDBox mb={2}>
-                <MDTypography variant="caption" display="block" fontWeight="medium">
-                  {field.replace(/_/g, " ")}
-                </MDTypography>
-                <MDInput
-                  fullWidth
-                  type="text"
-                  name={field}
-                  placeholder={`Saisir ${field.replace(/_/g, " ")}`}
-                  value={formData[field] || ""}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                />
-              </MDBox>
-            )}
-          </Grid>
-        ))}
-        <Grid item xs={12} textAlign="right">
-          <Button variant="text" color="success" onClick={handleUpdate} sx={{ mr: 2 }}>
-            {isLoading ? <CircularProgress size={20} /> : "Enregistrer"}
-          </Button>
-          <Button variant="text" onClick={handleCloseDialog}>
-            Annuler
-          </Button>
-        </Grid>
-      </Grid>
-    )}
-  </DialogContent>
-</Dialog>
+                      {selectedChild.fields[field] && (
+                        <Tooltip title="Voir l'ancien fichier">
+                          <IconButton
+                            href={selectedChild.fields[field]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            color="primary"
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </MDBox>
+                  ) : field === "sexe" ? (
+                    <MDBox mb={2}>
+                      <MDTypography variant="caption" display="block" fontWeight="medium">
+                        Sexe
+                      </MDTypography>
+                      <Select
+                        fullWidth
+                        value={formData[field] || ""}
+                        style={{ borderRadius: "8px", height: "40px" }}
+                        onChange={(e) => handleChange(field, e.target.value)}
+                        displayEmpty
+                      >
+                        <MenuItem value="" disabled>
+                          Sélectionnez le sexe
+                        </MenuItem>
+                        <MenuItem value="M">Masculin</MenuItem>
+                        <MenuItem value="F">Féminin</MenuItem>
+                      </Select>
+                    </MDBox>
+                  ) : field === "date_naissance" ? (
+                    <MDBox mb={2}>
+                      <MDTypography variant="caption" display="block" fontWeight="medium">
+                        Date de naissance
+                      </MDTypography>
+                      <MDInput
+                        fullWidth
+                        type="date"
+                        name={field}
+                        value={formData[field].split("T")[0] || ""}
+                        onChange={(e) => handleChange(field, e.target.value)}
+                      />
+                    </MDBox>
+                  ) : (
+                    <MDBox mb={2}>
+                      <MDTypography variant="caption" display="block" fontWeight="medium">
+                        {field.replace(/_/g, " ")}
+                      </MDTypography>
+                      <MDInput
+                        fullWidth
+                        type="text"
+                        name={field}
+                        placeholder={`Saisir ${field.replace(/_/g, " ")}`}
+                        value={formData[field] || ""}
+                        onChange={(e) => handleChange(field, e.target.value)}
+                      />
+                    </MDBox>
+                  )}
+                </Grid>
+              ))}
+              <Grid item xs={12} textAlign="right">
+                <Button variant="text" color="success" onClick={handleUpdate} sx={{ mr: 2 }}>
+                  {isLoading ? <CircularProgress size={20} /> : "Enregistrer"}
+                </Button>
+                <Button variant="text" onClick={handleCloseDialog}>
+                  Annuler
+                </Button>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+      </Dialog>
 
     </DashboardLayout>
   );

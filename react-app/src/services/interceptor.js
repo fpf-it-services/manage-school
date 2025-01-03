@@ -2,10 +2,7 @@ import HttpService from "./htttp.service";
 
 export const setupAxiosInterceptors = (onUnauthenticated) => {
   const onRequestSuccess = async (config) => {
-    const isPublicRoute = location.pathname.startsWith("/public/");
-    if(isPublicRoute){
-      return config;
-    }
+
     const token = localStorage.getItem("token");
     config.headers.Authorization = `Bearer ${token}`;
     return config;

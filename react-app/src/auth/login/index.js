@@ -95,14 +95,14 @@ function Login() {
       <Card>
         <MDBox
           variant="gradient"
-          bgColor="info"
           borderRadius="lg"
-          coloredShadow="info"
+          coloredShadow="success"
           mx={2}
           mt={-3}
           p={2}
           mb={1}
           textAlign="center"
+          sx={{ backgroundColor: "#0D83FD" }}
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Connectez-vous à votre compte
@@ -144,8 +144,8 @@ function Login() {
                 &nbsp;&nbsp;Se rappeler de moi
               </MDTypography>
             </MDBox>
-            <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth type="submit">
+            <MDBox mt={4} mb={1} >
+              <MDButton color="info" fullWidth type="submit" sx={{ backgroundColor: "##0D83FD" }}>
                 Se connecter
               </MDButton>
             </MDBox>

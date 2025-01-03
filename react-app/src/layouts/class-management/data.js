@@ -33,6 +33,7 @@ export const getClassesByLevel = async (levelId) => {
   }
 };
 
+
 export const uploadStudents = async (className, classSize, data, level, serie = null) => {
   if (!className || !classSize || !level) {
     console.error("Données manquantes pour la création de la classe");

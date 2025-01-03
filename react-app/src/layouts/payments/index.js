@@ -204,7 +204,7 @@ const Payment = () => {
       } */
 
       if(!response.success) {
-        Swal.fire("Echec", `${response.error}. Veuillez réessayer demain ${new Date() +1}.`, "error");
+        Swal.fire("Echec", `${response.error}. Veuillez réessayer demain ${new Date().getDay()}.`, "error");
       }
 
       if (result.isConfirmed && response.success) {

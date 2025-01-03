@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transaction extends Model
 {
@@ -16,7 +16,8 @@ class Transaction extends Model
         "classe_id",
         "type_frais",
         "montant",
-        "reference"
+        "reference",
+        "recu"
     ];
 
     public function eleve(){
@@ -24,5 +25,8 @@ class Transaction extends Model
     }
     public function classe(){
         return $this->belongsTo(Classe::class);
+    }
+    public static function getTransactionsTypes(){
+        return ["frais_inscription","frais_formation","frais_annexe"];
     }
 }

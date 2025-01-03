@@ -20,6 +20,7 @@ import Payment from "layouts/payments";
 import MesTransactions from "layouts/mes-transactions";
 import PendingStudents from "layouts/pending-registration-student";
 import MyChildren from "layouts/mes-enfants";
+import Homepage from "layouts/homepage";
 
 
 // const routes = [
@@ -56,6 +57,14 @@ const func_routes = (role) => {
       icon: <Icon fontSize="small">lock_reset</Icon>,
       route: "/auth/forgot-password",
       component: <ForgotPassword />,
+    },
+    {
+      type: "auth",
+      name: "Homepage",
+      key: "homepage",
+      icon: <Icon fontSize="small">home</Icon>,
+      route: "/homepage",
+      component: <Homepage />,
     },
   ];
 

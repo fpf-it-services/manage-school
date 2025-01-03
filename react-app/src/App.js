@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
@@ -21,6 +22,8 @@ import { AuthContext } from "context";
 import { Helmet } from "react-helmet";
 import func_routes from "routes";
 import DepotDossier from "auth/depot-dossier";
+import Homepage from "layouts/homepage";
+import MainEffects from "MainEffects";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -58,7 +61,7 @@ export default function App() {
   const navigate = useNavigate();
   setupAxiosInterceptors(() => {
     authContext.logout();
-    navigate("/auth/login");
+    navigate("/homepage");
   });
 
   useEffect(() => {
@@ -72,7 +75,7 @@ export default function App() {
         return getRoutes(route.collapse);
       }
 
-      if (route.route && route.type !== "auth") {
+      if (route.route && route.type !== "auth" && route.type !== "public") {
         return (
           <Route
             exact
@@ -148,6 +151,7 @@ export default function App() {
         <meta property="og:site_name" content="School App" />
       </Helmet>
       <ThemeProvider theme={darkMode ? themeDark : theme}>
+        <MainEffects />
         <CssBaseline />
         {layout === "dashboard" && (
           <>
@@ -163,17 +167,20 @@ export default function App() {
             {configsButton}
           </>
         )}
+        {layout === "homepage" && (
+          <></>
+        )}
         {layout === "vr" && <Configurator />}
         <Routes>
-          <Route path="/" element={<Navigate to="/auth/login" />} />
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/homepage" element={<Homepage />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/depot-de-dossier" element={<DepotDossier />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/auth/login" />} />
+          <Route path="*" element={<Navigate to="/homepage" />} />
         </Routes>
       </ThemeProvider>
     </>

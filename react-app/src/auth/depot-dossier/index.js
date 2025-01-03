@@ -329,7 +329,6 @@ function DepotDossier() {
       >
         <MDBox
           variant="gradient"
-          bgColor="info"
           borderRadius="lg"
           coloredShadow="success"
           mx={2}
@@ -337,6 +336,7 @@ function DepotDossier() {
           p={3}
           mb={1}
           textAlign="center"
+          sx={{ backgroundColor: "#0D83FD" }}
         >
           <MDTypography variant="h5" color="white">
             Dépôt de dossier d'inscription
@@ -633,10 +633,10 @@ function DepotDossier() {
             </Grid>
             <MDBox mt={4} mb={1}>
               <MDButton
-                variant="gradient"
                 color="info"
                 fullWidth
                 type="submit"
+                sx={{ backgroundColor: '#0D83FD' }}
                 disabled={!enabledFields.remaining || isLoading}
                 startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
               >

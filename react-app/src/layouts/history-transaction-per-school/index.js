@@ -36,7 +36,7 @@ const TransactionHistory = () => {
     setSelectedYear(newYear);
     setFilter("");
     setLoading(true);
-  
+
     try {
       const responseClasses = await getClasses(newYear);
       setClasses(responseClasses);
@@ -52,7 +52,7 @@ const TransactionHistory = () => {
       setLoading(false);
     }
   };
-  
+
 
   const handleClassChange = async (event) => {
     setSelectedClass(event.target.value);
@@ -164,7 +164,7 @@ const TransactionHistory = () => {
                         { Header: "Payeur", accessor: "payeur", align: "center" },
                         { Header: "Date", accessor: "date", align: "center" },
                         { Header: "Observations", accessor: "reste", align: "center" },
-                        { Header: "Reçu", accessor: "recu", align: "center" }, 
+                        { Header: "Reçu", accessor: "recu", align: "center" },
                       ],
                       rows: filteredData.map((item, index) => ({
                         index: index + 1,
@@ -173,14 +173,24 @@ const TransactionHistory = () => {
                         montant_paye: `${item.montant_paye} (${item.type.split("_")[1]?.charAt(0).toUpperCase() + item.type.split("_")[1]?.slice(1)})`,
                         payeur: item.payeur,
                         date: item.date,
-                        reste: item.reste === 0 ? "Soldé" : `Reste ${" "}${item.reste}`,
+                        reste: (item) => {
+                          if (item.frais_annexe === 0 && item.frais_formation === 0 && item.frais_inscription === 0) {
+                            return "Soldé";
+                          }
+                          return `
+                              Frais annexe : ${item.frais_annexe}
+                              Frais formation : ${item.frais_formation}
+                              Frais inscription : ${item.frais_inscription}
+                          `;
+                        },
+
                         recu: (
                           <MDButton variant="text" color="primary">
                             <a
-                              href={item.recu_url}
+                              href={item.recu}
                               target="_blank"
                               rel="noopener noreferrer"
-                              
+
                             >
                               Voir
                             </a>
